@@ -135,6 +135,40 @@ function safePost(port: any, message: StreamMessage) {
 
 type OllamaMessage = { role: "system" | "user" | "assistant"; content: string };
 
+// Simple in-memory cache for model tags (avoid hammering Ollama)
+let tagsCache: { time: number; tags: string[] } = { time: 0, tags: [] };
+
+chrome.runtime.onMessage.addListener((message: any, _sender, sendResponse) => {
+  if (message?.type === "get_models") {
+    (async () => {
+      const now = Date.now();
+      if (tagsCache.time && now - tagsCache.time < 60_000) {
+        sendResponse({ models: tagsCache.tags });
+        return;
+      }
+      try {
+        const res = await fetch("http://127.0.0.1:11434/api/tags");
+        if (!res.ok) {
+          sendResponse({ error: `status ${res.status}` });
+          return;
+        }
+        const json = await res.json();
+        // Ollama /api/tags may return an array or object; normalize
+        let models: string[] = [];
+        if (Array.isArray(json)) models = json.map((x) => String(x));
+        else if (Array.isArray(json?.tags)) models = json.tags.map((x: any) => String(x));
+        else if (Array.isArray(json?.models)) models = json.models.map((x: any) => String(x));
+        else if (typeof json === "object") models = Object.keys(json);
+        tagsCache = { time: Date.now(), tags: models };
+        sendResponse({ models });
+      } catch (e: any) {
+        sendResponse({ error: e?.message || String(e) });
+      }
+    })();
+    return true; // keep channel open for async response
+  }
+});
+
 async function streamFromOllama(
   args: {
     model?: string;

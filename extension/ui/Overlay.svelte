@@ -9,6 +9,9 @@
   let streaming = false;
   let output = "";
   let model = "";
+  let models: string[] = [];
+  let modelsLoading = false;
+  let modelsError = "";
 
   async function loadSettings() {
     try {
@@ -76,6 +79,7 @@
     window.addEventListener("ollama-stream", onStream as any);
     window.addEventListener("keydown", onKey as any);
     loadSettings();
+    fetchModels();
   });
   onDestroy(() => {
     window.removeEventListener("ollama-open", onOpen as any);
@@ -83,6 +87,25 @@
     window.removeEventListener("ollama-stream", onStream as any);
     window.removeEventListener("keydown", onKey as any);
   });
+  
+  async function fetchModels() {
+    modelsLoading = true;
+    modelsError = "";
+    try {
+      const resp = await chrome.runtime.sendMessage({ type: "get_models" });
+      if (resp?.error) {
+        modelsError = String(resp.error);
+        models = [];
+      } else {
+        models = resp?.models || [];
+      }
+    } catch (e: any) {
+      modelsError = String(e?.message || e);
+      models = [];
+    } finally {
+      modelsLoading = false;
+    }
+  }
 </script>
 
 <div class="overlay">
@@ -102,15 +125,29 @@
           bind:value={prompt}
           placeholder="Задайте вопрос или оставьте пустым для суммаризации..."
         ></textarea>
-        <div style="display:flex;gap:8px;align-items:center">
-          <input
-            class="input"
-            placeholder="model (e.g. llama2-mini)"
-            bind:value={model}
-          />
-          <button class="btn secondary" on:click={saveModel}
-            >Сохранить модель</button
-          >
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+          {#if modelsLoading}
+            <div>Loading models...</div>
+          {:else}
+            {#if models.length}
+              <select bind:value={model} class="input">
+                <option value="">(manual)</option>
+                {#each models as m}
+                  <option value={m}>{m}</option>
+                {/each}
+              </select>
+            {:else}
+              <input
+                class="input"
+                placeholder="model (e.g. llama2-mini)"
+                bind:value={model}
+              />
+            {/if}
+          {/if}
+          <button class="btn secondary" on:click={saveModel}>Сохранить модель</button>
+          {#if modelsError}
+            <div style="color:#c00;margin-left:8px">Ошибка: {modelsError}</div>
+          {/if}
         </div>
         <div class="actions">
           <button class="btn" disabled={streaming} on:click={start}
@@ -146,6 +183,10 @@
       "Segoe UI Emoji";
     /* prevent page CSS from leaking too much */
     box-sizing: border-box;
+  }
+
+  .overlay * {
+    box-sizing: inherit;
   }
   .overlay * {
     box-sizing: inherit;
