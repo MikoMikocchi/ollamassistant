@@ -104,7 +104,9 @@ async function streamFromOllama(
   onMessage: (m: StreamMessage) => void,
   signal?: AbortSignal
 ) {
-  const model = args.model || "llama3.1:8b-instruct";
+  // Allow overriding model from extension settings (chrome.storage.local)
+  const stored = await chrome.storage.local.get(["model"]);
+  const model = args.model || stored?.model || "llama3.1:8b-instruct";
   const body = {
     model,
     stream: true,

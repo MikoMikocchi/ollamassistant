@@ -35,8 +35,10 @@
     "commands": {
         "toggle-overlay": {
             "suggested_key": {
-                "default": "Command+K",
-                "mac": "Command+K"
+                "default": "Ctrl+K",
+                "mac": "Ctrl+K",
+                "windows": "Ctrl+K",
+                "linux": "Ctrl+K"
             },
             "description": "Открыть/закрыть Overlay"
         }

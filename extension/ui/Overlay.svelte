@@ -8,6 +8,20 @@
   let prompt = "";
   let streaming = false;
   let output = "";
+  let model = "";
+
+  async function loadSettings() {
+    try {
+      const s = await chrome.storage.local.get(["model"]);
+      model = s?.model || "";
+    } catch {}
+  }
+
+  async function saveModel() {
+    try {
+      await chrome.storage.local.set({ model });
+    } catch {}
+  }
 
   function toggle() {
     open = !open;
@@ -57,6 +71,7 @@
     window.addEventListener("ollama-open", onOpen as any);
     window.addEventListener("ollama-toggle", onToggle as any);
     window.addEventListener("ollama-stream", onStream as any);
+    loadSettings();
   });
   onDestroy(() => {
     window.removeEventListener("ollama-open", onOpen as any);
@@ -71,7 +86,7 @@
     <div class="panel" role="dialog" aria-label="Ollama Assistant">
       <div class="header">
         <div class="title">Ollama Assistant · {version}</div>
-  <div style="margin-left:auto"></div>
+        <div style="margin-left:auto"></div>
         {#if streaming}
           <button class="btn secondary" on:click={stop}>Стоп</button>
         {/if}
@@ -82,6 +97,16 @@
           bind:value={prompt}
           placeholder="Задайте вопрос или оставьте пустым для суммаризации..."
         ></textarea>
+        <div style="display:flex;gap:8px;align-items:center">
+          <input
+            class="input"
+            placeholder="model (e.g. llama2-mini)"
+            bind:value={model}
+          />
+          <button class="btn secondary" on:click={saveModel}
+            >Сохранить модель</button
+          >
+        </div>
         <div class="actions">
           <button class="btn" disabled={streaming} on:click={start}
             >Спросить локально</button
