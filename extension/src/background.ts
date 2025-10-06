@@ -154,13 +154,38 @@ chrome.runtime.onMessage.addListener((message: any, _sender, sendResponse) => {
         }
         const json = await res.json();
         // Ollama /api/tags may return an array or object; normalize
+        const extract = (x: any): string | null => {
+          if (x == null) return null;
+          if (typeof x === "string") return x;
+          if (typeof x === "number") return String(x);
+          if (typeof x === "object") {
+            // common fields
+            return (
+              x.name ||
+              x.id ||
+              x.tag ||
+              x.model ||
+              x.label ||
+              (typeof x === "object" &&
+              x?.toString &&
+              x.toString() !== "[object Object]"
+                ? x.toString()
+                : null)
+            );
+          }
+          return null;
+        };
         let models: string[] = [];
-        if (Array.isArray(json)) models = json.map((x) => String(x));
+        if (Array.isArray(json))
+          models = json.map(extract).filter(Boolean) as string[];
         else if (Array.isArray(json?.tags))
-          models = json.tags.map((x: any) => String(x));
+          models = json.tags.map(extract).filter(Boolean) as string[];
         else if (Array.isArray(json?.models))
-          models = json.models.map((x: any) => String(x));
+          models = json.models.map(extract).filter(Boolean) as string[];
         else if (typeof json === "object") models = Object.keys(json);
+        // dedupe and trim
+        models = models.map((s) => s.trim()).filter(Boolean);
+        models = Array.from(new Set(models));
         tagsCache = { time: Date.now(), tags: models };
         sendResponse({ models });
       } catch (e: any) {
