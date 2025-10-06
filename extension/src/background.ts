@@ -33,6 +33,29 @@ chrome.runtime.onInstalled.addListener(() => {
   });
 });
 
+// Remove Origin header for localhost Ollama to avoid CORS/proxy 403 on some setups
+try {
+  const urls = [
+    "http://127.0.0.1/*",
+    "http://127.0.0.1:11434/*",
+    "http://localhost/*",
+    "http://localhost:11434/*",
+  ];
+  chrome.webRequest.onBeforeSendHeaders.addListener(
+    (details) => {
+      const headers = details.requestHeaders || [];
+      const filtered = headers.filter(
+        (h) =>
+          h.name.toLowerCase() !== "origin" &&
+          h.name.toLowerCase() !== "referer"
+      );
+      return { requestHeaders: filtered };
+    },
+    { urls },
+    ["blocking", "requestHeaders"]
+  );
+} catch {}
+
 chrome.contextMenus.onClicked.addListener(async (info: any, tab?: any) => {
   if (!tab?.id) return;
   const action = info.menuItemId?.toString();
@@ -50,6 +73,24 @@ chrome.commands.onCommand.addListener(async (command: string) => {
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
   if (tab?.id) {
     await chrome.tabs.sendMessage(tab.id, { type: "toggle_overlay" });
+  }
+});
+
+// Action (toolbar icon) click: open overlay in active tab
+chrome.action?.onClicked?.addListener?.(async (tab) => {
+  try {
+    const tabId =
+      tab?.id ??
+      (await chrome.tabs.query({ active: true, currentWindow: true }))[0]?.id;
+    if (tabId) {
+      await chrome.tabs.sendMessage(tabId, {
+        type: "open_overlay",
+        preset: "summarize",
+        selectionText: "",
+      });
+    }
+  } catch (e) {
+    // ignore
   }
 });
 
@@ -123,6 +164,27 @@ async function streamFromOllama(
     body: JSON.stringify(body),
     signal,
   });
+  if (!res.ok) {
+    // Non-OK response: try to extract error message
+    let errText = res.statusText;
+    try {
+      const t = await res.text();
+      try {
+        const j = JSON.parse(t);
+        errText = j?.error || j?.message || errText || String(t).slice(0, 300);
+      } catch {
+        errText = t?.slice(0, 300) || errText;
+      }
+    } catch {}
+    if (res.status === 403) {
+      const extId = chrome.runtime.id;
+      const hint = `Forbidden. Разрешите источник расширения для Ollama. Пример (macOS):\nlaunchctl setenv OLLAMA_ORIGINS "chrome-extension://${extId},http://localhost,http://127.0.0.1"\nlaunchctl kickstart -k system/com.ollama.ollama\nИли перезапустите Ollama так: OLLAMA_ORIGINS="chrome-extension://${extId},http://localhost,http://127.0.0.1" ollama serve`;
+      onMessage({ type: "error", error: `Ollama: ${errText}\n${hint}` });
+    } else {
+      onMessage({ type: "error", error: `Ollama: ${errText}` });
+    }
+    return;
+  }
   if (!res.body) throw new Error(`No response body from Ollama`);
 
   const reader = res.body.getReader();

@@ -57,6 +57,9 @@
   function onToggle() {
     toggle();
   }
+  function onKey(ev: KeyboardEvent) {
+    if (ev.key === "Escape" && open) toggle();
+  }
   function onStream(e: any) {
     const msg = e?.detail;
     if (msg?.type === "chunk") output += msg.data;
@@ -71,18 +74,20 @@
     window.addEventListener("ollama-open", onOpen as any);
     window.addEventListener("ollama-toggle", onToggle as any);
     window.addEventListener("ollama-stream", onStream as any);
+    window.addEventListener("keydown", onKey as any);
     loadSettings();
   });
   onDestroy(() => {
     window.removeEventListener("ollama-open", onOpen as any);
     window.removeEventListener("ollama-toggle", onToggle as any);
     window.removeEventListener("ollama-stream", onStream as any);
+    window.removeEventListener("keydown", onKey as any);
   });
 </script>
 
 <div class="overlay">
-  <button class="fab" on:click={toggle}>LLM</button>
   {#if open}
+    <div class="backdrop" on:click={toggle} aria-hidden="true"></div>
     <div class="panel" role="dialog" aria-label="Ollama Assistant">
       <div class="header">
         <div class="title">Ollama Assistant · {version}</div>
@@ -122,14 +127,11 @@
 </div>
 
 <style>
-  :global(#ollama-assistant-overlay-host) {
-    all: initial;
-  }
   .overlay {
     position: fixed;
+    top: 12px;
     right: 12px;
-    bottom: 12px;
-    z-index: 2147483000;
+    z-index: 2147483000; /* above most UIs */
     font-family:
       ui-sans-serif,
       system-ui,
@@ -142,22 +144,25 @@
       Arial,
       "Apple Color Emoji",
       "Segoe UI Emoji";
+    /* prevent page CSS from leaking too much */
+    box-sizing: border-box;
   }
-  .fab {
-    background: #111;
-    color: #fff;
-    border: none;
-    border-radius: 999px;
-    padding: 10px 14px;
-    cursor: pointer;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  .overlay * {
+    box-sizing: inherit;
+  }
+  .backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.15);
+    backdrop-filter: saturate(140%) blur(1px);
+    animation: fadeIn 120ms ease-out;
   }
   .panel {
     position: fixed;
-    right: 12px;
-    bottom: 64px;
-    width: min(520px, 90vw);
-    height: min(60vh, 600px);
+    top: 8px;
+    right: 8px;
+    width: min(520px, 92vw);
+    max-height: min(70vh, 640px);
     background: #fff;
     color: #111;
     border-radius: 10px;
@@ -166,6 +171,8 @@
     flex-direction: column;
     overflow: hidden;
     border: 1px solid #e5e7eb;
+    transform-origin: top right;
+    animation: panelIn 130ms cubic-bezier(0.2, 0.8, 0.2, 1);
   }
   .header {
     padding: 10px 12px;
@@ -183,7 +190,7 @@
     display: flex;
     flex-direction: column;
     gap: 8px;
-    height: 100%;
+    max-height: 70vh;
   }
   .input {
     width: 100%;
@@ -192,6 +199,9 @@
     border: 1px solid #cbd5e1;
     border-radius: 8px;
     font: inherit;
+    background: #fff;
+    color: inherit;
+    outline: none;
   }
   .actions {
     display: flex;
@@ -204,13 +214,14 @@
     padding: 8px 12px;
     border-radius: 8px;
     cursor: pointer;
+    appearance: none;
   }
   .btn.secondary {
     background: #e5e7eb;
     color: #111;
   }
   .output {
-    flex: 1;
+    flex: 1 1 auto;
     overflow: auto;
     background: #0b1020;
     color: #e2e8f0;
@@ -219,6 +230,24 @@
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
       "Liberation Mono", "Courier New", monospace;
     white-space: pre-wrap;
+  }
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  @keyframes panelIn {
+    from {
+      opacity: 0;
+      transform: translateY(-6px) scale(0.98);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
   }
   /* reserved */
 </style>

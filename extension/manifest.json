@@ -1,20 +1,24 @@
 {
     "manifest_version": 3,
-    "name": "Ollama Assistant (Local)",
+    "name": "Ollamassistant",
     "version": "0.1.0",
     "description": "Локальный ассистент с Ollama: overlay, контекстное меню и стрим без внешнего трафика.",
     "action": {
-        "default_title": "Ollama Assistant"
+        "default_title": "Ollamassistant"
     },
     "permissions": [
         "contextMenus",
         "activeTab",
         "scripting",
-        "storage"
+        "storage",
+        "webRequest",
+        "webRequestBlocking"
     ],
     "host_permissions": [
         "http://127.0.0.1/*",
-        "http://localhost/*"
+        "http://localhost/*",
+        "http://127.0.0.1:11434/*",
+        "http://localhost:11434/*"
     ],
     "background": {
         "service_worker": "src/background.ts",
