@@ -320,8 +320,7 @@ async function streamFromOllama(
         try {
           const json = JSON.parse(line);
           const token = (json?.message?.content ?? "").toString();
-          const trimmed = token.replace(/^\s+|\s+$/g, "");
-          if (trimmed) onMessage({ type: "chunk", data: trimmed });
+          if (token.length) onMessage({ type: "chunk", data: token });
         } catch {
           // Non-JSON line, ignore
         }
@@ -338,7 +337,14 @@ function buildMessages(args: {
   messages.push({
     role: "system",
     content:
-      args.system || "Ты — локальный ассистент. Работай кратко и безопасно.",
+      args.system ||
+      [
+        "Ты — локальный помощник, запущенный локально (без облака).",
+        "Отвечай по-русски, чётко и по делу.",
+        "Если уместно — используй краткие абзацы и маркированные списки.",
+        "Сохраняй разметку: заголовки, списки, код в тройных кавычках (```), таблицы – как Markdown.",
+        "Избегай выдумок; если чего-то не хватает, попроси уточнение.",
+      ].join(" \n"),
   });
   messages.push({ role: "user", content: args.prompt });
   return messages;

@@ -6,6 +6,7 @@ let rootEl: HTMLElement | null = null;
 let app: any | null = null;
 let port: chrome.runtime.Port | null = null;
 let portConnected = false;
+let overlayReady = false;
 
 function ensureOverlay() {
   if (rootEl) return;
@@ -30,6 +31,26 @@ function ensureOverlay() {
     console.error("[ollama] error mounting Overlay, using fallback", err);
     createFallbackOverlay(mountPoint);
   }
+}
+
+function ensureOverlayReady(): Promise<void> {
+  // Guarantee the component is mounted and has run its onMount listeners.
+  if (!rootEl) ensureOverlay();
+  if (overlayReady) return Promise.resolve();
+  return new Promise((resolve) => {
+    const done = () => {
+      overlayReady = true;
+      window.removeEventListener("ollama-ready", done as any);
+      resolve();
+    };
+    // If already set via a previous event, resolve immediately
+    if (overlayReady) return resolve();
+    window.addEventListener("ollama-ready", done as any, { once: true });
+    // Fallback: in case the event already fired before listener attach
+    setTimeout(() => {
+      if (overlayReady) resolve();
+    }, 0);
+  });
 }
 
 function createFallbackOverlay(mount: HTMLElement) {
@@ -142,16 +163,23 @@ function connectPort(force = false) {
 chrome.runtime.onMessage.addListener((message, _sender, _sendResponse) => {
   console.log("[ollama] runtime.onMessage", message);
   if (message?.type === "open_overlay") {
-    ensureOverlay();
-    window.dispatchEvent(new CustomEvent("ollama-open", { detail: message }));
+    ensureOverlayReady().then(() => {
+      let selection = "";
+      try {
+        selection = String(window.getSelection()?.toString() || "").trim();
+      } catch {}
+      const detail = { ...message, selectionText: message?.selectionText || selection };
+      window.dispatchEvent(new CustomEvent("ollama-open", { detail }));
+    });
   }
 });
 
 chrome.runtime.onMessage.addListener((message) => {
   console.log("[ollama] runtime.onMessage toggle?", message);
   if (message?.type === "toggle_overlay") {
-    ensureOverlay();
-    window.dispatchEvent(new CustomEvent("ollama-toggle"));
+    ensureOverlayReady().then(() => {
+      window.dispatchEvent(new CustomEvent("ollama-toggle"));
+    });
   }
 });
 

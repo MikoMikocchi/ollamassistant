@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount, onDestroy } from "svelte";
+  import { onMount, onDestroy, tick } from "svelte";
   export let version: string;
 
   let open = false;
@@ -8,6 +8,7 @@
   let prompt = "";
   let streaming = false;
   let output = "";
+  let textareaEl: HTMLTextAreaElement | null = null;
   let model = "";
   let models: string[] = [];
   let modelsLoading = false;
@@ -43,6 +44,11 @@
     streaming = false;
     window.dispatchEvent(new CustomEvent("ollama-stop"));
   }
+  function copyOutput() {
+    try {
+      navigator.clipboard.writeText(output);
+    } catch {}
+  }
 
   function buildPrompt() {
     const parts = [] as string[];
@@ -52,10 +58,12 @@
     return parts.join("\n\n") || "Суммаризируй видимое содержимое страницы.";
   }
 
-  function onOpen(e: any) {
+  async function onOpen(e: any) {
     open = true;
     preset = e?.detail?.preset;
     selectionText = e?.detail?.selectionText || "";
+    await tick();
+    textareaEl?.focus();
   }
   function onToggle() {
     toggle();
@@ -80,6 +88,10 @@
     window.addEventListener("keydown", onKey as any);
     loadSettings();
     fetchModels();
+    // Notify content script we're ready to receive open/toggle events
+    try {
+      window.dispatchEvent(new CustomEvent("ollama-ready"));
+    } catch {}
   });
   onDestroy(() => {
     window.removeEventListener("ollama-open", onOpen as any);
@@ -114,24 +126,23 @@
     <div class="panel" role="dialog" aria-label="Ollama Assistant">
       <div class="header">
         <div class="title">Ollama Assistant · {version}</div>
-        <div style="margin-left:12px;display:flex;align-items:center;gap:8px">
-          <!-- simple status placeholder -->
-          <div
-            class="status {streaming ? 'online' : ''}"
-            title={streaming ? "Streaming" : "Idle"}
-          ></div>
-        </div>
-        <div style="margin-left:auto"></div>
+        <div class="grow"></div>
         {#if streaming}
-          <button class="btn secondary" on:click={stop}>Стоп</button>
+          <div class="spinner" aria-label="Ответ генерируется"></div>
+          <button class="btn subtle" on:click={stop} title="Остановить">Стоп</button>
         {/if}
       </div>
       <div class="body">
-        <textarea
-          class="input"
-          bind:value={prompt}
-          placeholder="Задайте вопрос или оставьте пустым для суммаризации..."
-        ></textarea>
+        <div class="input-wrap">
+          <textarea
+            class="input"
+            bind:this={textareaEl}
+            bind:value={prompt}
+            placeholder="Задайте вопрос или оставьте пустым для суммаризации..."
+            on:keydown={(e)=>{ if(e.key==='Enter' && !e.shiftKey){ e.preventDefault(); if(!streaming) start(); } }}
+          ></textarea>
+          <div class="hint">Enter — отправить • Shift+Enter — новая строка</div>
+        </div>
         <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
           {#if modelsLoading}
             <div>Loading models...</div>
@@ -157,14 +168,11 @@
           {/if}
         </div>
         <div class="actions">
-          <button class="btn" disabled={streaming} on:click={start}
-            >Спросить локально</button
-          >
-          <button class="btn secondary" on:click={() => (output = "")}
-            >Очистить</button
-          >
+          <button class="btn primary" disabled={streaming} on:click={start}>Спросить локально</button>
+          <button class="btn secondary" on:click={() => (output = "")} title="Очистить поле ответа">Очистить</button>
+          <button class="btn secondary" on:click={copyOutput} title="Скопировать ответ">Копировать</button>
         </div>
-        <div class="output">{output}</div>
+        <div class="output" data-empty={!output}> {#if output}{output}{:else}<span class="placeholder">Ответ появится здесь…</span>{/if} </div>
       </div>
     </div>
   {/if}
@@ -198,11 +206,12 @@
   .overlay * {
     box-sizing: inherit;
   }
+  .grow { flex: 1 1 auto; }
   .backdrop {
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.15);
-    backdrop-filter: saturate(140%) blur(1px);
+    background: rgba(12, 15, 28, 0.2);
+    backdrop-filter: saturate(140%) blur(2px);
     animation: fadeIn 120ms ease-out;
   }
   .panel {
@@ -211,10 +220,10 @@
     right: 8px;
     width: min(520px, 92vw);
     max-height: min(70vh, 640px);
-    background: #fff;
-    color: #111;
-    border-radius: 10px;
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+    background: linear-gradient(180deg, #ffffff, #fbfbfe);
+    color: #0f172a;
+    border-radius: 14px;
+    box-shadow: 0 18px 60px rgba(2, 6, 23, 0.25);
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -223,62 +232,63 @@
     animation: panelIn 130ms cubic-bezier(0.2, 0.8, 0.2, 1);
   }
   .header {
-    padding: 10px 12px;
+    padding: 10px 14px;
     display: flex;
     gap: 8px;
     align-items: center;
-    background: #f8fafc;
+    background: linear-gradient(180deg, #f1f5f9, #eef2ff);
     border-bottom: 1px solid #e5e7eb;
   }
   .header .title {
     font-weight: 600;
+    letter-spacing: 0.2px;
   }
   .body {
-    padding: 12px;
+    padding: 14px;
     display: flex;
     flex-direction: column;
     gap: 8px;
     max-height: 70vh;
   }
+  .input-wrap { display: flex; flex-direction: column; gap: 6px; }
   .input {
     width: 100%;
     min-height: 64px;
-    padding: 8px;
+    padding: 10px 12px;
     border: 1px solid #cbd5e1;
-    border-radius: 8px;
+    border-radius: 10px;
     font: inherit;
     background: #fff;
     color: inherit;
     outline: none;
+    transition: border-color .12s ease, box-shadow .12s ease;
+  }
+  .input:focus {
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
   }
   .actions {
     display: flex;
     gap: 8px;
   }
-  .btn {
-    background: #111;
-    color: #fff;
-    border: none;
-    padding: 8px 12px;
-    border-radius: 8px;
-    cursor: pointer;
-    appearance: none;
-  }
-  .btn.secondary {
-    background: #e5e7eb;
-    color: #111;
-  }
+  .btn { border: none; cursor: pointer; appearance: none; border-radius: 10px; padding: 8px 12px; font-weight: 600; }
+  .btn.primary { background: #111827; color: #fff; }
+  .btn.primary:disabled { opacity: .6; cursor: not-allowed; }
+  .btn.secondary { background: #e5e7eb; color: #111827; }
+  .btn.subtle { background: transparent; color: #111827; border: 1px solid #cbd5e1; }
   .output {
     flex: 1 1 auto;
     overflow: auto;
     background: #0b1020;
     color: #e2e8f0;
-    border-radius: 8px;
-    padding: 8px;
+    border-radius: 10px;
+    padding: 12px;
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
       "Liberation Mono", "Courier New", monospace;
     white-space: pre-wrap;
   }
+  .output[data-empty="true"] { opacity: .7; }
+  .output .placeholder { opacity: .6; }
   .status {
     width: 10px;
     height: 10px;
@@ -288,6 +298,7 @@
   .status.online {
     background: #10b981;
   }
+  .spinner { width: 14px; height: 14px; border: 2px solid #c7d2fe; border-top-color: #6366f1; border-radius: 50%; animation: spin .8s linear infinite; margin-right: 6px; }
   @keyframes fadeIn {
     from {
       opacity: 0;
@@ -306,5 +317,7 @@
       transform: translateY(0) scale(1);
     }
   }
+  @keyframes spin { to { transform: rotate(360deg); } }
   /* reserved */
+  .hint { color: #64748b; font-size: 12px; }
 </style>
