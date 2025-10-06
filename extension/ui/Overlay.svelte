@@ -114,6 +114,13 @@
     <div class="panel" role="dialog" aria-label="Ollama Assistant">
       <div class="header">
         <div class="title">Ollama Assistant · {version}</div>
+        <div style="margin-left:12px;display:flex;align-items:center;gap:8px">
+          <!-- simple status placeholder -->
+          <div
+            class="status {streaming ? 'online' : ''}"
+            title={streaming ? "Streaming" : "Idle"}
+          ></div>
+        </div>
         <div style="margin-left:auto"></div>
         {#if streaming}
           <button class="btn secondary" on:click={stop}>Стоп</button>
@@ -132,7 +139,7 @@
             <select bind:value={model} class="input">
               <option value="">(manual)</option>
               {#each models as m}
-                <option value={m}>{m}</option>
+                <option value={String(m)}>{String(m)}</option>
               {/each}
             </select>
           {:else}
@@ -271,6 +278,15 @@
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
       "Liberation Mono", "Courier New", monospace;
     white-space: pre-wrap;
+  }
+  .status {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #cbd5e1;
+  }
+  .status.online {
+    background: #10b981;
   }
   @keyframes fadeIn {
     from {

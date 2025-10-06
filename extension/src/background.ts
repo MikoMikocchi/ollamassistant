@@ -33,28 +33,20 @@ chrome.runtime.onInstalled.addListener(() => {
   });
 });
 
-// Remove Origin header for localhost Ollama to avoid CORS/proxy 403 on some setups
-try {
-  const urls = [
-    "http://127.0.0.1/*",
-    "http://127.0.0.1:11434/*",
-    "http://localhost/*",
-    "http://localhost:11434/*",
-  ];
-  chrome.webRequest.onBeforeSendHeaders.addListener(
-    (details) => {
-      const headers = details.requestHeaders || [];
-      const filtered = headers.filter(
-        (h) =>
-          h.name.toLowerCase() !== "origin" &&
-          h.name.toLowerCase() !== "referer"
-      );
-      return { requestHeaders: filtered };
-    },
-    { urls },
-    ["blocking", "requestHeaders"]
-  );
-} catch {}
+// NOTE: MV3 does not allow blocking webRequest listeners in normal extensions
+// (the "webRequestBlocking" permission is only available to force-installed extensions).
+// Attempting to register a blocking onBeforeSendHeaders listener causes runtime errors
+// like: "webRequestBlocking requires manifest version of 2 or lower" or
+// "You do not have permission to use blocking webRequest listeners".
+//
+// To avoid that, we do NOT try to strip Origin/Referer headers here. The recommended
+// permanent fix is to configure Ollama to allow the extension's origin via the
+// OLLAMA_ORIGINS environment variable on the host running Ollama (see README or
+// earlier messages). For convenience we log a helpful note at runtime if network
+// requests fail with 403 so the user can apply the OLLAMA_ORIGINS workaround.
+console.info(
+  "Ollama extension: running in MV3; skipping webRequest header mutation (use OLLAMA_ORIGINS on the Ollama host if you see 403 errors)"
+);
 
 chrome.contextMenus.onClicked.addListener(async (info: any, tab?: any) => {
   if (!tab?.id) return;
@@ -140,9 +132,11 @@ let tagsCache: { time: number; tags: string[] } = { time: 0, tags: [] };
 
 chrome.runtime.onMessage.addListener((message: any, _sender, sendResponse) => {
   if (message?.type === "get_models") {
+    const debug = message?.debug;
     (async () => {
       const now = Date.now();
-      if (tagsCache.time && now - tagsCache.time < 60_000) {
+      // If debug is requested, bypass the cache so we can return rawTags for inspection.
+      if (!debug && tagsCache.time && now - tagsCache.time < 60_000) {
         sendResponse({ models: tagsCache.tags });
         return;
       }
@@ -153,40 +147,104 @@ chrome.runtime.onMessage.addListener((message: any, _sender, sendResponse) => {
           return;
         }
         const json = await res.json();
+        if (debug) console.log("[ollama debug] raw tags:", json);
         // Ollama /api/tags may return an array or object; normalize
-        const extract = (x: any): string | null => {
+        const extract = (x: any, depth = 3): string | null => {
           if (x == null) return null;
           if (typeof x === "string") return x;
           if (typeof x === "number") return String(x);
+          if (depth <= 0) return null;
+          if (Array.isArray(x)) {
+            for (const it of x) {
+              const v = extract(it, depth - 1);
+              if (v) return v;
+            }
+            return null;
+          }
           if (typeof x === "object") {
-            // common fields
-            return (
-              x.name ||
-              x.id ||
-              x.tag ||
-              x.model ||
-              x.label ||
-              (typeof x === "object" &&
-              x?.toString &&
-              x.toString() !== "[object Object]"
-                ? x.toString()
-                : null)
-            );
+            // check common fields first
+            const keys = ["name", "id", "tag", "model", "label", "title"];
+            for (const k of keys) {
+              if (typeof x[k] === "string" && x[k].trim()) return x[k].trim();
+            }
+            // fallback: search nested properties for first string
+            for (const k of Object.keys(x)) {
+              try {
+                const v = extract(x[k], depth - 1);
+                if (v) return v;
+              } catch {}
+            }
+            // as last resort, stringify short object
+            try {
+              const s = JSON.stringify(x);
+              return s.length < 200 ? s : null;
+            } catch {
+              return null;
+            }
           }
           return null;
         };
         let models: string[] = [];
-        if (Array.isArray(json))
-          models = json.map(extract).filter(Boolean) as string[];
-        else if (Array.isArray(json?.tags))
+        // If Ollama returns an object with a `models` array (as in your sample),
+        // prefer extracting `name` or `model` fields directly.
+        const takeFromObjectArray = (arr: any[]) =>
+          arr
+            .map((it) => {
+              if (it == null) return null;
+              if (typeof it === "string") return it;
+              if (typeof it === "object") {
+                if (typeof it.name === "string" && it.name.trim())
+                  return it.name.trim();
+                if (typeof it.model === "string" && it.model.trim())
+                  return it.model.trim();
+                // fallback to extract nested
+                return extract(it, 2);
+              }
+              return null;
+            })
+            .filter(Boolean) as string[];
+
+        if (Array.isArray(json?.models)) {
+          models = takeFromObjectArray(json.models);
+        } else if (
+          Array.isArray(json) &&
+          json.length > 0 &&
+          typeof json[0] === "object"
+        ) {
+          // top-level array of model objects
+          models = takeFromObjectArray(json as any[]);
+        } else if (Array.isArray(json?.tags)) {
           models = json.tags.map(extract).filter(Boolean) as string[];
-        else if (Array.isArray(json?.models))
-          models = json.models.map(extract).filter(Boolean) as string[];
-        else if (typeof json === "object") models = Object.keys(json);
-        // dedupe and trim
-        models = models.map((s) => s.trim()).filter(Boolean);
+        } else if (Array.isArray(json)) {
+          models = json.map(extract).filter(Boolean) as string[];
+        } else if (typeof json === "object") models = Object.keys(json);
+        // dedupe and trim — ensure every item is a string (defensive against unexpected shapes)
+        const safeToString = (v: any) => {
+          if (v == null) return "";
+          if (typeof v === "string") return v;
+          if (typeof v === "number") return String(v);
+          try {
+            return JSON.stringify(v);
+          } catch {
+            try {
+              return String(v);
+            } catch {
+              return "";
+            }
+          }
+        };
+        models = models.map((s) => safeToString(s).trim()).filter(Boolean);
         models = Array.from(new Set(models));
+        // Heuristic: many model names are compact (no spaces). If some tags look like full sentences
+        // (e.g. system messages), filter them out preferentially. Keep a fallback to the original list
+        // if filtering would remove everything.
+        const compact = models.filter((s) => !/\s/.test(s));
+        if (compact.length > 0) {
+          models = compact;
+        }
         tagsCache = { time: Date.now(), tags: models };
+        // Production: return only normalized model list. rawTags is debug-only and
+        // not returned here to keep the API clean.
         sendResponse({ models });
       } catch (e: any) {
         sendResponse({ error: e?.message || String(e) });
@@ -261,8 +319,9 @@ async function streamFromOllama(
       for (const line of lines) {
         try {
           const json = JSON.parse(line);
-          const token = json?.message?.content ?? "";
-          if (token) onMessage({ type: "chunk", data: token });
+          const token = (json?.message?.content ?? "").toString();
+          const trimmed = token.replace(/^\s+|\s+$/g, "");
+          if (trimmed) onMessage({ type: "chunk", data: trimmed });
         } catch {
           // Non-JSON line, ignore
         }
