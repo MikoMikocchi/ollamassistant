@@ -50,12 +50,24 @@
     } catch {}
   }
 
+  function summaryInstruction() {
+    return (
+      "Суммаризируй следующий контекст по-русски кратко и структурировано: " +
+      "короткое введение + 5–8 тезисов с фактами и числами; " +
+      "если есть — выдели разделы 'Главное' и 'Детали'."
+    );
+  }
   function buildPrompt() {
     const parts = [] as string[];
-    if (preset) parts.push(`[${preset}]`);
-    if (selectionText) parts.push(`Выделение:\n${selectionText}`);
+    const wantsSummary =
+      preset === "summarize" || preset === "tldr" || (!prompt && !!selectionText);
+    if (wantsSummary) parts.push(summaryInstruction());
+    if (selectionText) parts.push(`Контекст:\n${selectionText}`);
     if (prompt) parts.push(`Вопрос:\n${prompt}`);
-    return parts.join("\n\n") || "Суммаризируй видимое содержимое страницы.";
+    return (
+      parts.join("\n\n") ||
+      `${summaryInstruction()}\n\nКонтекст: (пусто)`
+    );
   }
 
   async function onOpen(e: any) {
@@ -64,6 +76,10 @@
     selectionText = e?.detail?.selectionText || "";
     await tick();
     textareaEl?.focus();
+    // Автостарт для суммаризации, если нет пользовательского запроса
+    if ((preset === 'summarize' || preset === 'tldr') && selectionText && !prompt && !streaming) {
+      start();
+    }
   }
   function onToggle() {
     toggle();

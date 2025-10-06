@@ -8,6 +8,25 @@ let port: chrome.runtime.Port | null = null;
 let portConnected = false;
 let overlayReady = false;
 
+function getPageText(maxChars = 8000): string {
+  try {
+    let text = (document.body?.innerText || "").replace(/\s+/g, " ").trim();
+    if (!text) return "";
+    if (text.length > maxChars) text = text.slice(0, maxChars) + "…";
+    const title = (document.title || "").trim();
+    const url = location.href;
+    return [
+      title ? `Заголовок: ${title}` : "",
+      url ? `URL: ${url}` : "",
+      text ? `Текст:\n${text}` : "",
+    ]
+      .filter(Boolean)
+      .join("\n\n");
+  } catch {
+    return "";
+  }
+}
+
 function ensureOverlay() {
   if (rootEl) return;
   console.log("[ollama] injecting overlay");
@@ -168,6 +187,10 @@ chrome.runtime.onMessage.addListener((message, _sender, _sendResponse) => {
       try {
         selection = String(window.getSelection()?.toString() || "").trim();
       } catch {}
+      // If no selection and preset asks to summarize, capture page text
+      if (!selection && (message?.preset === 'summarize' || message?.preset === 'tldr')) {
+        selection = getPageText(9000);
+      }
       const detail = { ...message, selectionText: message?.selectionText || selection };
       window.dispatchEvent(new CustomEvent("ollama-open", { detail }));
     });
