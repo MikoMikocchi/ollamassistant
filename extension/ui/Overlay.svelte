@@ -87,7 +87,7 @@
     window.removeEventListener("ollama-stream", onStream as any);
     window.removeEventListener("keydown", onKey as any);
   });
-  
+
   async function fetchModels() {
     modelsLoading = true;
     modelsError = "";
@@ -128,23 +128,23 @@
         <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
           {#if modelsLoading}
             <div>Loading models...</div>
+          {:else if models.length}
+            <select bind:value={model} class="input">
+              <option value="">(manual)</option>
+              {#each models as m}
+                <option value={m}>{m}</option>
+              {/each}
+            </select>
           {:else}
-            {#if models.length}
-              <select bind:value={model} class="input">
-                <option value="">(manual)</option>
-                {#each models as m}
-                  <option value={m}>{m}</option>
-                {/each}
-              </select>
-            {:else}
-              <input
-                class="input"
-                placeholder="model (e.g. llama2-mini)"
-                bind:value={model}
-              />
-            {/if}
+            <input
+              class="input"
+              placeholder="model (e.g. llama2-mini)"
+              bind:value={model}
+            />
           {/if}
-          <button class="btn secondary" on:click={saveModel}>Сохранить модель</button>
+          <button class="btn secondary" on:click={saveModel}
+            >Сохранить модель</button
+          >
           {#if modelsError}
             <div style="color:#c00;margin-left:8px">Ошибка: {modelsError}</div>
           {/if}

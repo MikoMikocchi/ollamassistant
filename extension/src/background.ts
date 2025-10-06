@@ -156,8 +156,10 @@ chrome.runtime.onMessage.addListener((message: any, _sender, sendResponse) => {
         // Ollama /api/tags may return an array or object; normalize
         let models: string[] = [];
         if (Array.isArray(json)) models = json.map((x) => String(x));
-        else if (Array.isArray(json?.tags)) models = json.tags.map((x: any) => String(x));
-        else if (Array.isArray(json?.models)) models = json.models.map((x: any) => String(x));
+        else if (Array.isArray(json?.tags))
+          models = json.tags.map((x: any) => String(x));
+        else if (Array.isArray(json?.models))
+          models = json.models.map((x: any) => String(x));
         else if (typeof json === "object") models = Object.keys(json);
         tagsCache = { time: Date.now(), tags: models };
         sendResponse({ models });
