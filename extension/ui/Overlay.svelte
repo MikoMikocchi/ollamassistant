@@ -9,6 +9,7 @@
   let streaming = false;
   let output = "";
   let textareaEl: HTMLTextAreaElement | null = null;
+  let rendered = "";
   let model = "";
   let models: string[] = [];
   let modelsLoading = false;
@@ -61,7 +62,11 @@
     const parts = [] as string[];
     const wantsSummary =
       preset === "summarize" || preset === "tldr" || (!prompt && !!selectionText);
-    if (wantsSummary) parts.push(summaryInstruction());
+    if (wantsSummary)
+      parts.push(
+        summaryInstruction() +
+          " Не извиняйся и не оценивай релевантность — просто сделай резюме."
+      );
     if (selectionText) parts.push(`Контекст:\n${selectionText}`);
     if (prompt) parts.push(`Вопрос:\n${prompt}`);
     return (
@@ -76,10 +81,6 @@
     selectionText = e?.detail?.selectionText || "";
     await tick();
     textareaEl?.focus();
-    // Автостарт для суммаризации, если нет пользовательского запроса
-    if ((preset === 'summarize' || preset === 'tldr') && selectionText && !prompt && !streaming) {
-      start();
-    }
   }
   function onToggle() {
     toggle();
@@ -95,6 +96,152 @@
       streaming = false;
       output += `\n[Ошибка] ${msg.error}`;
     }
+  }
+
+  // Markdown rendering (safe, minimal)
+  $: rendered = renderMarkdownSafe(output);
+
+  function renderMarkdown(md: string): string {
+    if (!md) return "";
+    const esc = (s: string) =>
+      s
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+
+    // Normalize newlines
+    md = md.replace(/\r\n?/g, "\n");
+
+    // Fenced code blocks ```lang\n...\n```
+    md = md.replace(
+      /```([a-zA-Z0-9_-]*)\n([\s\S]*?)```/g,
+      (_m, lang: string, code: string) => {
+        return `\n<pre class="code"><code class="lang-${esc(lang)}">${esc(
+          code
+        )}</code></pre>\n`;
+      }
+    );
+
+    // Escape the rest to avoid HTML injection
+    md = esc(md);
+
+    // Headings
+    md = md.replace(/^######\s+(.*)$/gm, "<h6>$1</h6>");
+    md = md.replace(/^#####\s+(.*)$/gm, "<h5>$1</h5>");
+    md = md.replace(/^####\s+(.*)$/gm, "<h4>$1</h4>");
+    md = md.replace(/^###\s+(.*)$/gm, "<h3>$1</h3>");
+    md = md.replace(/^##\s+(.*)$/gm, "<h2>$1</h2>");
+    md = md.replace(/^#\s+(.*)$/gm, "<h1>$1</h1>");
+
+    // Horizontal rule
+    md = md.replace(/^---$/gm, "<hr>");
+
+    // Links [text](url)
+    md = md.replace(
+      /\[([^\]]+)\]\((https?:[^\s)]+)\)/g,
+      '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>'
+    );
+
+    // Bold and italic (simple)
+    md = md.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
+    md = md.replace(/\*([^*]+)\*/g, "<em>$1</em>");
+
+    // Inline code
+    md = md.replace(/`([^`]+)`/g, "<code>$1</code>");
+
+    // Lists: group consecutive lines
+    md = md.replace(
+      /(^|\n)(?:-\s+.+(?:\n-\s+.+)*)/g,
+      (block) => {
+        const items = block
+          .split(/\n/)
+          .map((l) => l.trim())
+          .filter((l) => /^-\s+/.test(l))
+          .map((l) => `<li>${l.replace(/^-\s+/, "")}</li>`) // already escaped
+          .join("");
+        return `\n<ul>${items}</ul>`;
+      }
+    );
+    md = md.replace(
+      /(^|\n)(?:\d+\.\s+.+(?:\n\d+\.\s+.+)*)/g,
+      (block) => {
+        const items = block
+          .split(/\n/)
+          .map((l) => l.trim())
+          .filter((l) => /^\d+\.\s+/.test(l))
+          .map((l) => `<li>${l.replace(/^\d+\.\s+/, "")}</li>`)
+          .join("");
+        return `\n<ol>${items}</ol>`;
+      }
+    );
+
+    // Paragraphs: wrap non-block elements
+    const lines = md.split(/\n\n+/).map((seg) => seg.trim());
+    const isBlock = (s: string) => /^(<h\d|<ul>|<ol>|<pre|<hr>)/.test(s);
+    const html = lines
+      .map((seg) => (isBlock(seg) ? seg : `<p>${seg}</p>`))
+      .join("\n");
+    return html;
+  }
+
+  // Safer renderer that preserves fenced code blocks via placeholders
+  function renderMarkdownSafe(md: string): string {
+    if (!md) return "";
+    const esc = (s: string) =>
+      s
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+
+    md = md.replace(/\r\n?/g, "\n");
+    const blocks: string[] = [];
+    md = md.replace(/```([a-zA-Z0-9_-]*)\n([\s\S]*?)```/g, (_m, lang: string, code: string) => {
+      const html = `\n<pre class="code"><code class="lang-${esc(lang)}">${esc(code)}</code></pre>\n`;
+      const idx = blocks.push(html) - 1;
+      return `§§BLOCK${idx}§§`;
+    });
+
+    // Escape rest and format inline (avoid double-escaping)
+    let out = esc(md);
+    out = out.replace(/^######\s+(.*)$/gm, "<h6>$1</h6>");
+    out = out.replace(/^#####\s+(.*)$/gm, "<h5>$1</h5>");
+    out = out.replace(/^####\s+(.*)$/gm, "<h4>$1</h4>");
+    out = out.replace(/^###\s+(.*)$/gm, "<h3>$1</h3>");
+    out = out.replace(/^##\s+(.*)$/gm, "<h2>$1</h2>");
+    out = out.replace(/^#\s+(.*)$/gm, "<h1>$1</h1>");
+    out = out.replace(/^---$/gm, "<hr>");
+    out = out.replace(/\[([^\]]+)\]\((https?:[^\s)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
+    out = out.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
+    out = out.replace(/\*([^*]+)\*/g, "<em>$1</em>");
+    out = out.replace(/`([^`]+)`/g, "<code>$1</code>");
+    out = out.replace(/(^|\n)(?:-\s+.+(?:\n-\s+.+)*)/g, (block) => {
+      const items = block
+        .split(/\n/)
+        .map((l) => l.trim())
+        .filter((l) => /^-\s+/.test(l))
+        .map((l) => `<li>${l.replace(/^-\s+/, "")}</li>`)
+        .join("");
+      return `\n<ul>${items}</ul>`;
+    });
+    out = out.replace(/(^|\n)(?:\d+\.\s+.+(?:\n\d+\.\s+.+)*)/g, (block) => {
+      const items = block
+        .split(/\n/)
+        .map((l) => l.trim())
+        .filter((l) => /^\d+\.\s+/.test(l))
+        .map((l) => `<li>${l.replace(/^\d+\.\s+/, "")}</li>`)
+        .join("");
+      return `\n<ol>${items}</ol>`;
+    });
+
+    const parts = out.split(/\n\n+/).map((seg) => seg.trim());
+    const isBlock = (s: string) => /^(<h\d|<ul>|<ol>|<pre|<hr>)/.test(s);
+    let html = parts.map((seg) => (isBlock(seg) ? seg : `<p>${seg}</p>`)).join("\n");
+    html = html.replace(/§§BLOCK(\d+)§§/g, (_m, i) => blocks[Number(i)] || "");
+    return html;
   }
 
   onMount(() => {
@@ -188,7 +335,13 @@
           <button class="btn secondary" on:click={() => (output = "")} title="Очистить поле ответа">Очистить</button>
           <button class="btn secondary" on:click={copyOutput} title="Скопировать ответ">Копировать</button>
         </div>
-        <div class="output" data-empty={!output}> {#if output}{output}{:else}<span class="placeholder">Ответ появится здесь…</span>{/if} </div>
+        <div class="output markdown" data-empty={!output}>
+          {#if output}
+            {@html rendered}
+          {:else}
+            <span class="placeholder">Ответ появится здесь…</span>
+          {/if}
+        </div>
       </div>
     </div>
   {/if}
@@ -301,10 +454,19 @@
     padding: 12px;
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
       "Liberation Mono", "Courier New", monospace;
-    white-space: pre-wrap;
+    white-space: normal;
   }
   .output[data-empty="true"] { opacity: .7; }
   .output .placeholder { opacity: .6; }
+  /* Markdown look */
+  .markdown { font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Arial; line-height: 1.45; }
+  .markdown h1, .markdown h2, .markdown h3, .markdown h4 { margin: .4em 0 .2em; font-weight: 700; }
+  .markdown p { margin: .4em 0; }
+  .markdown ul, .markdown ol { margin: .4em 0 .6em 1.2em; }
+  .markdown code { background: rgba(148,163,184,.2); padding: 2px 4px; border-radius: 5px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono, Courier New, monospace; }
+  .markdown pre.code { background: #0a0f1f; padding: 10px 12px; border-radius: 10px; overflow: auto; }
+  .markdown pre.code code { background: transparent; padding: 0; }
+  .markdown a { color: #93c5fd; text-decoration: underline; }
   .status {
     width: 10px;
     height: 10px;
