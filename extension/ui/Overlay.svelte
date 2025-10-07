@@ -56,7 +56,8 @@
     streaming = true;
     const payload = {
       prompt: buildPrompt(),
-      model: undefined,
+      // Pass the currently selected model directly; background will use it if present
+      model,
       temperature: 0.3,
     };
     window.dispatchEvent(new CustomEvent("ollama-start", { detail: payload }));
