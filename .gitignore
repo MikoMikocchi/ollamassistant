@@ -1,10 +1,32 @@
+# Node
 node_modules/
+npm-debug.log*
+yarn-error.log
+pnpm-lock.yaml
+
+# Vite / build
 dist/
-.env
+extension/dist/
+.build/
+.cache/
+.vite/
+
+# TypeScript buildinfo
+*.tsbuildinfo
+
+# OS
 .DS_Store
-coverage/
-.idea/
+Thumbs.db
+
+# Editor
 .vscode/
-*.log
-*.tmp
+.idea/
+
+# Env / secrets
+.env
+.env.local
+.env.*.local
+
+# Misc
+coverage/
 ROADMAP.md
