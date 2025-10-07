@@ -9,7 +9,9 @@
 </script>
 
 <div class="header">
-  <div class="title" aria-label="Название и версия">Ollamassistant · {version}</div>
+  <div class="title" aria-label="Название и версия">
+    Ollamassistant · {version}
+  </div>
   <div class="grow"></div>
   {#if streaming}
     <div class="status" aria-live="polite">
@@ -23,7 +25,12 @@
     title={theme === "dark" ? "Светлая тема" : "Тёмная тема"}
     aria-label="Сменить тему">{theme === "dark" ? "☀︎" : "☾"}</Button
   >
-  <Button variant="subtle" on:click={onClose} title="Закрыть панель" aria-label="Закрыть">×</Button>
+  <Button
+    variant="subtle"
+    on:click={onClose}
+    title="Закрыть панель"
+    aria-label="Закрыть">×</Button
+  >
 </div>
 
 <style>

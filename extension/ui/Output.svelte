@@ -14,8 +14,16 @@
     title="Очистить поле ответа"
     aria-label="Очистить"
   >
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-      <path d="M9 3h6a1 1 0 0 1 1 1v1h5v2h-2v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7H2V5h5V4a1 1 0 0 1 1-1zm1 4v10h2V7h-2zm4 0v10h2V7h-2zM8 5v1h8V5H8z"/>
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      aria-hidden="true"
+    >
+      <path
+        d="M9 3h6a1 1 0 0 1 1 1v1h5v2h-2v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7H2V5h5V4a1 1 0 0 1 1-1zm1 4v10h2V7h-2zm4 0v10h2V7h-2zM8 5v1h8V5H8z"
+      />
     </svg>
   </Button>
   <Button
@@ -25,8 +33,16 @@
     title="Скопировать ответ"
     aria-label="Копировать"
   >
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-      <path d="M16 1H6a2 2 0 0 0-2 2v12h2V3h10V1zm3 4H10a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H10V7h9v14z"/>
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      aria-hidden="true"
+    >
+      <path
+        d="M16 1H6a2 2 0 0 0-2 2v12h2V3h10V1zm3 4H10a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H10V7h9v14z"
+      />
     </svg>
   </Button>
 </div>
@@ -39,7 +55,12 @@
 </div>
 
 <style>
-  .actions { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+  .actions {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
   /* button styles come from Button component */
   .output {
     flex: 1 1 auto;
@@ -62,7 +83,15 @@
     opacity: 0.6;
   }
   :global(.markdown) {
-    font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Arial;
+    font-family:
+      system-ui,
+      -apple-system,
+      Segoe UI,
+      Roboto,
+      Ubuntu,
+      Cantarell,
+      Noto Sans,
+      Arial;
     line-height: 1.6;
     font-size: 14.5px;
   }

@@ -40,7 +40,12 @@
     {#if modelsLoading}
       <div class="muted">Загрузка списка моделей…</div>
     {:else if models.length}
-      <Select bind:value={model} items={models} placeholder="(manual)" compact />
+      <Select
+        bind:value={model}
+        items={models}
+        placeholder="(manual)"
+        compact
+      />
     {:else}
       <input
         class="input compact"
@@ -55,13 +60,23 @@
   </div>
   <div class="right">
     <slot name="extra-actions" />
-    <Button variant="subtle" size="compact" on:click={onSaveModel} title="Сделать модель текущей"
-      >Сделать текущей</Button
+    <Button
+      variant="subtle"
+      size="compact"
+      on:click={onSaveModel}
+      title="Сделать модель текущей">Сделать текущей</Button
     >
     {#if streaming}
-      <Button variant="primary" on:click={onStop} title="Остановить генерацию">Стоп</Button>
+      <Button variant="primary" on:click={onStop} title="Остановить генерацию"
+        >Стоп</Button
+      >
     {:else}
-      <Button variant="primary" {disabled} on:click={onStart} title="Отправить в локальную LLM">
+      <Button
+        variant="primary"
+        {disabled}
+        on:click={onStart}
+        title="Отправить в локальную LLM"
+      >
         Спросить
       </Button>
     {/if}
@@ -124,5 +139,7 @@
     color: #c00;
     margin-left: 8px;
   }
-  .muted { color: var(--placeholder); }
+  .muted {
+    color: var(--placeholder);
+  }
 </style>

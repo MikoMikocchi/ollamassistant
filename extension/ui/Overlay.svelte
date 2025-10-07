@@ -140,7 +140,11 @@
   })();
 
   // Restore focus to the opener when panel closes
-  $: if (!open && lastActiveElement && typeof (lastActiveElement as any).focus === 'function') {
+  $: if (
+    !open &&
+    lastActiveElement &&
+    typeof (lastActiveElement as any).focus === "function"
+  ) {
     try {
       (lastActiveElement as HTMLElement).focus();
     } catch {}
@@ -220,15 +224,19 @@
   function getFocusable(): HTMLElement[] {
     if (!panelEl) return [];
     const selectors = [
-      'button',
-      '[href]',
-      'input',
-      'select',
-      'textarea',
-      '[tabindex]:not([tabindex="-1"])'
+      "button",
+      "[href]",
+      "input",
+      "select",
+      "textarea",
+      '[tabindex]:not([tabindex="-1"])',
     ];
-    const nodes = Array.from(panelEl.querySelectorAll<HTMLElement>(selectors.join(',')));
-    return nodes.filter((el) => !el.hasAttribute('disabled') && el.tabIndex !== -1);
+    const nodes = Array.from(
+      panelEl.querySelectorAll<HTMLElement>(selectors.join(","))
+    );
+    return nodes.filter(
+      (el) => !el.hasAttribute("disabled") && el.tabIndex !== -1
+    );
   }
 
   function focusFirstElement() {
@@ -237,7 +245,7 @@
   }
 
   function focusTrap(ev: KeyboardEvent) {
-    if (ev.key !== 'Tab' || !open) return;
+    if (ev.key !== "Tab" || !open) return;
     const focusables = getFocusable();
     if (!focusables.length) return;
     const first = focusables[0];
