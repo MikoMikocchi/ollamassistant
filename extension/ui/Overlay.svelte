@@ -71,27 +71,9 @@
     } catch {}
   }
 
-  function summaryInstruction() {
-    return (
-      "Суммаризируй следующий контекст по-русски кратко и структурировано: " +
-      "короткое введение + 5–8 тезисов с фактами и числами; " +
-      "если есть — выдели разделы 'Главное' и 'Детали'."
-    );
-  }
+  import { buildPrompt as buildPromptExternal } from "./prompt";
   function buildPrompt() {
-    const parts = [] as string[];
-    const wantsSummary =
-      preset === "summarize" ||
-      preset === "tldr" ||
-      (!prompt && !!selectionText);
-    if (wantsSummary)
-      parts.push(
-        summaryInstruction() +
-          " Не извиняйся и не оценивай релевантность — просто сделай резюме."
-      );
-    if (selectionText) parts.push(`Контекст:\n${selectionText}`);
-    if (prompt) parts.push(`Вопрос:\n${prompt}`);
-    return parts.join("\n\n") || `${summaryInstruction()}\n\nКонтекст: (пусто)`;
+    return buildPromptExternal({ preset, selectionText, prompt });
   }
 
   async function onOpen(e: any) {
