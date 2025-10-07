@@ -10,6 +10,7 @@
   let output = "";
   let textareaEl: HTMLTextAreaElement | null = null;
   let rendered = "";
+  let theme: "light" | "dark" = "light";
   let model = "";
   let models: string[] = [];
   let modelsLoading = false;
@@ -17,8 +18,13 @@
 
   async function loadSettings() {
     try {
-      const s = await chrome.storage.local.get(["model"]);
+      const s = await chrome.storage.local.get(["model", "theme"]);
       model = s?.model || "";
+      if (s?.theme === "light" || s?.theme === "dark") {
+        theme = s.theme;
+      } else {
+        theme = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+      }
     } catch {}
   }
 
@@ -26,6 +32,17 @@
     try {
       await chrome.storage.local.set({ model });
     } catch {}
+  }
+
+  async function saveTheme() {
+    try {
+      await chrome.storage.local.set({ theme });
+    } catch {}
+  }
+
+  function toggleTheme() {
+    theme = theme === "light" ? "dark" : "light";
+    saveTheme();
   }
 
   function toggle() {
@@ -283,13 +300,14 @@
   }
 </script>
 
-<div class="overlay">
+<div class="overlay" data-theme={theme}>
   {#if open}
     <div class="backdrop" on:click={toggle} aria-hidden="true"></div>
     <div class="panel" role="dialog" aria-label="Ollama Assistant">
       <div class="header">
         <div class="title">Ollama Assistant · {version}</div>
         <div class="grow"></div>
+        <button class="btn toggle" on:click={toggleTheme} title={theme === 'dark' ? 'Светлая тема' : 'Тёмная тема'} aria-label="Сменить тему">{theme === 'dark' ? '☀︎' : '☾'}</button>
         {#if streaming}
           <div class="spinner" aria-label="Ответ генерируется"></div>
           <button class="btn subtle" on:click={stop} title="Остановить">Стоп</button>
@@ -365,8 +383,49 @@
       Arial,
       "Apple Color Emoji",
       "Segoe UI Emoji";
-    /* prevent page CSS from leaking too much */
+    /* theming variables (light defaults) */
+    --panel-bg: #ffffff;
+    --panel-text: #0f172a;
+    --panel-border: #e5e7eb;
+    --header-bg: linear-gradient(180deg, #f1f5f9, #eef2ff);
+    --shadow: 0 18px 60px rgba(2, 6, 23, 0.25);
+    --input-bg: #ffffff;
+    --input-border: #cbd5e1;
+    --focus-ring: rgba(99, 102, 241, 0.15);
+    --btn-primary-bg: #111827;
+    --btn-primary-text: #ffffff;
+    --btn-secondary-bg: #e5e7eb;
+    --btn-secondary-text: #111827;
+    --btn-subtle-border: #cbd5e1;
+    --output-bg: #0b1020;
+    --output-text: #e2e8f0;
+    --link: #93c5fd;
+    --code-bg: rgba(148,163,184,.2);
+    --codeblock-bg: #0a0f1f;
+    --placeholder: #64748b;
     box-sizing: border-box;
+  }
+
+  .overlay[data-theme="dark"] {
+    --panel-bg: #0c1222;
+    --panel-text: #e6edf8;
+    --panel-border: #1f2a44;
+    --header-bg: linear-gradient(180deg, #0f172a, #0b1324);
+    --shadow: 0 22px 70px rgba(0, 0, 0, 0.45);
+    --input-bg: #0f162a;
+    --input-border: #24304a;
+    --focus-ring: rgba(99, 102, 241, 0.25);
+    --btn-primary-bg: #3b82f6;
+    --btn-primary-text: #ffffff;
+    --btn-secondary-bg: #2a344b;
+    --btn-secondary-text: #e6edf8;
+    --btn-subtle-border: #2b3753;
+    --output-bg: #0a0f1f;
+    --output-text: #dde7f6;
+    --link: #60a5fa;
+    --code-bg: rgba(148,163,184,.18);
+    --codeblock-bg: #0a0f1f;
+    --placeholder: #8aa0c2;
   }
 
   .overlay * {
@@ -379,7 +438,7 @@
   .backdrop {
     position: fixed;
     inset: 0;
-    background: rgba(12, 15, 28, 0.2);
+    background: rgba(12, 15, 28, 0.32);
     backdrop-filter: saturate(140%) blur(2px);
     animation: fadeIn 120ms ease-out;
   }
@@ -389,14 +448,14 @@
     right: 8px;
     width: min(520px, 92vw);
     max-height: min(70vh, 640px);
-    background: linear-gradient(180deg, #ffffff, #fbfbfe);
-    color: #0f172a;
+    background: var(--panel-bg);
+    color: var(--panel-text);
     border-radius: 14px;
-    box-shadow: 0 18px 60px rgba(2, 6, 23, 0.25);
+    box-shadow: var(--shadow);
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    border: 1px solid #e5e7eb;
+    border: 1px solid var(--panel-border);
     transform-origin: top right;
     animation: panelIn 130ms cubic-bezier(0.2, 0.8, 0.2, 1);
   }
@@ -405,8 +464,8 @@
     display: flex;
     gap: 8px;
     align-items: center;
-    background: linear-gradient(180deg, #f1f5f9, #eef2ff);
-    border-bottom: 1px solid #e5e7eb;
+    background: var(--header-bg);
+    border-bottom: 1px solid var(--panel-border);
   }
   .header .title {
     font-weight: 600;
@@ -424,32 +483,33 @@
     width: 100%;
     min-height: 64px;
     padding: 10px 12px;
-    border: 1px solid #cbd5e1;
+    border: 1px solid var(--input-border);
     border-radius: 10px;
     font: inherit;
-    background: #fff;
-    color: inherit;
+    background: var(--input-bg);
+    color: var(--panel-text);
     outline: none;
     transition: border-color .12s ease, box-shadow .12s ease;
   }
   .input:focus {
     border-color: #6366f1;
-    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+    box-shadow: 0 0 0 3px var(--focus-ring);
   }
   .actions {
     display: flex;
     gap: 8px;
   }
   .btn { border: none; cursor: pointer; appearance: none; border-radius: 10px; padding: 8px 12px; font-weight: 600; }
-  .btn.primary { background: #111827; color: #fff; }
+  .btn.primary { background: var(--btn-primary-bg); color: var(--btn-primary-text); }
   .btn.primary:disabled { opacity: .6; cursor: not-allowed; }
-  .btn.secondary { background: #e5e7eb; color: #111827; }
-  .btn.subtle { background: transparent; color: #111827; border: 1px solid #cbd5e1; }
+  .btn.secondary { background: var(--btn-secondary-bg); color: var(--btn-secondary-text); }
+  .btn.subtle { background: transparent; color: var(--panel-text); border: 1px solid var(--btn-subtle-border); }
+  .btn.toggle { background: transparent; border: 1px solid var(--btn-subtle-border); color: var(--panel-text); border-radius: 20px; padding: 4px 10px; font-weight: 700; }
   .output {
     flex: 1 1 auto;
     overflow: auto;
-    background: #0b1020;
-    color: #e2e8f0;
+    background: var(--output-bg);
+    color: var(--output-text);
     border-radius: 10px;
     padding: 12px;
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
@@ -463,10 +523,10 @@
   .markdown h1, .markdown h2, .markdown h3, .markdown h4 { margin: .4em 0 .2em; font-weight: 700; }
   .markdown p { margin: .4em 0; }
   .markdown ul, .markdown ol { margin: .4em 0 .6em 1.2em; }
-  .markdown code { background: rgba(148,163,184,.2); padding: 2px 4px; border-radius: 5px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono, Courier New, monospace; }
-  .markdown pre.code { background: #0a0f1f; padding: 10px 12px; border-radius: 10px; overflow: auto; }
+  .markdown code { background: var(--code-bg); padding: 2px 4px; border-radius: 5px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono, Courier New, monospace; }
+  .markdown pre.code { background: var(--codeblock-bg); padding: 10px 12px; border-radius: 10px; overflow: auto; }
   .markdown pre.code code { background: transparent; padding: 0; }
-  .markdown a { color: #93c5fd; text-decoration: underline; }
+  .markdown a { color: var(--link); text-decoration: underline; }
   .status {
     width: 10px;
     height: 10px;
