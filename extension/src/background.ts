@@ -1,9 +1,6 @@
 /* Background service worker: context menus, messaging, local Ollama streaming */
 
-type StreamMessage =
-  | { type: "chunk"; data: string }
-  | { type: "done" }
-  | { type: "error"; error: string };
+import { streamFromOllama, StreamMessage } from "./ollama";
 
 const MENU_ROOT_ID = "ollama_assistant_root";
 
@@ -124,8 +121,6 @@ function safePost(port: any, message: StreamMessage) {
     port.postMessage(message);
   } catch {}
 }
-
-type OllamaMessage = { role: "system" | "user" | "assistant"; content: string };
 
 // Simple in-memory cache for model tags (avoid hammering Ollama)
 let tagsCache: { time: number; tags: string[] } = { time: 0, tags: [] };
@@ -254,98 +249,4 @@ chrome.runtime.onMessage.addListener((message: any, _sender, sendResponse) => {
   }
 });
 
-async function streamFromOllama(
-  args: {
-    model?: string;
-    system?: string;
-    prompt: string;
-    temperature?: number;
-  },
-  onMessage: (m: StreamMessage) => void,
-  signal?: AbortSignal
-) {
-  // Allow overriding model from extension settings (chrome.storage.local)
-  const stored = await chrome.storage.local.get(["model"]);
-  const model = args.model || stored?.model || "llama3.1:8b-instruct";
-  const body = {
-    model,
-    stream: true,
-    messages: buildMessages(args),
-    options: {
-      temperature: args.temperature ?? 0.3,
-    },
-  };
-
-  const url = "http://127.0.0.1:11434/api/chat";
-  const res = await fetch(url, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
-    signal,
-  });
-  if (!res.ok) {
-    // Non-OK response: try to extract error message
-    let errText = res.statusText;
-    try {
-      const t = await res.text();
-      try {
-        const j = JSON.parse(t);
-        errText = j?.error || j?.message || errText || String(t).slice(0, 300);
-      } catch {
-        errText = t?.slice(0, 300) || errText;
-      }
-    } catch {}
-    if (res.status === 403) {
-      const extId = chrome.runtime.id;
-      const hint = `Forbidden. Разрешите источник расширения для Ollama. Пример (macOS):\nlaunchctl setenv OLLAMA_ORIGINS "chrome-extension://${extId},http://localhost,http://127.0.0.1"\nlaunchctl kickstart -k system/com.ollama.ollama\nИли перезапустите Ollama так: OLLAMA_ORIGINS="chrome-extension://${extId},http://localhost,http://127.0.0.1" ollama serve`;
-      onMessage({ type: "error", error: `Ollama: ${errText}\n${hint}` });
-    } else {
-      onMessage({ type: "error", error: `Ollama: ${errText}` });
-    }
-    return;
-  }
-  if (!res.body) throw new Error(`No response body from Ollama`);
-
-  const reader = res.body.getReader();
-  const decoder = new TextDecoder();
-  let done = false;
-  while (!done) {
-    const { value, done: d } = await reader.read();
-    done = d;
-    if (value) {
-      const chunk = decoder.decode(value, { stream: true });
-      // Ollama returns JSONL lines with { message: { content: '...' }, done: boolean }
-      const lines = chunk.split("\n").filter(Boolean);
-      for (const line of lines) {
-        try {
-          const json = JSON.parse(line);
-          const token = (json?.message?.content ?? "").toString();
-          if (token.length) onMessage({ type: "chunk", data: token });
-        } catch {
-          // Non-JSON line, ignore
-        }
-      }
-    }
-  }
-}
-
-function buildMessages(args: {
-  system?: string;
-  prompt: string;
-}): OllamaMessage[] {
-  const messages: OllamaMessage[] = [];
-  messages.push({
-    role: "system",
-    content:
-      args.system ||
-      [
-        "Ты — локальный помощник (без облака).",
-        "Отвечай по-русски, кратко и структурировано.",
-        "Если дан 'Контекст:' — работай только с ним: краткое резюме (введение + 5–8 пунктов), затем ответ на вопрос (если он есть).",
-        "Сохраняй Markdown-разметку: заголовки, списки, код (```), таблицы.",
-        "Не извиняйся и не оценивай релевантность контента; просто отвечай по запросу.",
-      ].join(" \n"),
-  });
-  messages.push({ role: "user", content: args.prompt });
-  return messages;
-}
+// streamFromOllama is implemented in ./ollama and imported at top
