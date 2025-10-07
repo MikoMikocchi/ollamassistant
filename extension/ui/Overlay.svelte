@@ -14,6 +14,18 @@
   let models: string[] = [];
   let modelsLoading = false;
   let modelsError = "";
+  let panelEl: HTMLElement | null = null;
+  let lastActiveElement: Element | null = null;
+  let lastSavedModel = "";
+
+  import {
+    EV_OVERLAY_READY,
+    EV_OVERLAY_OPEN,
+    EV_OVERLAY_TOGGLE,
+    EV_STREAM_OUT,
+    EV_STREAM_START,
+    EV_STREAM_STOP,
+  } from "../src/types";
 
   async function loadSettings() {
     try {
@@ -34,6 +46,7 @@
   async function saveModel() {
     try {
       await chrome.storage.local.set({ model });
+      lastSavedModel = model;
     } catch {}
   }
 
@@ -60,11 +73,11 @@
       model,
       temperature: 0.3,
     };
-    window.dispatchEvent(new CustomEvent("ollama-start", { detail: payload }));
+    window.dispatchEvent(new CustomEvent(EV_STREAM_START, { detail: payload }));
   }
   function stop() {
     streaming = false;
-    window.dispatchEvent(new CustomEvent("ollama-stop"));
+    window.dispatchEvent(new CustomEvent(EV_STREAM_STOP));
   }
   function copyOutput() {
     try {
@@ -84,6 +97,11 @@
     await tick();
     try {
       inputRef?.focusTextarea?.();
+    } catch {}
+    // Save the element which had focus and focus the panel for better a11y
+    try {
+      lastActiveElement = document.activeElement;
+      focusFirstElement();
     } catch {}
   }
   function onToggle() {
@@ -106,9 +124,28 @@
   import Header from "./Header.svelte";
   import Input from "./Input.svelte";
   import Output from "./Output.svelte";
+  import Button from "./components/Button.svelte";
   let inputRef: any;
   // Markdown rendering (safe, minimal)
   $: rendered = renderMarkdownSafe(output);
+
+  // Autosave selected model on change
+  $: (async () => {
+    if (model && model !== lastSavedModel) {
+      try {
+        await chrome.storage.local.set({ model });
+        lastSavedModel = model;
+      } catch {}
+    }
+  })();
+
+  // Restore focus to the opener when panel closes
+  $: if (!open && lastActiveElement && typeof (lastActiveElement as any).focus === 'function') {
+    try {
+      (lastActiveElement as HTMLElement).focus();
+    } catch {}
+    lastActiveElement = null;
+  }
 
   // Incremental adoption of app-wide stores
   import {
@@ -136,21 +173,21 @@
   $: presetStore.set(preset);
 
   onMount(() => {
-    window.addEventListener("ollama-open", onOpen as any);
-    window.addEventListener("ollama-toggle", onToggle as any);
-    window.addEventListener("ollama-stream", onStream as any);
+    window.addEventListener(EV_OVERLAY_OPEN, onOpen as any);
+    window.addEventListener(EV_OVERLAY_TOGGLE, onToggle as any);
+    window.addEventListener(EV_STREAM_OUT, onStream as any);
     window.addEventListener("keydown", onKey as any);
     loadSettings();
     fetchModels();
     // Notify content script we're ready to receive open/toggle events
     try {
-      window.dispatchEvent(new CustomEvent("ollama-ready"));
+      window.dispatchEvent(new CustomEvent(EV_OVERLAY_READY));
     } catch {}
   });
   onDestroy(() => {
-    window.removeEventListener("ollama-open", onOpen as any);
-    window.removeEventListener("ollama-toggle", onToggle as any);
-    window.removeEventListener("ollama-stream", onStream as any);
+    window.removeEventListener(EV_OVERLAY_OPEN, onOpen as any);
+    window.removeEventListener(EV_OVERLAY_TOGGLE, onToggle as any);
+    window.removeEventListener(EV_STREAM_OUT, onStream as any);
     window.removeEventListener("keydown", onKey as any);
   });
 
@@ -172,12 +209,67 @@
       modelsLoading = false;
     }
   }
+
+  async function refreshModels() {
+    try {
+      await chrome.runtime.sendMessage({ type: "invalidate_models" });
+    } catch {}
+    await fetchModels();
+  }
+
+  function getFocusable(): HTMLElement[] {
+    if (!panelEl) return [];
+    const selectors = [
+      'button',
+      '[href]',
+      'input',
+      'select',
+      'textarea',
+      '[tabindex]:not([tabindex="-1"])'
+    ];
+    const nodes = Array.from(panelEl.querySelectorAll<HTMLElement>(selectors.join(',')));
+    return nodes.filter((el) => !el.hasAttribute('disabled') && el.tabIndex !== -1);
+  }
+
+  function focusFirstElement() {
+    const focusables = getFocusable();
+    if (focusables.length) focusables[0].focus();
+  }
+
+  function focusTrap(ev: KeyboardEvent) {
+    if (ev.key !== 'Tab' || !open) return;
+    const focusables = getFocusable();
+    if (!focusables.length) return;
+    const first = focusables[0];
+    const last = focusables[focusables.length - 1];
+    const active = document.activeElement as HTMLElement | null;
+    if (ev.shiftKey) {
+      if (active === first || !panelEl?.contains(active)) {
+        last.focus();
+        ev.preventDefault();
+      }
+    } else {
+      if (active === last) {
+        first.focus();
+        ev.preventDefault();
+      }
+    }
+  }
 </script>
 
 <div class="overlay" data-theme={theme}>
   {#if open}
     <div class="backdrop" on:click={toggle} aria-hidden="true"></div>
-    <div class="panel" role="dialog" aria-label="Ollamassistant">
+    <div
+      bind:this={panelEl}
+      class="panel"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Ollamassistant"
+      tabindex="-1"
+      on:keydown={focusTrap}
+      on:introend={focusFirstElement}
+    >
       <Header
         {version}
         {theme}
@@ -196,7 +288,13 @@
           disabled={streaming}
           onStart={start}
           onSaveModel={saveModel}
-        />
+        >
+          <svelte:fragment slot="extra-actions">
+            <Button variant="subtle" size="compact" on:click={refreshModels}>
+              Обновить модели
+            </Button>
+          </svelte:fragment>
+        </Input>
         <Output
           {output}
           {rendered}

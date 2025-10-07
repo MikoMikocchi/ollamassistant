@@ -22,6 +22,7 @@
     bind:this={textareaEl}
     bind:value={prompt}
     placeholder="Задайте вопрос или оставьте пустым для суммаризации..."
+    aria-label="Вопрос ассистенту"
     on:keydown={(e) => {
       if (e.key === "Enter" && !e.shiftKey) {
         e.preventDefault();

@@ -1,6 +1,13 @@
 /* Background service worker: context menus, messaging, local Ollama streaming */
 
-import { streamFromOllama, StreamMessage } from "./ollama";
+import { streamFromOllama } from "./ollama";
+import {
+  StreamMessage,
+  RuntimeMessage,
+  PortMessage,
+  PORT_OLLAMA_STREAM,
+} from "./types";
+import { OLLAMA_TAGS_ENDPOINT, TAGS_TTL_MS } from "./config";
 
 const MENU_ROOT_ID = "ollama_assistant_root";
 
@@ -87,7 +94,7 @@ chrome.action?.onClicked?.addListener?.(async (tab) => {
 const ports: Map<number, any> = new Map();
 
 chrome.runtime.onConnect.addListener((port: any) => {
-  if (port.name !== "ollama_stream") return;
+  if (port.name !== PORT_OLLAMA_STREAM) return;
   const tabId = port.sender?.tab?.id ?? -1;
   if (tabId !== -1) ports.set(tabId, port);
 
@@ -95,13 +102,13 @@ chrome.runtime.onConnect.addListener((port: any) => {
     if (tabId !== -1) ports.delete(tabId);
   });
 
-  port.onMessage.addListener(async (msg: any) => {
+  port.onMessage.addListener(async (msg: PortMessage) => {
     if (msg?.type === "start_stream") {
       const controller = new AbortController();
       const { signal } = controller;
 
       const onStop = () => controller.abort();
-      port.onMessage.addListener((m: any) => {
+      port.onMessage.addListener((m: PortMessage) => {
         if (m?.type === "stop_stream") onStop();
       });
 
@@ -125,18 +132,18 @@ function safePost(port: any, message: StreamMessage) {
 // Simple in-memory cache for model tags (avoid hammering Ollama)
 let tagsCache: { time: number; tags: string[] } = { time: 0, tags: [] };
 
-chrome.runtime.onMessage.addListener((message: any, _sender, sendResponse) => {
+chrome.runtime.onMessage.addListener((message: RuntimeMessage, _sender, sendResponse) => {
   if (message?.type === "get_models") {
     const debug = message?.debug;
     (async () => {
       const now = Date.now();
       // If debug is requested, bypass the cache so we can return rawTags for inspection.
-      if (!debug && tagsCache.time && now - tagsCache.time < 60_000) {
-        sendResponse({ models: tagsCache.tags });
+      if (!debug && tagsCache.time && now - tagsCache.time < TAGS_TTL_MS) {
+        sendResponse({ models: tagsCache.tags, ttlMs: TAGS_TTL_MS });
         return;
       }
       try {
-        const res = await fetch("http://127.0.0.1:11434/api/tags");
+        const res = await fetch(OLLAMA_TAGS_ENDPOINT);
         if (!res.ok) {
           sendResponse({ error: `status ${res.status}` });
           return;
@@ -240,12 +247,17 @@ chrome.runtime.onMessage.addListener((message: any, _sender, sendResponse) => {
         tagsCache = { time: Date.now(), tags: models };
         // Production: return only normalized model list. rawTags is debug-only and
         // not returned here to keep the API clean.
-        sendResponse({ models });
+        sendResponse({ models, ttlMs: TAGS_TTL_MS });
       } catch (e: any) {
         sendResponse({ error: e?.message || String(e) });
       }
     })();
     return true; // keep channel open for async response
+  }
+  if (message?.type === "invalidate_models") {
+    tagsCache = { time: 0, tags: [] };
+    sendResponse({ ok: true });
+    return; // sync response
   }
 });
 

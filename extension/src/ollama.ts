@@ -1,12 +1,10 @@
 // Ollama helper: streaming request + message builder
-type StreamMessage =
-  | { type: "chunk"; data: string }
-  | { type: "done" }
-  | { type: "error"; error: string };
-
-type OllamaMessage = { role: "system" | "user" | "assistant"; content: string };
-
-export { StreamMessage, OllamaMessage };
+import { StreamMessage, OllamaMessage } from "./types";
+import {
+  DEFAULT_MODEL,
+  OLLAMA_CHAT_ENDPOINT,
+  DEFAULT_TEMPERATURE,
+} from "./config";
 
 export async function streamFromOllama(
   args: {
@@ -20,18 +18,17 @@ export async function streamFromOllama(
 ) {
   // Allow overriding model from extension settings (chrome.storage.local)
   const stored = await chrome.storage.local.get(["model"]);
-  const model = args.model || stored?.model || "llama3.1:8b-instruct";
+  const model = args.model || stored?.model || DEFAULT_MODEL;
   const body = {
     model,
     stream: true,
     messages: buildMessages(args),
     options: {
-      temperature: args.temperature ?? 0.3,
+      temperature: args.temperature ?? DEFAULT_TEMPERATURE,
     },
   };
 
-  const url = "http://127.0.0.1:11434/api/chat";
-  const res = await fetch(url, {
+  const res = await fetch(OLLAMA_CHAT_ENDPOINT, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
@@ -62,23 +59,48 @@ export async function streamFromOllama(
 
   const reader = res.body.getReader();
   const decoder = new TextDecoder();
+  let buffer = "";
   let done = false;
   while (!done) {
     const { value, done: d } = await reader.read();
     done = d;
-    if (value) {
-      const chunk = decoder.decode(value, { stream: true });
-      // Ollama returns JSONL lines with { message: { content: '...' }, done: boolean }
-      const lines = chunk.split("\n").filter(Boolean);
-      for (const line of lines) {
-        try {
-          const json = JSON.parse(line);
-          const token = (json?.message?.content ?? "").toString();
-          if (token.length) onMessage({ type: "chunk", data: token });
-        } catch {
-          // Non-JSON line, ignore
+    if (!value) continue;
+    const chunk = decoder.decode(value, { stream: true });
+    buffer += chunk;
+    // Process all complete lines; keep the last partial (if any) in buffer
+    let nlIndex: number;
+    while ((nlIndex = buffer.indexOf("\n")) !== -1) {
+      const line = buffer.slice(0, nlIndex).trim();
+      buffer = buffer.slice(nlIndex + 1);
+      if (!line) continue;
+      try {
+        const json = JSON.parse(line);
+        // Typical Ollama JSONL: { message: { content: "..." }, done: boolean }
+        if (json?.error) {
+          onMessage({ type: "error", error: String(json.error) });
+          continue;
         }
+        const token = (json?.message?.content ?? "").toString();
+        if (token) onMessage({ type: "chunk", data: token });
+        // If some implementations emit tool_calls or different shapes, ignore for now
+      } catch {
+        // ignore non-JSON lines
       }
+    }
+  }
+  // Flush any remaining buffered line on stream end
+  const tail = buffer.trim();
+  if (tail) {
+    try {
+      const json = JSON.parse(tail);
+      if (json?.error) {
+        onMessage({ type: "error", error: String(json.error) });
+      } else {
+        const token = (json?.message?.content ?? "").toString();
+        if (token) onMessage({ type: "chunk", data: token });
+      }
+    } catch {
+      // ignore trailing garbage
     }
   }
 }

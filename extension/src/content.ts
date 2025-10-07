@@ -1,12 +1,34 @@
 // @ts-ignore - svelte type shims provided separately
 import Overlay from "../ui/Overlay.svelte";
 import { mount as svelteMount } from "svelte";
+import {
+  PORT_OLLAMA_STREAM,
+  EV_OVERLAY_READY,
+  EV_OVERLAY_OPEN,
+  EV_OVERLAY_TOGGLE,
+  EV_STREAM_OUT,
+  EV_STREAM_START,
+  EV_STREAM_STOP,
+  RuntimeMessage,
+  PortMessage,
+} from "./types";
 
 let rootEl: HTMLElement | null = null;
+let shadowRootRef: ShadowRoot | null = null;
 let app: any | null = null;
 let port: chrome.runtime.Port | null = null;
 let portConnected = false;
 let overlayReady = false;
+let DEBUG = false;
+let USE_SHADOW = false;
+
+// Load debug flag once (best-effort; doesn't block)
+try {
+  chrome.storage?.local?.get?.(["debug", "useShadowRoot"]).then((v) => {
+    if (typeof v?.debug === "boolean") DEBUG = v.debug;
+    if (typeof v?.useShadowRoot === "boolean") USE_SHADOW = v.useShadowRoot;
+  });
+} catch {}
 
 function getPageText(maxChars = 8000): string {
   try {
@@ -29,19 +51,28 @@ function getPageText(maxChars = 8000): string {
 
 function ensureOverlay() {
   if (rootEl) return;
-  console.log("[ollama] injecting overlay");
+  if (DEBUG) console.log("[ollama] injecting overlay");
   const host = document.createElement("div");
   host.id = "ollama-assistant-overlay-host";
-  // Mount directly in the page to allow Svelte CSS to apply
   document.body.appendChild(host);
   rootEl = host;
 
   const mountPoint = document.createElement("div");
-  rootEl.appendChild(mountPoint);
+  try {
+    if (USE_SHADOW) {
+      shadowRootRef = host.attachShadow({ mode: "open" });
+      shadowRootRef.appendChild(mountPoint);
+    } else {
+      rootEl.appendChild(mountPoint);
+    }
+  } catch {
+    // Fallback: no Shadow DOM
+    rootEl.appendChild(mountPoint);
+  }
 
   // Try to create Svelte component; fallback to simple overlay if fails
   try {
-    console.log("[ollama] mounting Svelte Overlay via svelte.mount", Overlay);
+    if (DEBUG) console.log("[ollama] mounting Svelte Overlay via svelte.mount", Overlay);
     try {
       // Use svelte's mount helper to support the project's compiled component shape
       // @ts-ignore
@@ -49,7 +80,7 @@ function ensureOverlay() {
         target: mountPoint,
         props: { version: "MVP" },
       });
-      // overlayReady remains false until the component fires its 'ollama-ready' event
+      // overlayReady remains false until the component fires its ready event
     } catch (innerErr) {
       console.error(
         "[ollama] error mounting Overlay, using fallback",
@@ -70,12 +101,12 @@ function ensureOverlayReady(): Promise<void> {
   return new Promise((resolve) => {
     const done = () => {
       overlayReady = true;
-      window.removeEventListener("ollama-ready", done as any);
+      window.removeEventListener(EV_OVERLAY_READY, done as any);
       resolve();
     };
     // If already set via a previous event, resolve immediately
     if (overlayReady) return resolve();
-    window.addEventListener("ollama-ready", done as any, { once: true });
+    window.addEventListener(EV_OVERLAY_READY, done as any, { once: true });
     // Fallback: in case the event already fired before listener attach
     setTimeout(() => {
       if (overlayReady) resolve();
@@ -146,12 +177,10 @@ function createFallbackOverlay(mount: HTMLElement) {
       const payload = {
         prompt: input.value || "Суммаризируй видимое содержимое страницы.",
       };
-      window.dispatchEvent(
-        new CustomEvent("ollama-start", { detail: payload })
-      );
+      window.dispatchEvent(new CustomEvent(EV_STREAM_START, { detail: payload }));
     });
     stopBtn.addEventListener("click", () => {
-      window.dispatchEvent(new CustomEvent("ollama-stop"));
+      window.dispatchEvent(new CustomEvent(EV_STREAM_STOP));
     });
 
     const onStream = (e: any) => {
@@ -162,7 +191,7 @@ function createFallbackOverlay(mount: HTMLElement) {
       if (msg.type === "error")
         output.textContent += `\n[error] ${msg.error}\n`;
     };
-    window.addEventListener("ollama-stream", onStream as any);
+    window.addEventListener(EV_STREAM_OUT, onStream as any);
 
     mount.appendChild(panel);
   } catch (err) {
@@ -173,15 +202,15 @@ function createFallbackOverlay(mount: HTMLElement) {
 function connectPort(force = false) {
   if (portConnected && port && !force) return port;
   try {
-    console.log("[ollama] connecting port");
-    port = chrome.runtime.connect({ name: "ollama_stream" });
+    if (DEBUG) console.log("[ollama] connecting port");
+    port = chrome.runtime.connect({ name: PORT_OLLAMA_STREAM });
     portConnected = true;
     port.onDisconnect.addListener(() => {
       portConnected = false;
     });
     port.onMessage.addListener((msg: any) => {
-      console.log("[ollama] port message", msg);
-      window.dispatchEvent(new CustomEvent("ollama-stream", { detail: msg }));
+      if (DEBUG) console.log("[ollama] port message", msg);
+      window.dispatchEvent(new CustomEvent(EV_STREAM_OUT, { detail: msg }));
     });
   } catch (e) {
     console.warn("[ollama] port connect failed", e);
@@ -190,8 +219,8 @@ function connectPort(force = false) {
   return port;
 }
 
-chrome.runtime.onMessage.addListener((message, _sender, _sendResponse) => {
-  console.log("[ollama] runtime.onMessage", message);
+chrome.runtime.onMessage.addListener((message: RuntimeMessage, _sender, _sendResponse) => {
+  if (DEBUG) console.log("[ollama] runtime.onMessage", message);
   if (message?.type === "open_overlay") {
     ensureOverlayReady().then(() => {
       let selection = "";
@@ -209,21 +238,21 @@ chrome.runtime.onMessage.addListener((message, _sender, _sendResponse) => {
         ...message,
         selectionText: message?.selectionText || selection,
       };
-      window.dispatchEvent(new CustomEvent("ollama-open", { detail }));
+      window.dispatchEvent(new CustomEvent(EV_OVERLAY_OPEN, { detail }));
     });
   }
 });
 
-chrome.runtime.onMessage.addListener((message) => {
-  console.log("[ollama] runtime.onMessage toggle?", message);
+chrome.runtime.onMessage.addListener((message: RuntimeMessage) => {
+  if (DEBUG) console.log("[ollama] runtime.onMessage toggle?", message);
   if (message?.type === "toggle_overlay") {
     ensureOverlayReady().then(() => {
-      window.dispatchEvent(new CustomEvent("ollama-toggle"));
+      window.dispatchEvent(new CustomEvent(EV_OVERLAY_TOGGLE));
     });
   }
 });
 
-window.addEventListener("ollama-start", (e: any) => {
+window.addEventListener(EV_STREAM_START, (e: any) => {
   const payload = e?.detail;
   const p = connectPort();
   if (!p) return;
@@ -236,7 +265,7 @@ window.addEventListener("ollama-start", (e: any) => {
   }
 });
 
-window.addEventListener("ollama-stop", () => {
+window.addEventListener(EV_STREAM_STOP, () => {
   const p = connectPort();
   try {
     p?.postMessage({ type: "stop_stream" });
