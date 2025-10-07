@@ -1,5 +1,6 @@
 // @ts-ignore - svelte type shims provided separately
 import Overlay from "../ui/Overlay.svelte";
+import { mount as svelteMount } from "svelte";
 
 let rootEl: HTMLElement | null = null;
 let app: any | null = null;
@@ -40,27 +41,24 @@ function ensureOverlay() {
 
   // Try to create Svelte component; fallback to simple overlay if fails
   try {
-    // Standard Svelte component instantiation. Using `new Overlay(...)` is
-    // compatible with compiled Svelte components and avoids relying on a
-    // non-existent `svelte.mount` helper which can fail at runtime.
-    console.log("[ollama] mounting Svelte Overlay", Overlay);
+    console.log("[ollama] mounting Svelte Overlay via svelte.mount", Overlay);
     try {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore - runtime Svelte component constructor
-      app = new (Overlay as any)({
+      // Use svelte's mount helper to support the project's compiled component shape
+      // @ts-ignore
+      app = svelteMount(Overlay as any, {
         target: mountPoint,
         props: { version: "MVP" },
       });
-      // Mark overlay as ready immediately after mounting so callers waiting
-      // in `ensureOverlayReady` do not miss the ready signal if the
-      // component dispatches its event before listeners are attached.
-      overlayReady = true;
-    } catch (err) {
-      // If component instantiation fails, fall back to the DOM fallback.
-      throw err;
+      // overlayReady remains false until the component fires its 'ollama-ready' event
+    } catch (innerErr) {
+      console.error(
+        "[ollama] error mounting Overlay, using fallback",
+        innerErr
+      );
+      createFallbackOverlay(mountPoint);
     }
   } catch (err) {
-    console.error("[ollama] error mounting Overlay, using fallback", err);
+    console.error("[ollama] error creating mount host", err);
     createFallbackOverlay(mountPoint);
   }
 }
@@ -201,10 +199,16 @@ chrome.runtime.onMessage.addListener((message, _sender, _sendResponse) => {
         selection = String(window.getSelection()?.toString() || "").trim();
       } catch {}
       // If no selection and preset asks to summarize, capture page text
-      if (!selection && (message?.preset === 'summarize' || message?.preset === 'tldr')) {
+      if (
+        !selection &&
+        (message?.preset === "summarize" || message?.preset === "tldr")
+      ) {
         selection = getPageText(9000);
       }
-      const detail = { ...message, selectionText: message?.selectionText || selection };
+      const detail = {
+        ...message,
+        selectionText: message?.selectionText || selection,
+      };
       window.dispatchEvent(new CustomEvent("ollama-open", { detail }));
     });
   }
