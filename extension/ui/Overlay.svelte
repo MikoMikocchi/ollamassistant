@@ -109,6 +109,31 @@
   // Markdown rendering (safe, minimal)
   $: rendered = renderMarkdownSafe(output);
 
+  // Incremental adoption of app-wide stores
+  import {
+    theme as themeStore,
+    streaming as streamingStore,
+    model as modelStore,
+    models as modelsStore,
+    modelsLoading as modelsLoadingStore,
+    modelsError as modelsErrorStore,
+    prompt as promptStore,
+    output as outputStore,
+    selectionText as selectionTextStore,
+    preset as presetStore,
+  } from "./stores";
+  // Sync local vars → stores
+  $: themeStore.set(theme);
+  $: streamingStore.set(streaming);
+  $: modelStore.set(model);
+  $: modelsStore.set(models);
+  $: modelsLoadingStore.set(modelsLoading);
+  $: modelsErrorStore.set(modelsError);
+  $: promptStore.set(prompt);
+  $: outputStore.set(output);
+  $: selectionTextStore.set(selectionText);
+  $: presetStore.set(preset);
+
   onMount(() => {
     window.addEventListener("ollama-open", onOpen as any);
     window.addEventListener("ollama-toggle", onToggle as any);
