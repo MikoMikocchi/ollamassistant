@@ -3,18 +3,21 @@
   export let rendered: string = "";
   export let onClear: () => void;
   export let onCopy: () => void;
+  import Button from "./components/Button.svelte";
 </script>
 
 <div class="actions">
-  <button
-    class="btn secondary compact"
+  <Button
+    variant="secondary"
+    size="compact"
     on:click={onClear}
-    title="Очистить поле ответа">Очистить</button
+    title="Очистить поле ответа">Очистить</Button
   >
-  <button
-    class="btn secondary compact"
+  <Button
+    variant="secondary"
+    size="compact"
     on:click={onCopy}
-    title="Скопировать ответ">Копировать</button
+    title="Скопировать ответ">Копировать</Button
   >
 </div>
 <div class="output markdown" data-empty={!output}>
@@ -31,22 +34,7 @@
     gap: 6px;
     flex-wrap: wrap;
   }
-  .btn {
-    border: none;
-    cursor: pointer;
-    appearance: none;
-    border-radius: 9px;
-    padding: 8px 12px;
-    font-weight: 600;
-  }
-  .btn.compact {
-    padding: 6px 10px;
-    font-size: 13px;
-  }
-  .btn.secondary {
-    background: var(--btn-secondary-bg);
-    color: var(--btn-secondary-text);
-  }
+  /* button styles come from Button component */
   .output {
     flex: 1 1 auto;
     overflow: auto;

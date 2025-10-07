@@ -4,21 +4,22 @@
   export let streaming: boolean;
   export let onToggleTheme: () => void;
   export let onStop: () => void;
+  import Button from "./components/Button.svelte";
+  import Spinner from "./components/Spinner.svelte";
 </script>
 
 <div class="header">
   <div class="title">Ollamassistant · {version}</div>
   <div class="grow"></div>
-  <button
-    class="btn toggle"
+  <Button
+    variant="toggle"
     on:click={onToggleTheme}
     title={theme === "dark" ? "Светлая тема" : "Тёмная тема"}
-    aria-label="Сменить тему">{theme === "dark" ? "☀︎" : "☾"}</button
+    aria-label="Сменить тему">{theme === "dark" ? "☀︎" : "☾"}</Button
   >
   {#if streaming}
-    <div class="spinner" aria-label="Ответ генерируется"></div>
-    <button class="btn subtle" on:click={onStop} title="Остановить">Стоп</button
-    >
+    <Spinner />
+    <Button variant="subtle" on:click={onStop} title="Остановить">Стоп</Button>
   {/if}
 </div>
 
@@ -38,27 +39,5 @@
   .grow {
     flex: 1 1 auto;
   }
-  .btn.toggle {
-    background: transparent;
-    border: 1px solid var(--btn-subtle-border);
-    color: var(--panel-text);
-    border-radius: 16px;
-    padding: 2px 8px;
-    font-weight: 700;
-    font-size: 13px;
-  }
-  .spinner {
-    width: 14px;
-    height: 14px;
-    border: 2px solid #c7d2fe;
-    border-top-color: #6366f1;
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-    margin-right: 6px;
-  }
-  @keyframes spin {
-    to {
-      transform: rotate(360deg);
-    }
-  }
+  /* button & spinner moved to components */
 </style>
