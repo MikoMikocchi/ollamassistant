@@ -345,7 +345,7 @@
           {#if modelsLoading}
             <div>Loading models...</div>
           {:else if models.length}
-            <select bind:value={model} class="input">
+            <select bind:value={model} class="select compact">
               <option value="">(manual)</option>
               {#each models as m}
                 <option value={String(m)}>{String(m)}</option>
@@ -353,12 +353,12 @@
             </select>
           {:else}
             <input
-              class="input"
+              class="input compact"
               placeholder="model (e.g. llama2-mini)"
               bind:value={model}
             />
           {/if}
-          <button class="btn secondary" on:click={saveModel}
+          <button class="btn secondary compact" on:click={saveModel}
             >Сохранить модель</button
           >
           {#if modelsError}
@@ -366,16 +366,16 @@
           {/if}
         </div>
         <div class="actions">
-          <button class="btn primary" disabled={streaming} on:click={start}
+          <button class="btn primary compact" disabled={streaming} on:click={start}
             >Спросить локально</button
           >
           <button
-            class="btn secondary"
+            class="btn secondary compact"
             on:click={() => (output = "")}
             title="Очистить поле ответа">Очистить</button
           >
           <button
-            class="btn secondary"
+            class="btn secondary compact"
             on:click={copyOutput}
             title="Скопировать ответ">Копировать</button
           >
@@ -475,8 +475,8 @@
     position: fixed;
     top: 8px;
     right: 8px;
-    width: min(520px, 92vw);
-    max-height: min(70vh, 640px);
+    width: min(720px, 94vw);
+    max-height: min(84vh, 820px);
     background: var(--panel-bg);
     color: var(--panel-text);
     border-radius: 14px;
@@ -505,7 +505,9 @@
     display: flex;
     flex-direction: column;
     gap: 8px;
-    max-height: 70vh;
+    /* Make body fill the panel and keep internal scroll localized */
+    flex: 1 1 auto;
+    overflow: hidden;
   }
   .input-wrap {
     display: flex;
@@ -526,21 +528,50 @@
       border-color 0.12s ease,
       box-shadow 0.12s ease;
   }
+  .input.compact {
+    min-height: 0;
+    padding: 6px 8px;
+    font-size: 13px;
+  }
   .input:focus {
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px var(--focus-ring);
+  }
+  .select {
+    min-width: 150px;
+    max-width: 260px;
+    padding: 6px 8px;
+    border: 1px solid var(--input-border);
+    background: var(--input-bg);
+    color: var(--panel-text);
+    border-radius: 10px;
+    font: inherit;
+    font-size: 13px;
+    outline: none;
+    transition:
+      border-color 0.12s ease,
+      box-shadow 0.12s ease;
+  }
+  .select:focus {
     border-color: #6366f1;
     box-shadow: 0 0 0 3px var(--focus-ring);
   }
   .actions {
     display: flex;
-    gap: 8px;
+    gap: 6px;
+    flex-wrap: wrap;
   }
   .btn {
     border: none;
     cursor: pointer;
     appearance: none;
-    border-radius: 10px;
+    border-radius: 9px;
     padding: 8px 12px;
     font-weight: 600;
+  }
+  .btn.compact {
+    padding: 6px 10px;
+    font-size: 13px;
   }
   .btn.primary {
     background: var(--btn-primary-bg);
@@ -563,13 +594,15 @@
     background: transparent;
     border: 1px solid var(--btn-subtle-border);
     color: var(--panel-text);
-    border-radius: 20px;
-    padding: 4px 10px;
+    border-radius: 16px;
+    padding: 2px 8px;
     font-weight: 700;
+    font-size: 13px;
   }
   .output {
     flex: 1 1 auto;
     overflow: auto;
+    overscroll-behavior: contain; /* prevent page scroll chaining */
     background: var(--output-bg);
     color: var(--output-text);
     border-radius: 10px;
@@ -577,6 +610,7 @@
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
       "Liberation Mono", "Courier New", monospace;
     white-space: normal;
+    min-height: 220px; /* make answer area visually larger */
   }
   .output[data-empty="true"] {
     opacity: 0.7;
