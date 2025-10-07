@@ -23,7 +23,11 @@
       if (s?.theme === "light" || s?.theme === "dark") {
         theme = s.theme;
       } else {
-        theme = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+        theme =
+          window.matchMedia &&
+          window.matchMedia("(prefers-color-scheme: dark)").matches
+            ? "dark"
+            : "light";
       }
     } catch {}
   }
@@ -78,7 +82,9 @@
   function buildPrompt() {
     const parts = [] as string[];
     const wantsSummary =
-      preset === "summarize" || preset === "tldr" || (!prompt && !!selectionText);
+      preset === "summarize" ||
+      preset === "tldr" ||
+      (!prompt && !!selectionText);
     if (wantsSummary)
       parts.push(
         summaryInstruction() +
@@ -86,10 +92,7 @@
       );
     if (selectionText) parts.push(`Контекст:\n${selectionText}`);
     if (prompt) parts.push(`Вопрос:\n${prompt}`);
-    return (
-      parts.join("\n\n") ||
-      `${summaryInstruction()}\n\nКонтекст: (пусто)`
-    );
+    return parts.join("\n\n") || `${summaryInstruction()}\n\nКонтекст: (пусто)`;
   }
 
   async function onOpen(e: any) {
@@ -169,30 +172,24 @@
     md = md.replace(/`([^`]+)`/g, "<code>$1</code>");
 
     // Lists: group consecutive lines
-    md = md.replace(
-      /(^|\n)(?:-\s+.+(?:\n-\s+.+)*)/g,
-      (block) => {
-        const items = block
-          .split(/\n/)
-          .map((l) => l.trim())
-          .filter((l) => /^-\s+/.test(l))
-          .map((l) => `<li>${l.replace(/^-\s+/, "")}</li>`) // already escaped
-          .join("");
-        return `\n<ul>${items}</ul>`;
-      }
-    );
-    md = md.replace(
-      /(^|\n)(?:\d+\.\s+.+(?:\n\d+\.\s+.+)*)/g,
-      (block) => {
-        const items = block
-          .split(/\n/)
-          .map((l) => l.trim())
-          .filter((l) => /^\d+\.\s+/.test(l))
-          .map((l) => `<li>${l.replace(/^\d+\.\s+/, "")}</li>`)
-          .join("");
-        return `\n<ol>${items}</ol>`;
-      }
-    );
+    md = md.replace(/(^|\n)(?:-\s+.+(?:\n-\s+.+)*)/g, (block) => {
+      const items = block
+        .split(/\n/)
+        .map((l) => l.trim())
+        .filter((l) => /^-\s+/.test(l))
+        .map((l) => `<li>${l.replace(/^-\s+/, "")}</li>`) // already escaped
+        .join("");
+      return `\n<ul>${items}</ul>`;
+    });
+    md = md.replace(/(^|\n)(?:\d+\.\s+.+(?:\n\d+\.\s+.+)*)/g, (block) => {
+      const items = block
+        .split(/\n/)
+        .map((l) => l.trim())
+        .filter((l) => /^\d+\.\s+/.test(l))
+        .map((l) => `<li>${l.replace(/^\d+\.\s+/, "")}</li>`)
+        .join("");
+      return `\n<ol>${items}</ol>`;
+    });
 
     // Paragraphs: wrap non-block elements
     const lines = md.split(/\n\n+/).map((seg) => seg.trim());
@@ -216,11 +213,14 @@
 
     md = md.replace(/\r\n?/g, "\n");
     const blocks: string[] = [];
-    md = md.replace(/```([a-zA-Z0-9_-]*)\n([\s\S]*?)```/g, (_m, lang: string, code: string) => {
-      const html = `\n<pre class="code"><code class="lang-${esc(lang)}">${esc(code)}</code></pre>\n`;
-      const idx = blocks.push(html) - 1;
-      return `§§BLOCK${idx}§§`;
-    });
+    md = md.replace(
+      /```([a-zA-Z0-9_-]*)\n([\s\S]*?)```/g,
+      (_m, lang: string, code: string) => {
+        const html = `\n<pre class="code"><code class="lang-${esc(lang)}">${esc(code)}</code></pre>\n`;
+        const idx = blocks.push(html) - 1;
+        return `§§BLOCK${idx}§§`;
+      }
+    );
 
     // Escape rest and format inline (avoid double-escaping)
     let out = esc(md);
@@ -231,7 +231,10 @@
     out = out.replace(/^##\s+(.*)$/gm, "<h2>$1</h2>");
     out = out.replace(/^#\s+(.*)$/gm, "<h1>$1</h1>");
     out = out.replace(/^---$/gm, "<hr>");
-    out = out.replace(/\[([^\]]+)\]\((https?:[^\s)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
+    out = out.replace(
+      /\[([^\]]+)\]\((https?:[^\s)]+)\)/g,
+      '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>'
+    );
     out = out.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
     out = out.replace(/\*([^*]+)\*/g, "<em>$1</em>");
     out = out.replace(/`([^`]+)`/g, "<code>$1</code>");
@@ -256,7 +259,9 @@
 
     const parts = out.split(/\n\n+/).map((seg) => seg.trim());
     const isBlock = (s: string) => /^(<h\d|<ul>|<ol>|<pre|<hr>)/.test(s);
-    let html = parts.map((seg) => (isBlock(seg) ? seg : `<p>${seg}</p>`)).join("\n");
+    let html = parts
+      .map((seg) => (isBlock(seg) ? seg : `<p>${seg}</p>`))
+      .join("\n");
     html = html.replace(/§§BLOCK(\d+)§§/g, (_m, i) => blocks[Number(i)] || "");
     return html;
   }
@@ -303,14 +308,21 @@
 <div class="overlay" data-theme={theme}>
   {#if open}
     <div class="backdrop" on:click={toggle} aria-hidden="true"></div>
-    <div class="panel" role="dialog" aria-label="Ollama Assistant">
+    <div class="panel" role="dialog" aria-label="Ollamassistant">
       <div class="header">
-        <div class="title">Ollama Assistant · {version}</div>
+        <div class="title">Ollamassistant · {version}</div>
         <div class="grow"></div>
-        <button class="btn toggle" on:click={toggleTheme} title={theme === 'dark' ? 'Светлая тема' : 'Тёмная тема'} aria-label="Сменить тему">{theme === 'dark' ? '☀︎' : '☾'}</button>
+        <button
+          class="btn toggle"
+          on:click={toggleTheme}
+          title={theme === "dark" ? "Светлая тема" : "Тёмная тема"}
+          aria-label="Сменить тему">{theme === "dark" ? "☀︎" : "☾"}</button
+        >
         {#if streaming}
           <div class="spinner" aria-label="Ответ генерируется"></div>
-          <button class="btn subtle" on:click={stop} title="Остановить">Стоп</button>
+          <button class="btn subtle" on:click={stop} title="Остановить"
+            >Стоп</button
+          >
         {/if}
       </div>
       <div class="body">
@@ -320,7 +332,12 @@
             bind:this={textareaEl}
             bind:value={prompt}
             placeholder="Задайте вопрос или оставьте пустым для суммаризации..."
-            on:keydown={(e)=>{ if(e.key==='Enter' && !e.shiftKey){ e.preventDefault(); if(!streaming) start(); } }}
+            on:keydown={(e) => {
+              if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                if (!streaming) start();
+              }
+            }}
           ></textarea>
           <div class="hint">Enter — отправить • Shift+Enter — новая строка</div>
         </div>
@@ -349,9 +366,19 @@
           {/if}
         </div>
         <div class="actions">
-          <button class="btn primary" disabled={streaming} on:click={start}>Спросить локально</button>
-          <button class="btn secondary" on:click={() => (output = "")} title="Очистить поле ответа">Очистить</button>
-          <button class="btn secondary" on:click={copyOutput} title="Скопировать ответ">Копировать</button>
+          <button class="btn primary" disabled={streaming} on:click={start}
+            >Спросить локально</button
+          >
+          <button
+            class="btn secondary"
+            on:click={() => (output = "")}
+            title="Очистить поле ответа">Очистить</button
+          >
+          <button
+            class="btn secondary"
+            on:click={copyOutput}
+            title="Скопировать ответ">Копировать</button
+          >
         </div>
         <div class="output markdown" data-empty={!output}>
           {#if output}
@@ -400,7 +427,7 @@
     --output-bg: #0b1020;
     --output-text: #e2e8f0;
     --link: #93c5fd;
-    --code-bg: rgba(148,163,184,.2);
+    --code-bg: rgba(148, 163, 184, 0.2);
     --codeblock-bg: #0a0f1f;
     --placeholder: #64748b;
     box-sizing: border-box;
@@ -423,7 +450,7 @@
     --output-bg: #0a0f1f;
     --output-text: #dde7f6;
     --link: #60a5fa;
-    --code-bg: rgba(148,163,184,.18);
+    --code-bg: rgba(148, 163, 184, 0.18);
     --codeblock-bg: #0a0f1f;
     --placeholder: #8aa0c2;
   }
@@ -434,7 +461,9 @@
   .overlay * {
     box-sizing: inherit;
   }
-  .grow { flex: 1 1 auto; }
+  .grow {
+    flex: 1 1 auto;
+  }
   .backdrop {
     position: fixed;
     inset: 0;
@@ -478,7 +507,11 @@
     gap: 8px;
     max-height: 70vh;
   }
-  .input-wrap { display: flex; flex-direction: column; gap: 6px; }
+  .input-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
   .input {
     width: 100%;
     min-height: 64px;
@@ -489,7 +522,9 @@
     background: var(--input-bg);
     color: var(--panel-text);
     outline: none;
-    transition: border-color .12s ease, box-shadow .12s ease;
+    transition:
+      border-color 0.12s ease,
+      box-shadow 0.12s ease;
   }
   .input:focus {
     border-color: #6366f1;
@@ -499,12 +534,39 @@
     display: flex;
     gap: 8px;
   }
-  .btn { border: none; cursor: pointer; appearance: none; border-radius: 10px; padding: 8px 12px; font-weight: 600; }
-  .btn.primary { background: var(--btn-primary-bg); color: var(--btn-primary-text); }
-  .btn.primary:disabled { opacity: .6; cursor: not-allowed; }
-  .btn.secondary { background: var(--btn-secondary-bg); color: var(--btn-secondary-text); }
-  .btn.subtle { background: transparent; color: var(--panel-text); border: 1px solid var(--btn-subtle-border); }
-  .btn.toggle { background: transparent; border: 1px solid var(--btn-subtle-border); color: var(--panel-text); border-radius: 20px; padding: 4px 10px; font-weight: 700; }
+  .btn {
+    border: none;
+    cursor: pointer;
+    appearance: none;
+    border-radius: 10px;
+    padding: 8px 12px;
+    font-weight: 600;
+  }
+  .btn.primary {
+    background: var(--btn-primary-bg);
+    color: var(--btn-primary-text);
+  }
+  .btn.primary:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+  .btn.secondary {
+    background: var(--btn-secondary-bg);
+    color: var(--btn-secondary-text);
+  }
+  .btn.subtle {
+    background: transparent;
+    color: var(--panel-text);
+    border: 1px solid var(--btn-subtle-border);
+  }
+  .btn.toggle {
+    background: transparent;
+    border: 1px solid var(--btn-subtle-border);
+    color: var(--panel-text);
+    border-radius: 20px;
+    padding: 4px 10px;
+    font-weight: 700;
+  }
   .output {
     flex: 1 1 auto;
     overflow: auto;
@@ -516,17 +578,67 @@
       "Liberation Mono", "Courier New", monospace;
     white-space: normal;
   }
-  .output[data-empty="true"] { opacity: .7; }
-  .output .placeholder { opacity: .6; }
+  .output[data-empty="true"] {
+    opacity: 0.7;
+  }
+  .output .placeholder {
+    opacity: 0.6;
+  }
   /* Markdown look */
-  .markdown { font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Arial; line-height: 1.45; }
-  .markdown h1, .markdown h2, .markdown h3, .markdown h4 { margin: .4em 0 .2em; font-weight: 700; }
-  .markdown p { margin: .4em 0; }
-  .markdown ul, .markdown ol { margin: .4em 0 .6em 1.2em; }
-  .markdown code { background: var(--code-bg); padding: 2px 4px; border-radius: 5px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono, Courier New, monospace; }
-  .markdown pre.code { background: var(--codeblock-bg); padding: 10px 12px; border-radius: 10px; overflow: auto; }
-  .markdown pre.code code { background: transparent; padding: 0; }
-  .markdown a { color: var(--link); text-decoration: underline; }
+  .markdown {
+    font-family:
+      system-ui,
+      -apple-system,
+      Segoe UI,
+      Roboto,
+      Ubuntu,
+      Cantarell,
+      Noto Sans,
+      Arial;
+    line-height: 1.45;
+  }
+  .markdown h1,
+  .markdown h2,
+  .markdown h3,
+  .markdown h4 {
+    margin: 0.4em 0 0.2em;
+    font-weight: 700;
+  }
+  .markdown p {
+    margin: 0.4em 0;
+  }
+  .markdown ul,
+  .markdown ol {
+    margin: 0.4em 0 0.6em 1.2em;
+  }
+  .markdown code {
+    background: var(--code-bg);
+    padding: 2px 4px;
+    border-radius: 5px;
+    font-family:
+      ui-monospace,
+      SFMono-Regular,
+      Menlo,
+      Monaco,
+      Consolas,
+      Liberation Mono,
+      Courier New,
+      monospace;
+  }
+  .markdown pre.code {
+    background: var(--codeblock-bg);
+    padding: 10px 12px;
+    border-radius: 10px;
+    overflow: auto;
+  }
+  .markdown pre.code code {
+    background: transparent;
+    padding: 0;
+  }
+  .markdown a {
+    color: var(--link);
+    text-decoration: underline;
+  }
   .status {
     width: 10px;
     height: 10px;
@@ -536,7 +648,15 @@
   .status.online {
     background: #10b981;
   }
-  .spinner { width: 14px; height: 14px; border: 2px solid #c7d2fe; border-top-color: #6366f1; border-radius: 50%; animation: spin .8s linear infinite; margin-right: 6px; }
+  .spinner {
+    width: 14px;
+    height: 14px;
+    border: 2px solid #c7d2fe;
+    border-top-color: #6366f1;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin-right: 6px;
+  }
   @keyframes fadeIn {
     from {
       opacity: 0;
@@ -555,7 +675,14 @@
       transform: translateY(0) scale(1);
     }
   }
-  @keyframes spin { to { transform: rotate(360deg); } }
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
   /* reserved */
-  .hint { color: #64748b; font-size: 12px; }
+  .hint {
+    color: #64748b;
+    font-size: 12px;
+  }
 </style>
