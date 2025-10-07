@@ -30,7 +30,7 @@
     </svg>
   </Button>
 </div>
-<div class="output markdown" data-empty={!output}>
+<div class="output markdown" data-empty={!output} aria-live="polite">
   {#if output}
     {@html rendered}
   {:else}
@@ -39,12 +39,7 @@
 </div>
 
 <style>
-  .actions {
-    display: flex;
-    gap: 6px;
-    flex-wrap: wrap;
-    justify-content: flex-end;
-  }
+  .actions { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
   /* button styles come from Button component */
   .output {
     flex: 1 1 auto;
@@ -53,9 +48,10 @@
     background: var(--output-bg);
     color: var(--output-text);
     border-radius: 10px;
-    padding: 12px;
-    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
-      "Liberation Mono", "Courier New", monospace;
+    padding: 16px;
+    max-width: 70ch; /* readable line length */
+    /* center content within the scroll area */
+    margin: 0 auto;
     white-space: normal;
     min-height: 220px;
   }
@@ -66,30 +62,23 @@
     opacity: 0.6;
   }
   :global(.markdown) {
-    font-family:
-      system-ui,
-      -apple-system,
-      Segoe UI,
-      Roboto,
-      Ubuntu,
-      Cantarell,
-      Noto Sans,
-      Arial;
-    line-height: 1.45;
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Arial;
+    line-height: 1.6;
+    font-size: 14.5px;
   }
   :global(.markdown h1),
   :global(.markdown h2),
   :global(.markdown h3),
   :global(.markdown h4) {
-    margin: 0.4em 0 0.2em;
+    margin: 0.6em 0 0.25em;
     font-weight: 700;
   }
   :global(.markdown p) {
-    margin: 0.4em 0;
+    margin: 0.5em 0;
   }
   :global(.markdown ul),
   :global(.markdown ol) {
-    margin: 0.4em 0 0.6em 1.2em;
+    margin: 0.5em 0 0.8em 1.2em;
   }
   :global(.markdown code) {
     background: var(--code-bg);

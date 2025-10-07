@@ -18,6 +18,8 @@
   on:click={handleClick}
   {title}
   {disabled}
+  aria-disabled={disabled}
+  type="button"
   {...$$restProps}
 >
   <slot />

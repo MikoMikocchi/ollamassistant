@@ -275,7 +275,7 @@
         {theme}
         {streaming}
         onToggleTheme={toggleTheme}
-        onStop={stop}
+        onClose={toggle}
       />
       <div class="body">
         <Input
@@ -285,13 +285,15 @@
           {model}
           {modelsLoading}
           {modelsError}
+          {streaming}
           disabled={streaming}
           onStart={start}
+          onStop={stop}
           onSaveModel={saveModel}
         >
           <svelte:fragment slot="extra-actions">
             <Button variant="subtle" size="compact" on:click={refreshModels}>
-              Обновить модели
+              Обновить список моделей
             </Button>
           </svelte:fragment>
         </Input>
@@ -402,10 +404,10 @@
     animation: panelIn 130ms cubic-bezier(0.2, 0.8, 0.2, 1);
   }
   .body {
-    padding: 14px;
+    padding: 16px; /* 8-pt grid */
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 12px;
     /* Make body fill the panel and keep internal scroll localized */
     flex: 1 1 auto;
     overflow: hidden;

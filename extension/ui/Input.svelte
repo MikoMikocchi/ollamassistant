@@ -7,6 +7,8 @@
   export let disabled: boolean = false;
   export let onStart: () => void;
   export let onSaveModel: () => void;
+  export let streaming: boolean = false;
+  export let onStop: () => void;
 
   let textareaEl: HTMLTextAreaElement | null = null;
   export function focusTextarea() {
@@ -26,14 +28,14 @@
     on:keydown={(e) => {
       if (e.key === "Enter" && !e.shiftKey) {
         e.preventDefault();
-        if (!disabled) onStart();
+        if (!disabled && !streaming) onStart();
       }
     }}
   ></textarea>
   <div class="hint">Enter — отправить • Shift+Enter — новая строка</div>
 </div>
 
-<div class="toolbar">
+<div class="toolbar" role="group" aria-label="Панель ввода">
   <div class="left">
     {#if modelsLoading}
       <div class="muted">Загрузка списка моделей…</div>
@@ -53,14 +55,16 @@
   </div>
   <div class="right">
     <slot name="extra-actions" />
-    <Button variant="subtle" size="compact" on:click={onSaveModel}
-      >Сохранить модель</Button
+    <Button variant="subtle" size="compact" on:click={onSaveModel} title="Сделать модель текущей"
+      >Сделать текущей</Button
     >
-  </div>
-  <div class="footer">
-    <Button variant="primary" {disabled} on:click={onStart} title="Отправить в локальную LLM">
-      Спросить локально
-    </Button>
+    {#if streaming}
+      <Button variant="primary" on:click={onStop} title="Остановить генерацию">Стоп</Button>
+    {:else}
+      <Button variant="primary" {disabled} on:click={onStart} title="Отправить в локальную LLM">
+        Спросить
+      </Button>
+    {/if}
   </div>
 </div>
 
@@ -68,12 +72,12 @@
   .input-wrap {
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 8px; /* 8-pt grid */
   }
   .input {
     width: 100%;
     min-height: 64px;
-    padding: 10px 12px;
+    padding: 12px 14px;
     border: 1px solid var(--input-border);
     border-radius: 10px;
     font: inherit;
@@ -96,9 +100,9 @@
   .toolbar {
     display: grid;
     grid-template-columns: 1fr auto;
-    grid-template-rows: auto auto;
-    gap: 10px 12px;
+    gap: 12px;
     align-items: center;
+    margin-top: 8px;
   }
   .toolbar .left {
     display: flex;
@@ -111,12 +115,6 @@
     gap: 8px;
     justify-content: flex-end;
     align-items: center;
-  }
-  .toolbar .footer {
-    grid-column: 1 / -1;
-    display: flex;
-    justify-content: flex-end;
-    margin-top: 6px;
   }
   .hint {
     color: #64748b;
