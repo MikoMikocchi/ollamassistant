@@ -1,6 +1,5 @@
 // @ts-ignore - svelte type shims provided separately
 import Overlay from "../ui/Overlay.svelte";
-import { mount as svelteMount } from "svelte";
 
 let rootEl: HTMLElement | null = null;
 let app: any | null = null;
@@ -41,11 +40,25 @@ function ensureOverlay() {
 
   // Try to create Svelte component; fallback to simple overlay if fails
   try {
-    console.log("[ollama] mounting Svelte Overlay via svelte.mount", Overlay);
-    app = svelteMount(Overlay as any, {
-      target: mountPoint,
-      props: { version: "MVP" },
-    });
+    // Standard Svelte component instantiation. Using `new Overlay(...)` is
+    // compatible with compiled Svelte components and avoids relying on a
+    // non-existent `svelte.mount` helper which can fail at runtime.
+    console.log("[ollama] mounting Svelte Overlay", Overlay);
+    try {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore - runtime Svelte component constructor
+      app = new (Overlay as any)({
+        target: mountPoint,
+        props: { version: "MVP" },
+      });
+      // Mark overlay as ready immediately after mounting so callers waiting
+      // in `ensureOverlayReady` do not miss the ready signal if the
+      // component dispatches its event before listeners are attached.
+      overlayReady = true;
+    } catch (err) {
+      // If component instantiation fails, fall back to the DOM fallback.
+      throw err;
+    }
   } catch (err) {
     console.error("[ollama] error mounting Overlay, using fallback", err);
     createFallbackOverlay(mountPoint);
