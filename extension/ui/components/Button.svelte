@@ -31,6 +31,11 @@
     border-radius: 9px;
     padding: 8px 12px;
     font-weight: 600;
+    outline: none;
+    line-height: 1.1;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
   }
   .btn.compact {
     padding: 6px 10px;
@@ -40,6 +45,15 @@
     background: var(--btn-primary-bg);
     color: var(--btn-primary-text);
   }
+  .btn:focus-visible {
+    box-shadow: 0 0 0 3px var(--focus-ring);
+  }
+  .btn.primary:hover {
+    filter: brightness(1.05);
+  }
+  .btn.primary:active {
+    transform: translateY(0.5px);
+  }
   .btn.primary:disabled {
     opacity: 0.6;
     cursor: not-allowed;
@@ -48,10 +62,16 @@
     background: var(--btn-secondary-bg);
     color: var(--btn-secondary-text);
   }
+  .btn.secondary:hover {
+    filter: brightness(0.98);
+  }
   .btn.subtle {
     background: transparent;
     color: var(--panel-text);
     border: 1px solid var(--btn-subtle-border);
+  }
+  .btn.subtle:hover {
+    background: rgba(148, 163, 184, 0.08);
   }
   .btn.toggle {
     background: transparent;

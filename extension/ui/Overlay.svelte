@@ -324,15 +324,6 @@
       Arial,
       "Apple Color Emoji",
       "Segoe UI Emoji";
-    /* Unused styles removed */
-    --btn-secondary-text: #111827;
-    --btn-subtle-border: #cbd5e1;
-    --output-bg: #0b1020;
-    --output-text: #e2e8f0;
-    --link: #93c5fd;
-    --code-bg: rgba(148, 163, 184, 0.2);
-    --codeblock-bg: #0a0f1f;
-    --placeholder: #64748b;
     box-sizing: border-box;
   }
 
@@ -358,6 +349,28 @@
     --placeholder: #8aa0c2;
   }
 
+  .overlay[data-theme="light"] {
+    --panel-bg: #ffffff;
+    --panel-text: #0b1220;
+    --panel-border: #d9e0ea;
+    --header-bg: linear-gradient(180deg, #f7f9fc, #eef3fb);
+    --shadow: 0 22px 70px rgba(16, 24, 40, 0.15);
+    --input-bg: #ffffff;
+    --input-border: #d0d7e2;
+    --focus-ring: rgba(37, 99, 235, 0.25);
+    --btn-primary-bg: #2563eb;
+    --btn-primary-text: #ffffff;
+    --btn-secondary-bg: #eef2f9;
+    --btn-secondary-text: #0b1220;
+    --btn-subtle-border: #cfd8e5;
+    --output-bg: #f7f9fc;
+    --output-text: #111827;
+    --link: #2563eb;
+    --code-bg: rgba(148, 163, 184, 0.14);
+    --codeblock-bg: #eef3fb;
+    --placeholder: #6b7280;
+  }
+
   .overlay * {
     box-sizing: inherit;
   }
@@ -367,7 +380,7 @@
   .backdrop {
     position: fixed;
     inset: 0;
-    background: rgba(12, 15, 28, 0.32);
+    background: rgba(12, 15, 28, 0.35);
     backdrop-filter: saturate(140%) blur(2px);
     animation: fadeIn 120ms ease-out;
   }

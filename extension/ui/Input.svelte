@@ -33,31 +33,35 @@
   <div class="hint">Enter — отправить • Shift+Enter — новая строка</div>
 </div>
 
-<div class="row">
-  {#if modelsLoading}
-    <div>Loading models...</div>
-  {:else if models.length}
-    <Select bind:value={model} items={models} placeholder="(manual)" compact />
-  {:else}
-    <input
-      class="input compact"
-      placeholder="model (e.g. llama2-mini)"
-      bind:value={model}
-    />
-  {/if}
-  <Button variant="secondary" size="compact" on:click={onSaveModel}
-    >Сохранить модель</Button
-  >
-  {#if modelsError}
-    <div class="error">Ошибка: {modelsError}</div>
-  {/if}
-</div>
-
-<div class="actions">
-  <Button variant="primary" size="compact" {disabled} on:click={onStart}
-    >Спросить локально</Button
-  >
-  <slot name="extra-actions" />
+<div class="toolbar">
+  <div class="left">
+    {#if modelsLoading}
+      <div class="muted">Загрузка списка моделей…</div>
+    {:else if models.length}
+      <Select bind:value={model} items={models} placeholder="(manual)" compact />
+    {:else}
+      <input
+        class="input compact"
+        placeholder="model (e.g. llama3:latest)"
+        bind:value={model}
+        aria-label="Модель"
+      />
+    {/if}
+    {#if modelsError}
+      <div class="error">Ошибка: {modelsError}</div>
+    {/if}
+  </div>
+  <div class="right">
+    <slot name="extra-actions" />
+    <Button variant="subtle" size="compact" on:click={onSaveModel}
+      >Сохранить модель</Button
+    >
+  </div>
+  <div class="footer">
+    <Button variant="primary" {disabled} on:click={onStart} title="Отправить в локальную LLM">
+      Спросить локально
+    </Button>
+  </div>
 </div>
 
 <style>
@@ -89,16 +93,30 @@
     border-color: #6366f1;
     box-shadow: 0 0 0 3px var(--focus-ring);
   }
-  .row {
+  .toolbar {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-rows: auto auto;
+    gap: 10px 12px;
+    align-items: center;
+  }
+  .toolbar .left {
     display: flex;
     gap: 8px;
     align-items: center;
-    flex-wrap: wrap;
+    min-width: 0;
   }
-  .actions {
+  .toolbar .right {
     display: flex;
-    gap: 6px;
-    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: flex-end;
+    align-items: center;
+  }
+  .toolbar .footer {
+    grid-column: 1 / -1;
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 6px;
   }
   .hint {
     color: #64748b;
@@ -108,4 +126,5 @@
     color: #c00;
     margin-left: 8px;
   }
+  .muted { color: var(--placeholder); }
 </style>
