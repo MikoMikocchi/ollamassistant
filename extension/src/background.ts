@@ -1,7 +1,9 @@
 /* Background service worker: context menus, messaging, local Ollama streaming */
 
 import { streamFromOllama } from "./ollama";
-import { t } from "./i18n";
+import { t } from "./shared/i18n";
+import { isValidOllamaTagsResponse } from "./shared/validation";
+import { backgroundLogger } from "./shared/logger";
 import {
   StreamMessage,
   RuntimeMessage,
@@ -49,9 +51,9 @@ chrome.runtime.onInstalled.addListener(() => {
 // OLLAMA_ORIGINS environment variable on the host running Ollama (see README or
 // earlier messages). For convenience we log a helpful note at runtime if network
 // requests fail with 403 so the user can apply the OLLAMA_ORIGINS workaround.
-console.info(
-  "Ollama extension: running in MV3; skipping webRequest header mutation (use OLLAMA_ORIGINS on the Ollama host if you see 403 errors)"
-);
+backgroundLogger.info("Running in MV3; skipping webRequest header mutation", {
+  note: "use OLLAMA_ORIGINS on the Ollama host if you see 403 errors",
+});
 
 chrome.contextMenus.onClicked.addListener(async (info: any, tab?: any) => {
   if (!tab?.id) return;
@@ -133,133 +135,144 @@ function safePost(port: any, message: StreamMessage) {
 // Simple in-memory cache for model tags (avoid hammering Ollama)
 let tagsCache: { time: number; tags: string[] } = { time: 0, tags: [] };
 
-chrome.runtime.onMessage.addListener((message: RuntimeMessage, _sender, sendResponse) => {
-  if (message?.type === "get_models") {
-    const debug = message?.debug;
-    (async () => {
-      const now = Date.now();
-      // If debug is requested, bypass the cache so we can return rawTags for inspection.
-      if (!debug && tagsCache.time && now - tagsCache.time < TAGS_TTL_MS) {
-        sendResponse({ models: tagsCache.tags, ttlMs: TAGS_TTL_MS });
-        return;
-      }
-      try {
-        const res = await fetch(OLLAMA_TAGS_ENDPOINT);
-        if (!res.ok) {
-          sendResponse({ error: `status ${res.status}` });
+chrome.runtime.onMessage.addListener(
+  (message: RuntimeMessage, _sender, sendResponse) => {
+    if (message?.type === "get_models") {
+      const debug = message?.debug;
+      (async () => {
+        const now = Date.now();
+        // If debug is requested, bypass the cache so we can return rawTags for inspection.
+        if (!debug && tagsCache.time && now - tagsCache.time < TAGS_TTL_MS) {
+          sendResponse({ models: tagsCache.tags, ttlMs: TAGS_TTL_MS });
           return;
         }
-        const json = await res.json();
-        if (debug) console.log("[ollama debug] raw tags:", json);
-        // Ollama /api/tags may return an array or object; normalize
-        const extract = (x: any, depth = 3): string | null => {
-          if (x == null) return null;
-          if (typeof x === "string") return x;
-          if (typeof x === "number") return String(x);
-          if (depth <= 0) return null;
-          if (Array.isArray(x)) {
-            for (const it of x) {
-              const v = extract(it, depth - 1);
-              if (v) return v;
-            }
-            return null;
+        try {
+          const res = await fetch(OLLAMA_TAGS_ENDPOINT);
+          if (!res.ok) {
+            sendResponse({ error: `status ${res.status}` });
+            return;
           }
-          if (typeof x === "object") {
-            // check common fields first
-            const keys = ["name", "id", "tag", "model", "label", "title"];
-            for (const k of keys) {
-              if (typeof x[k] === "string" && x[k].trim()) return x[k].trim();
-            }
-            // fallback: search nested properties for first string
-            for (const k of Object.keys(x)) {
-              try {
-                const v = extract(x[k], depth - 1);
+          const json = await res.json();
+          if (debug) console.log("[ollama debug] raw tags:", json);
+
+          // Validate response structure
+          if (!isValidOllamaTagsResponse(json)) {
+            console.warn("[ollama] Invalid tags response structure:", json);
+            sendResponse({ error: "Invalid response format from Ollama" });
+            return;
+          }
+          // Ollama /api/tags may return an array or object; normalize
+          const extract = (x: any, depth = 3): string | null => {
+            if (x == null) return null;
+            if (typeof x === "string") return x;
+            if (typeof x === "number") return String(x);
+            if (depth <= 0) return null;
+            if (Array.isArray(x)) {
+              for (const it of x) {
+                const v = extract(it, depth - 1);
                 if (v) return v;
-              } catch {}
-            }
-            // as last resort, stringify short object
-            try {
-              const s = JSON.stringify(x);
-              return s.length < 200 ? s : null;
-            } catch {
-              return null;
-            }
-          }
-          return null;
-        };
-        let models: string[] = [];
-        // If Ollama returns an object with a `models` array (as in your sample),
-        // prefer extracting `name` or `model` fields directly.
-        const takeFromObjectArray = (arr: any[]) =>
-          arr
-            .map((it) => {
-              if (it == null) return null;
-              if (typeof it === "string") return it;
-              if (typeof it === "object") {
-                if (typeof it.name === "string" && it.name.trim())
-                  return it.name.trim();
-                if (typeof it.model === "string" && it.model.trim())
-                  return it.model.trim();
-                // fallback to extract nested
-                return extract(it, 2);
               }
               return null;
-            })
-            .filter(Boolean) as string[];
-
-        if (Array.isArray(json?.models)) {
-          models = takeFromObjectArray(json.models);
-        } else if (
-          Array.isArray(json) &&
-          json.length > 0 &&
-          typeof json[0] === "object"
-        ) {
-          // top-level array of model objects
-          models = takeFromObjectArray(json as any[]);
-        } else if (Array.isArray(json?.tags)) {
-          models = json.tags.map(extract).filter(Boolean) as string[];
-        } else if (Array.isArray(json)) {
-          models = json.map(extract).filter(Boolean) as string[];
-        } else if (typeof json === "object") models = Object.keys(json);
-        // dedupe and trim — ensure every item is a string (defensive against unexpected shapes)
-        const safeToString = (v: any) => {
-          if (v == null) return "";
-          if (typeof v === "string") return v;
-          if (typeof v === "number") return String(v);
-          try {
-            return JSON.stringify(v);
-          } catch {
-            try {
-              return String(v);
-            } catch {
-              return "";
             }
+            if (typeof x === "object") {
+              // check common fields first
+              const keys = ["name", "id", "tag", "model", "label", "title"];
+              for (const k of keys) {
+                if (typeof x[k] === "string" && x[k].trim()) return x[k].trim();
+              }
+              // fallback: search nested properties for first string
+              for (const k of Object.keys(x)) {
+                try {
+                  const v = extract(x[k], depth - 1);
+                  if (v) return v;
+                } catch {}
+              }
+              // as last resort, stringify short object
+              try {
+                const s = JSON.stringify(x);
+                return s.length < 200 ? s : null;
+              } catch {
+                return null;
+              }
+            }
+            return null;
+          };
+          let models: string[] = [];
+          // If Ollama returns an object with a `models` array (as in your sample),
+          // prefer extracting `name` or `model` fields directly.
+          const takeFromObjectArray = (arr: any[]) =>
+            arr
+              .map((it) => {
+                if (it == null) return null;
+                if (typeof it === "string") return it;
+                if (typeof it === "object") {
+                  if (typeof it.name === "string" && it.name.trim())
+                    return it.name.trim();
+                  if (typeof it.model === "string" && it.model.trim())
+                    return it.model.trim();
+                  // fallback to extract nested
+                  return extract(it, 2);
+                }
+                return null;
+              })
+              .filter(Boolean) as string[];
+
+          if (Array.isArray(json?.models)) {
+            models = takeFromObjectArray(json.models);
+          } else if (
+            Array.isArray(json) &&
+            json.length > 0 &&
+            typeof json[0] === "object"
+          ) {
+            // top-level array of model objects
+            models = takeFromObjectArray(json as any[]);
+          } else if (Array.isArray((json as any)?.tags)) {
+            models = (json as any).tags
+              .map(extract)
+              .filter(Boolean) as string[];
+          } else if (Array.isArray(json)) {
+            models = json.map(extract).filter(Boolean) as string[];
+          } else if (typeof json === "object") models = Object.keys(json);
+          // dedupe and trim — ensure every item is a string (defensive against unexpected shapes)
+          const safeToString = (v: any) => {
+            if (v == null) return "";
+            if (typeof v === "string") return v;
+            if (typeof v === "number") return String(v);
+            try {
+              return JSON.stringify(v);
+            } catch {
+              try {
+                return String(v);
+              } catch {
+                return "";
+              }
+            }
+          };
+          models = models.map((s) => safeToString(s).trim()).filter(Boolean);
+          models = Array.from(new Set(models));
+          // Heuristic: many model names are compact (no spaces). If some tags look like full sentences
+          // (e.g. system messages), filter them out preferentially. Keep a fallback to the original list
+          // if filtering would remove everything.
+          const compact = models.filter((s) => !/\s/.test(s));
+          if (compact.length > 0) {
+            models = compact;
           }
-        };
-        models = models.map((s) => safeToString(s).trim()).filter(Boolean);
-        models = Array.from(new Set(models));
-        // Heuristic: many model names are compact (no spaces). If some tags look like full sentences
-        // (e.g. system messages), filter them out preferentially. Keep a fallback to the original list
-        // if filtering would remove everything.
-        const compact = models.filter((s) => !/\s/.test(s));
-        if (compact.length > 0) {
-          models = compact;
+          tagsCache = { time: Date.now(), tags: models };
+          // Production: return only normalized model list. rawTags is debug-only and
+          // not returned here to keep the API clean.
+          sendResponse({ models, ttlMs: TAGS_TTL_MS });
+        } catch (e: any) {
+          sendResponse({ error: e?.message || String(e) });
         }
-        tagsCache = { time: Date.now(), tags: models };
-        // Production: return only normalized model list. rawTags is debug-only and
-        // not returned here to keep the API clean.
-        sendResponse({ models, ttlMs: TAGS_TTL_MS });
-      } catch (e: any) {
-        sendResponse({ error: e?.message || String(e) });
-      }
-    })();
-    return true; // keep channel open for async response
+      })();
+      return true; // keep channel open for async response
+    }
+    if (message?.type === "invalidate_models") {
+      tagsCache = { time: 0, tags: [] };
+      sendResponse({ ok: true });
+      return; // sync response
+    }
   }
-  if (message?.type === "invalidate_models") {
-    tagsCache = { time: 0, tags: [] };
-    sendResponse({ ok: true });
-    return; // sync response
-  }
-});
+);
 
 // streamFromOllama is implemented in ./ollama and imported at top

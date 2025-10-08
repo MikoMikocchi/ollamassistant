@@ -1,6 +1,7 @@
 // @ts-ignore - svelte type shims provided separately
 import Overlay from "../ui/Overlay.svelte";
-import { t } from "./i18n";
+import { t } from "./shared/i18n";
+import { contentLogger } from "./shared/logger";
 import { mount as svelteMount } from "svelte";
 import {
   PORT_OLLAMA_STREAM,
@@ -52,7 +53,7 @@ function getPageText(maxChars = 8000): string {
 
 function ensureOverlay() {
   if (rootEl) return;
-  if (DEBUG) console.log("[ollama] injecting overlay");
+  contentLogger.debug("Injecting overlay into page");
   const host = document.createElement("div");
   host.id = "ollama-assistant-overlay-host";
   document.body.appendChild(host);
@@ -73,24 +74,28 @@ function ensureOverlay() {
 
   // Try to create Svelte component; fallback to simple overlay if fails
   try {
-    if (DEBUG) console.log("[ollama] mounting Svelte Overlay via svelte.mount", Overlay);
+    contentLogger.debug("Mounting Svelte Overlay", { component: "Overlay" });
     try {
       // Use svelte's mount helper to support the project's compiled component shape
-      // @ts-ignore
       app = svelteMount(Overlay as any, {
         target: mountPoint,
         props: { version: "MVP" },
       });
       // overlayReady remains false until the component fires its ready event
     } catch (innerErr) {
-      console.error(
-        "[ollama] error mounting Overlay, using fallback",
-        innerErr
+      contentLogger.error(
+        "Error mounting Overlay, using fallback",
+        { action: "mount" },
+        innerErr as Error
       );
       createFallbackOverlay(mountPoint);
     }
   } catch (err) {
-    console.error("[ollama] error creating mount host", err);
+    contentLogger.error(
+      "Error creating mount host",
+      { action: "create-host" },
+      err as Error
+    );
     createFallbackOverlay(mountPoint);
   }
 }
@@ -178,7 +183,9 @@ function createFallbackOverlay(mount: HTMLElement) {
       const payload = {
         prompt: input.value || t("fallback_default_prompt"),
       };
-      window.dispatchEvent(new CustomEvent(EV_STREAM_START, { detail: payload }));
+      window.dispatchEvent(
+        new CustomEvent(EV_STREAM_START, { detail: payload })
+      );
     });
     stopBtn.addEventListener("click", () => {
       window.dispatchEvent(new CustomEvent(EV_STREAM_STOP));
@@ -188,7 +195,8 @@ function createFallbackOverlay(mount: HTMLElement) {
       const msg = e?.detail;
       if (!msg) return;
       if (msg.type === "chunk") output.textContent += msg.data;
-      if (msg.type === "done") output.textContent += `\n${t("fallback_done")}\n`;
+      if (msg.type === "done")
+        output.textContent += `\n${t("fallback_done")}\n`;
       if (msg.type === "error")
         output.textContent += `\n[${t("error_lower")}] ${msg.error}\n`;
     };
@@ -220,29 +228,31 @@ function connectPort(force = false) {
   return port;
 }
 
-chrome.runtime.onMessage.addListener((message: RuntimeMessage, _sender, _sendResponse) => {
-  if (DEBUG) console.log("[ollama] runtime.onMessage", message);
-  if (message?.type === "open_overlay") {
-    ensureOverlayReady().then(() => {
-      let selection = "";
-      try {
-        selection = String(window.getSelection()?.toString() || "").trim();
-      } catch {}
-      // If no selection and preset asks to summarize, capture page text
-      if (
-        !selection &&
-        (message?.preset === "summarize" || message?.preset === "tldr")
-      ) {
-        selection = getPageText(9000);
-      }
-      const detail = {
-        ...message,
-        selectionText: message?.selectionText || selection,
-      };
-      window.dispatchEvent(new CustomEvent(EV_OVERLAY_OPEN, { detail }));
-    });
+chrome.runtime.onMessage.addListener(
+  (message: RuntimeMessage, _sender, _sendResponse) => {
+    if (DEBUG) console.log("[ollama] runtime.onMessage", message);
+    if (message?.type === "open_overlay") {
+      ensureOverlayReady().then(() => {
+        let selection = "";
+        try {
+          selection = String(window.getSelection()?.toString() || "").trim();
+        } catch {}
+        // If no selection and preset asks to summarize, capture page text
+        if (
+          !selection &&
+          (message?.preset === "summarize" || message?.preset === "tldr")
+        ) {
+          selection = getPageText(9000);
+        }
+        const detail = {
+          ...message,
+          selectionText: message?.selectionText || selection,
+        };
+        window.dispatchEvent(new CustomEvent(EV_OVERLAY_OPEN, { detail }));
+      });
+    }
   }
-});
+);
 
 chrome.runtime.onMessage.addListener((message: RuntimeMessage) => {
   if (DEBUG) console.log("[ollama] runtime.onMessage toggle?", message);

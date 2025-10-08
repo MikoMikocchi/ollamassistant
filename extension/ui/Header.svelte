@@ -6,7 +6,7 @@
   export let onClose: () => void;
   import Button from "./components/Button.svelte";
   import Spinner from "./components/Spinner.svelte";
-  import { t } from "./i18n";
+  import { t } from "../src/shared/i18n";
 </script>
 
 <div class="header">
@@ -24,7 +24,9 @@
     variant="toggle"
     size="compact"
     on:click={onToggleTheme}
-    title={theme === "dark" ? t("theme_toggle_to_light") : t("theme_toggle_to_dark")}
+    title={theme === "dark"
+      ? t("theme_toggle_to_light")
+      : t("theme_toggle_to_dark")}
     aria-label={t("theme_toggle_aria")}>{theme === "dark" ? "☀︎" : "☾"}</Button
   >
   <Button

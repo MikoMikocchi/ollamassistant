@@ -143,11 +143,12 @@
   }
 
   import { renderMarkdownSafe } from "./markdown";
+  import { debounce } from "../src/shared/performance";
   import Header from "./Header.svelte";
   import Input from "./Input.svelte";
   import Output from "./Output.svelte";
   import Button from "./components/Button.svelte";
-  import { t } from "./i18n";
+  import { t } from "../src/shared/i18n";
   let inputRef: any;
   // Markdown rendering (safe, minimal)
   $: rendered = renderMarkdownSafe(output);
@@ -169,17 +170,25 @@
     }
   })();
 
-  // Persist generation options
-  $: (async () => {
-    try {
-      await chrome.storage.local.set({
-        temperature,
-        top_p,
-        max_tokens,
-        autoscroll,
-      });
-    } catch {}
-  })();
+  // Debounced save function for better performance
+  const debouncedSaveSettings = debounce(
+    async (settings: {
+      temperature: number;
+      top_p: number | null;
+      max_tokens: number | null;
+      autoscroll: boolean;
+    }) => {
+      try {
+        await chrome.storage.local.set(settings);
+      } catch (error) {
+        console.warn("[Settings] Failed to save:", error);
+      }
+    },
+    500
+  );
+
+  // Persist generation options with debouncing
+  $: debouncedSaveSettings({ temperature, top_p, max_tokens, autoscroll });
 
   // Restore focus to the opener when panel closes
   $: if (

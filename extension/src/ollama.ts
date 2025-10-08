@@ -1,6 +1,12 @@
 // Ollama helper: streaming request + message builder
 import { StreamMessage, OllamaMessage } from "./types";
-import { t } from "./i18n";
+import { t } from "./shared/i18n";
+import {
+  extractChunkContent,
+  extractChunkError,
+  isChunkDone,
+  isValidOllamaChunk,
+} from "./shared/validation";
 import {
   DEFAULT_MODEL,
   OLLAMA_CHAT_ENDPOINT,
@@ -70,9 +76,15 @@ export async function streamFromOllama(
     if (res.status === 403) {
       const extId = chrome.runtime.id;
       const hint = t("error_403_hint", [extId]);
-      onMessage({ type: "error", error: `${t("ollama_error_prefix")}: ${errText}\n${hint}` });
+      onMessage({
+        type: "error",
+        error: `${t("ollama_error_prefix")}: ${errText}\n${hint}`,
+      });
     } else {
-      onMessage({ type: "error", error: `${t("ollama_error_prefix")}: ${errText}` });
+      onMessage({
+        type: "error",
+        error: `${t("ollama_error_prefix")}: ${errText}`,
+      });
     }
     return;
   }
@@ -96,15 +108,30 @@ export async function streamFromOllama(
       if (!line) continue;
       try {
         const json = JSON.parse(line);
-        // Typical Ollama JSONL: { message: { content: "..." }, done: boolean }
-        if (json?.error) {
-          onMessage({ type: "error", error: String(json.error) });
+
+        // Validate the response structure
+        if (!isValidOllamaChunk(json)) {
+          console.warn("[Ollama] Invalid chunk structure, skipping:", json);
           continue;
         }
-        const token = (json?.message?.content ?? "").toString();
-        if (token) onMessage({ type: "chunk", data: token });
-        // If some implementations emit tool_calls or different shapes, ignore for now
-      } catch {
+
+        const error = extractChunkError(json);
+        if (error) {
+          onMessage({ type: "error", error });
+          continue;
+        }
+
+        const token = extractChunkContent(json);
+        if (token) {
+          onMessage({ type: "chunk", data: token });
+        }
+
+        // Check for completion
+        if (isChunkDone(json)) {
+          // Response is complete, but we continue reading until stream ends
+        }
+      } catch (parseError) {
+        console.warn("[Ollama] Failed to parse JSON line:", line, parseError);
         // ignore non-JSON lines
       }
     }
@@ -114,13 +141,19 @@ export async function streamFromOllama(
   if (tail) {
     try {
       const json = JSON.parse(tail);
-      if (json?.error) {
-        onMessage({ type: "error", error: String(json.error) });
-      } else {
-        const token = (json?.message?.content ?? "").toString();
-        if (token) onMessage({ type: "chunk", data: token });
+      if (isValidOllamaChunk(json)) {
+        const error = extractChunkError(json);
+        if (error) {
+          onMessage({ type: "error", error });
+        } else {
+          const token = extractChunkContent(json);
+          if (token) {
+            onMessage({ type: "chunk", data: token });
+          }
+        }
       }
-    } catch {
+    } catch (parseError) {
+      console.warn("[Ollama] Failed to parse final chunk:", tail, parseError);
       // ignore trailing garbage
     }
   }

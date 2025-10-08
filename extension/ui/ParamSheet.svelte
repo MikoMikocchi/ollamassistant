@@ -7,7 +7,7 @@
   function clamp(n: number, a: number, b: number) {
     return Math.min(Math.max(n, a), b);
   }
-  import { t } from "./i18n";
+  import { t } from "../src/shared/i18n";
 </script>
 
 <div class="params" aria-label={t("params_aria_label")}>
@@ -71,9 +71,18 @@
     gap: 10px;
     align-items: center;
   }
-  .label { color: var(--placeholder); font-size: 12px; }
-  .val { min-width: 44px; text-align: right; font-variant-numeric: tabular-nums; }
-  input[type="range"] { width: 100%; }
+  .label {
+    color: var(--placeholder);
+    font-size: 12px;
+  }
+  .val {
+    min-width: 44px;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+  input[type="range"] {
+    width: 100%;
+  }
   .num {
     grid-column: 2 / span 2;
     width: 160px;
@@ -86,8 +95,13 @@
     font-size: 13px;
     outline: none;
   }
-  .num:focus { border-color: #6366f1; box-shadow: 0 0 0 3px var(--focus-ring); }
-@media (max-width: 560px) {
-  .row { grid-template-columns: 80px 1fr auto; }
-}
+  .num:focus {
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px var(--focus-ring);
+  }
+  @media (max-width: 560px) {
+    .row {
+      grid-template-columns: 80px 1fr auto;
+    }
+  }
 </style>

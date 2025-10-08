@@ -21,7 +21,7 @@
   import Button from "./components/Button.svelte";
   import Combobox from "./components/Combobox.svelte";
   import ParamSheet from "./ParamSheet.svelte";
-  import { t } from "./i18n";
+  import { t } from "../src/shared/i18n";
 
   let showParams = false;
   import { onMount } from "svelte";

@@ -16,7 +16,7 @@
     scrollToBottom();
   }
   import Button from "./components/Button.svelte";
-  import { t } from "./i18n";
+  import { t } from "../src/shared/i18n";
 </script>
 
 <div
@@ -30,9 +30,13 @@
       <Button
         variant="subtle"
         size="compact"
-        title={autoscroll ? t("autoscroll_disable_title") : t("autoscroll_enable_title")}
+        title={autoscroll
+          ? t("autoscroll_disable_title")
+          : t("autoscroll_enable_title")}
         on:click={() => (autoscroll = !autoscroll)}
-        >{autoscroll ? t("autoscroll_label_on") : t("autoscroll_label_off")}</Button
+        >{autoscroll
+          ? t("autoscroll_label_on")
+          : t("autoscroll_label_off")}</Button
       >
       <Button
         variant="subtle"

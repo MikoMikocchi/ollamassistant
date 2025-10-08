@@ -5,7 +5,7 @@
   export let placeholder: string | null = null;
   export let compact: boolean = false;
   export let disabled: boolean = false;
-  import { t } from "../i18n";
+  import { t } from "../../src/shared/i18n";
 
   const dispatch = createEventDispatcher();
   let open = false;

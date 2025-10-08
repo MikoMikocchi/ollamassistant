@@ -1,4 +1,6 @@
-export function renderMarkdown(md: string): string {
+import { memoize, throttle } from "../src/shared/performance";
+
+function renderMarkdownInternal(md: string): string {
   if (!md) return "";
   const esc = (s: string) =>
     s
@@ -60,8 +62,11 @@ export function renderMarkdown(md: string): string {
   return html;
 }
 
+// Memoized version for better performance
+export const renderMarkdown = memoize(renderMarkdownInternal);
+
 // Safer renderer that preserves fenced code blocks via placeholders
-export function renderMarkdownSafe(md: string): string {
+function renderMarkdownSafeInternal(md: string): string {
   if (!md) return "";
   const esc = (s: string) =>
     s
@@ -127,3 +132,12 @@ export function renderMarkdownSafe(md: string): string {
   html = html.replace(/§§BLOCK(\d+)§§/g, (_m, i) => blocks[Number(i)] || "");
   return html;
 }
+
+// Memoized and throttled version for streaming content
+export const renderMarkdownSafe = memoize(renderMarkdownSafeInternal);
+
+// Throttled version for real-time updates during streaming
+export const renderMarkdownSafeThrottled = throttle(
+  (md: string) => renderMarkdownSafe(md),
+  100
+);
