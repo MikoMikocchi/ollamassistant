@@ -1,94 +1,64 @@
-# Ollamassistant
+# Ollama Assistant
 
-Локальный ассистент на базе Ollama для браузера (overlay + контекстное меню + стрим), реализованный как Svelte/Vite проект с отдельным Chrome MV3 расширением.
+Ollama Assistant is a browser extension that brings the power of your local Ollama models to your fingertips, allowing you to interact with AI on any webpage. Use it to summarize articles, ask questions about selected text, generate content, and much more, directly within your browser.
 
-## Кратко
+## Features
 
-Проект предоставляет overlay-интерфейс и background-слой в виде Chrome Extension (MV3), который общается с локальным экземпляром Ollama (на 127.0.0.1:11434). Вся сетевой активность ограничена локальной машиной — проект спроектирован без внешнего трафика.
+- **In-Page Overlay:** Access the assistant via a convenient overlay on any website using a keyboard shortcut (`Ctrl+K` or `Cmd+K`).
+- **Context Menu Integration:** Right-click on any page or selected text to quickly perform actions like:
+  - Summarize the page content.
+  - Ask questions about the selected text.
+  - Get a "Too Long; Didn't Read" (TL;DR) summary.
+- **Streaming Responses:** Get real-time, token-by-token responses from your Ollama models.
+- **Model Selection:** Easily switch between any of your available Ollama models.
+- **Customizable Prompts:** Start with a preset action or write your own custom prompts.
+- **Adjustable Parameters:** Fine-tune your requests by adjusting generation parameters like temperature, top-p, and max tokens.
+- **Light & Dark Themes:** The UI automatically adapts to your system's theme preference.
 
-## Структура репозитория
+## Getting Started
 
-- `extension/` — исходники Chrome MV3 расширения (service worker, content script, UI overlay на Svelte в `ui/`).
-- `public/` — публичные ассеты для UI/витрины.
-- `package.json` — корневые скрипты для локальной разработки и сборки расширения.
-- `tsconfig.json`, настройки TypeScript и Svelte.
+### Prerequisites
 
-Основные файлы расширения:
+- You must have [Ollama](https://ollama.com/) installed and running on your local machine.
+- You need at least one model pulled (e.g., `ollama pull llama3`).
 
-- `extension/manifest.json` — манифест расширения (host permissions, команды, контент-скрипты).
-- `extension/src/background.ts` — service worker фоновая логика.
-- `extension/src/content.ts` — content script, который внедряет overlay.
-- `extension/ui/Overlay.svelte` — UI overlay.
+### Installation
 
-## Предварительные требования
+1.  Clone or download this repository.
+2.  Install the dependencies:
+    ```bash
+    npm install
+    ```
+3.  Build the extension:
+    ```bash
+    npm run build:ext
+    ```
+4.  Open your browser's extension management page (e.g., `chrome://extensions`).
+5.  Enable "Developer mode".
+6.  Click "Load unpacked" and select the `extension/dist` directory that was created in step 3.
 
-- Node.js (рекомендуется 18+)
-- npm
-- Локально запущенный Ollama, доступный по http://127.0.0.1:11434 (или на 127.0.0.1/localhost на порту 11434)
+### Configuration
 
-Примечание: расширение использует host permissions только для localhost/127.0.0.1 адресов (см. `extension/manifest.json`).
+For the extension to communicate with your local Ollama instance, you may need to configure Ollama to accept requests from the extension's origin.
 
-## Установка и быстрая проверка
-
-1. Клонируйте репозиторий и перейдите в каталог проекта.
-2. Установите зависимости (при необходимости):
-
-```bash
-npm install
-```
-
-3. Убедитесь, что Ollama запущен локально и отвечает на http://127.0.0.1:11434
-
-## Команды разработки
-
-- Запуск Vite дев-сервера (если проект использует UI вне расширения):
-
-```bash
-npm run dev
-```
-
-- Проверки (svelte-check + tsc):
+Set the `OLLAMA_ORIGINS` environment variable when running Ollama. For Chrome, it would be:
 
 ```bash
-npm run check
+OLLAMA_ORIGINS=chrome-extension://[YOUR_EXTENSION_ID] ollama serve
 ```
 
-- Запуск development режима для расширения:
+You can find your extension's ID on the `chrome://extensions` page.
 
-```bash
-npm run dev:ext
-```
+## How to Use
 
-- Сборка расширения для продакшена:
+- **Toggle the Overlay:** Press `Ctrl+K` (or `Cmd+K` on Mac) on any webpage.
+- **Use Context Menus:** Right-click on a page or on selected text and choose an action from the "Ollama Assistant" menu.
+- **Send a Prompt:** Type your question or instruction into the input box in the overlay and press Enter or click the send button.
+- **Stop a Response:** Click the "Stop" button while a response is being generated.
 
-```bash
-npm run build:ext
-```
+## Tech Stack
 
-После сборки расширения директория с готовым артефактом: `extension/dist` — её можно загрузить в Chrome/Chromium как "Load unpacked" (chrome://extensions → Developer mode → Load unpacked → выбрать `extension/dist`).
-
-## Архитектура и как это работает
-
-- Background (service worker): отвечает за контекстное меню, взаимодействие с API Ollama и управление состоянием, которое должно жить вне контента страницы.
-- Content script: внедряется на все страницы (`<all_urls>`) и отвечает за встраивание overlay-интерфейса на страницу и передачу сообщений между UI и фоновым сервисом.
-- UI (Svelte): отображает overlay, принимает ввод от пользователя и стримит/отображает ответы от Ollama.
-- Host permissions ограничены локалхостом, чтобы предотвратить внешние запросы.
-
-## Безопасность и приватность
-
-- Расширение специально настроено для работы с локальным экземпляром Ollama — никакой внешней сетевой активности не требуется и не подразумевается.
-- Тем не менее в манифесте есть разрешения на работу с `http://127.0.0.1/*` и `http://localhost/*` — убедитесь, что на системе запускается доверенный локальный сервис.
-
-## Отладка и советы
-
-- Откройте chrome://extensions → включите Developer mode → Load unpacked → выберите `extension/dist` после сборки.
-- Для просмотра логов фона откройте "Service worker" → "Inspect views" в странице расширений.
-- Для отладки content script используйте DevTools страницы, на которой внедрён overlay.
-
-## Вклад и развитие
-
-Если хотите добавить функции или улучшения — создавайте pull requests. В описании PR указывайте:
-
-- краткое описание изменения;
-- как протестировать локально;
-- потенциальные риски для приватности/безопасности.
+- **Framework:** Svelte
+- **Language:** TypeScript
+- **Bundler:** Vite with `@crxjs/vite-plugin` for Chrome extension development
+- **API:** Interacts with the local Ollama `/api/chat` endpoint.
