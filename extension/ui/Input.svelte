@@ -21,6 +21,7 @@
   import Button from "./components/Button.svelte";
   import Combobox from "./components/Combobox.svelte";
   import ParamSheet from "./ParamSheet.svelte";
+  import { t } from "./i18n";
 
   let showParams = false;
   import { onMount } from "svelte";
@@ -38,8 +39,8 @@
     class="input"
     bind:this={textareaEl}
     bind:value={prompt}
-    placeholder="Задайте вопрос или оставьте пустым для суммаризации..."
-    aria-label="Вопрос ассистенту"
+    placeholder={t("input_placeholder")}
+    aria-label={t("input_aria_label")}
     on:keydown={(e) => {
       if (e.key === "Enter" && !e.shiftKey) {
         e.preventDefault();
@@ -49,45 +50,45 @@
     on:input={autosize}
     on:change={autosize}
   ></textarea>
-  <div class="hint">Enter — отправить • Shift+Enter — новая строка</div>
-  <div class="chips" role="listbox" aria-label="Быстрые пресеты">
+  <div class="hint">{t("hint_submit")}</div>
+  <div class="chips" role="listbox" aria-label={t("presets_aria_label")}>
     <button
       type="button"
       class="chip {preset === 'summarize' ? 'active' : ''}"
       on:click={() =>
         (preset = preset === "summarize" ? undefined : "summarize")}
-      title="Суммаризировать выделение/страницу">Суммаризировать</button
+      title={t("preset_summarize_title")}>{t("preset_summarize_label")}</button
     >
     <button
       type="button"
       class="chip {preset === 'tldr' ? 'active' : ''}"
       on:click={() => (preset = preset === "tldr" ? undefined : "tldr")}
-      title="TL;DR страницы">TL;DR</button
+      title={t("preset_tldr_title")}>{t("preset_tldr_label")}</button
     >
   </div>
 </div>
 
-<div class="toolbar" role="group" aria-label="Панель ввода">
+<div class="toolbar" role="group" aria-label={t("toolbar_aria_label")}>
   <div class="left">
     {#if modelsLoading}
-      <div class="muted">Загрузка списка моделей…</div>
+      <div class="muted">{t("models_loading")}</div>
     {:else if models.length}
       <Combobox
         bind:value={model}
         items={models}
-        placeholder="Выберите модель"
+        placeholder={t("select_model_placeholder")}
         compact
       />
     {:else}
       <input
         class="input compact model-fallback"
-        placeholder="model (e.g. llama3:latest)"
+        placeholder={t("model_fallback_placeholder")}
         bind:value={model}
-        aria-label="Модель"
+        aria-label={t("model_aria_label")}
       />
     {/if}
     {#if modelsError}
-      <div class="error">Ошибка: {modelsError}</div>
+      <div class="error">{t("error_label")}: {modelsError}</div>
     {/if}
   </div>
   <div class="primary">
@@ -96,7 +97,7 @@
         variant="danger"
         size="compact"
         on:click={onStop}
-        title="Остановить генерацию">Стоп</Button
+        title={t("stop_title")}>{t("stop_label")}</Button
       >
     {:else}
       <Button
@@ -104,9 +105,9 @@
         size="compact"
         {disabled}
         on:click={onStart}
-        title="Отправить запрос в локальную LLM"
+        title={t("send_title")}
       >
-        Отправить
+        {t("send_label")}
       </Button>
     {/if}
   </div>
@@ -116,13 +117,13 @@
       variant="subtle"
       size="compact"
       on:click={() => (showParams = !showParams)}
-      title="Параметры генерации">Настройки</Button
+      title={t("settings_title")}>{t("settings_label")}</Button
     >
     <Button
       variant="subtle"
       size="compact"
       on:click={onSaveModel}
-      title="Сохранить модель как текущую">Сохранить</Button
+      title={t("save_model_title")}>{t("save_label")}</Button
     >
   </div>
 </div>

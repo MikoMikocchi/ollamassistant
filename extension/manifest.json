@@ -1,10 +1,11 @@
 {
     "manifest_version": 3,
-    "name": "Ollamassistant",
+    "name": "__MSG_ext_name__",
+    "default_locale": "en",
     "version": "0.1.0",
-    "description": "Локальный ассистент с Ollama: overlay, контекстное меню и стрим без внешнего трафика.",
+    "description": "__MSG_ext_description__",
     "action": {
-        "default_title": "Ollamassistant"
+        "default_title": "__MSG_action_title__"
     },
     "permissions": [
         "contextMenus",
@@ -39,7 +40,7 @@
                 "windows": "Ctrl+K",
                 "linux": "Ctrl+K"
             },
-            "description": "Открыть/закрыть Overlay"
+            "description": "__MSG_cmd_toggle_overlay_description__"
         }
     }
 }

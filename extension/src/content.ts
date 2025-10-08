@@ -1,5 +1,6 @@
 // @ts-ignore - svelte type shims provided separately
 import Overlay from "../ui/Overlay.svelte";
+import { t } from "./i18n";
 import { mount as svelteMount } from "svelte";
 import {
   PORT_OLLAMA_STREAM,
@@ -38,9 +39,9 @@ function getPageText(maxChars = 8000): string {
     const title = (document.title || "").trim();
     const url = location.href;
     return [
-      title ? `Заголовок: ${title}` : "",
-      url ? `URL: ${url}` : "",
-      text ? `Текст:\n${text}` : "",
+      title ? `${t("label_title")}: ${title}` : "",
+      url ? `${t("label_url")}: ${url}` : "",
+      text ? `${t("label_text")}:\n${text}` : "",
     ]
       .filter(Boolean)
       .join("\n\n");
@@ -132,13 +133,13 @@ function createFallbackOverlay(mount: HTMLElement) {
     panel.style.padding = "8px";
 
     const header = document.createElement("div");
-    header.textContent = "Ollama Assistant (fallback)";
+    header.textContent = t("fallback_header");
     header.style.fontWeight = "600";
     header.style.marginBottom = "6px";
     panel.appendChild(header);
 
     const input = document.createElement("textarea");
-    input.placeholder = "Вопрос или оставить пустым для суммаризации...";
+    input.placeholder = t("fallback_input_placeholder");
     input.style.width = "100%";
     input.style.minHeight = "64px";
     input.style.marginBottom = "6px";
@@ -148,14 +149,14 @@ function createFallbackOverlay(mount: HTMLElement) {
     actions.style.display = "flex";
     actions.style.gap = "8px";
     const startBtn = document.createElement("button");
-    startBtn.textContent = "Спросить локально";
+    startBtn.textContent = t("fallback_start");
     startBtn.style.background = "#111";
     startBtn.style.color = "#fff";
     startBtn.style.border = "none";
     startBtn.style.padding = "6px 10px";
     startBtn.style.borderRadius = "6px";
     const stopBtn = document.createElement("button");
-    stopBtn.textContent = "Стоп";
+    stopBtn.textContent = t("fallback_stop");
     stopBtn.style.padding = "6px 10px";
     stopBtn.style.borderRadius = "6px";
     actions.appendChild(startBtn);
@@ -175,7 +176,7 @@ function createFallbackOverlay(mount: HTMLElement) {
 
     startBtn.addEventListener("click", () => {
       const payload = {
-        prompt: input.value || "Суммаризируй видимое содержимое страницы.",
+        prompt: input.value || t("fallback_default_prompt"),
       };
       window.dispatchEvent(new CustomEvent(EV_STREAM_START, { detail: payload }));
     });
@@ -187,9 +188,9 @@ function createFallbackOverlay(mount: HTMLElement) {
       const msg = e?.detail;
       if (!msg) return;
       if (msg.type === "chunk") output.textContent += msg.data;
-      if (msg.type === "done") output.textContent += "\n--- done ---\n";
+      if (msg.type === "done") output.textContent += `\n${t("fallback_done")}\n`;
       if (msg.type === "error")
-        output.textContent += `\n[error] ${msg.error}\n`;
+        output.textContent += `\n[${t("error_lower")}] ${msg.error}\n`;
     };
     window.addEventListener(EV_STREAM_OUT, onStream as any);
 

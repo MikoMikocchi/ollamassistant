@@ -138,7 +138,7 @@
     if (msg?.type === "done") streaming = false;
     if (msg?.type === "error") {
       streaming = false;
-      output += `\n[Ошибка] ${msg.error}`;
+      output += `\n[${t("error")}] ${msg.error}`;
     }
   }
 
@@ -147,6 +147,7 @@
   import Input from "./Input.svelte";
   import Output from "./Output.svelte";
   import Button from "./components/Button.svelte";
+  import { t } from "./i18n";
   let inputRef: any;
   // Markdown rendering (safe, minimal)
   $: rendered = renderMarkdownSafe(output);
@@ -322,7 +323,7 @@
       class="panel"
       role="dialog"
       aria-modal="true"
-      aria-label="Ollamassistant"
+      aria-label={t("overlay_panel_aria")}
       tabindex="-1"
       on:keydown={focusTrap}
       on:introend={focusFirstElement}
@@ -357,9 +358,9 @@
               variant="subtle"
               size="compact"
               on:click={refreshModels}
-              title="Обновить список моделей"
+              title={t("refresh_models_title")}
             >
-              Обновить список
+              {t("refresh_models_button")}
             </Button>
           </svelte:fragment>
         </Input>

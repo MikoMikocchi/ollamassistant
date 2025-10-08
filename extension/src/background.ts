@@ -1,6 +1,7 @@
 /* Background service worker: context menus, messaging, local Ollama streaming */
 
 import { streamFromOllama } from "./ollama";
+import { t } from "./i18n";
 import {
   StreamMessage,
   RuntimeMessage,
@@ -14,25 +15,25 @@ const MENU_ROOT_ID = "ollama_assistant_root";
 chrome.runtime.onInstalled.addListener(() => {
   chrome.contextMenus.create({
     id: MENU_ROOT_ID,
-    title: "Спросить локальную LLM",
+    title: t("context_root"),
     contexts: ["all"],
   });
   chrome.contextMenus.create({
     id: "summarize",
     parentId: MENU_ROOT_ID,
-    title: "Суммаризировать",
+    title: t("context_summarize"),
     contexts: ["all"],
   });
   chrome.contextMenus.create({
     id: "qa_selection",
     parentId: MENU_ROOT_ID,
-    title: "Q&A по выделению",
+    title: t("context_qa_selection"),
     contexts: ["selection"],
   });
   chrome.contextMenus.create({
     id: "tldr",
     parentId: MENU_ROOT_ID,
-    title: "TL;DR страницы",
+    title: t("context_tldr"),
     contexts: ["all"],
   });
 });

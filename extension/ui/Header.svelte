@@ -6,32 +6,33 @@
   export let onClose: () => void;
   import Button from "./components/Button.svelte";
   import Spinner from "./components/Spinner.svelte";
+  import { t } from "./i18n";
 </script>
 
 <div class="header">
-  <div class="title" aria-label="Название и версия">
+  <div class="title" aria-label={t("title_version_aria")}>
     Ollamassistant · {version}
   </div>
   <div class="grow"></div>
   {#if streaming}
     <div class="status" aria-live="polite">
       <Spinner />
-      <span>Генерация…</span>
+      <span>{t("header_generating")}</span>
     </div>
   {/if}
   <Button
     variant="toggle"
     size="compact"
     on:click={onToggleTheme}
-    title={theme === "dark" ? "Светлая тема" : "Тёмная тема"}
-    aria-label="Сменить тему">{theme === "dark" ? "☀︎" : "☾"}</Button
+    title={theme === "dark" ? t("theme_toggle_to_light") : t("theme_toggle_to_dark")}
+    aria-label={t("theme_toggle_aria")}>{theme === "dark" ? "☀︎" : "☾"}</Button
   >
   <Button
     variant="subtle"
     size="compact"
     on:click={onClose}
-    title="Закрыть панель"
-    aria-label="Закрыть">×</Button
+    title={t("close_panel_title")}
+    aria-label={t("close_panel_aria")}>×</Button
   >
 </div>
 

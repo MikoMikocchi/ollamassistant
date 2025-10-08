@@ -5,6 +5,7 @@
   export let placeholder: string | null = null;
   export let compact: boolean = false;
   export let disabled: boolean = false;
+  import { t } from "../i18n";
 
   const dispatch = createEventDispatcher();
   let open = false;
@@ -96,7 +97,7 @@
     bind:this={inputEl}
     type="text"
     {disabled}
-    placeholder={placeholder ?? "Выберите модель"}
+    placeholder={placeholder ?? t("select_model_placeholder")}
     bind:value={query}
     on:focus={onFocus}
     on:keydown={onKeydown}
@@ -119,7 +120,7 @@
       tabindex="-1"
     >
       {#if filtered.length === 0}
-        <div class="empty">Нет совпадений</div>
+        <div class="empty">{t("no_matches")}</div>
       {:else}
         {#each filtered as it, i}
           <button

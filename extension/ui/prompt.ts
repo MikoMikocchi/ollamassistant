@@ -4,12 +4,10 @@ export type BuildPromptArgs = {
   prompt: string;
 };
 
+import { t } from "./i18n";
+
 export function summaryInstruction(): string {
-  return (
-    "Суммаризируй следующий контекст по-русски кратко и структурировано: " +
-    "короткое введение + 5–8 тезисов с фактами и числами; " +
-    "если есть — выдели разделы 'Главное' и 'Детали'."
-  );
+  return `${t("prompt_summary_instruction")} ${t("prompt_summary_extra")}`;
 }
 
 export function buildPrompt({
@@ -21,11 +19,8 @@ export function buildPrompt({
   const wantsSummary =
     preset === "summarize" || preset === "tldr" || (!prompt && !!selectionText);
   if (wantsSummary)
-    parts.push(
-      summaryInstruction() +
-        " Не извиняйся и не оценивай релевантность — просто сделай резюме."
-    );
-  if (selectionText) parts.push(`Контекст:\n${selectionText}`);
-  if (prompt) parts.push(`Вопрос:\n${prompt}`);
-  return parts.join("\n\n") || `${summaryInstruction()}\n\nКонтекст: (пусто)`;
+    parts.push(summaryInstruction());
+  if (selectionText) parts.push(`${t("prompt_context_label")}\n${selectionText}`);
+  if (prompt) parts.push(`${t("prompt_question_label")}\n${prompt}`);
+  return parts.join("\n\n") || `${summaryInstruction()}\n\n${t("prompt_empty_context")}`;
 }

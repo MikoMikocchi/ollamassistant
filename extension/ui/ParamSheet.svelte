@@ -7,9 +7,10 @@
   function clamp(n: number, a: number, b: number) {
     return Math.min(Math.max(n, a), b);
   }
+  import { t } from "./i18n";
 </script>
 
-<div class="params" aria-label="Параметры генерации">
+<div class="params" aria-label={t("params_aria_label")}>
   <div class="row">
     <label class="label" for="temperature">temperature</label>
     <input
@@ -48,7 +49,7 @@
       step="1"
       bind:value={max_tokens}
       {disabled}
-      placeholder="0 = авто"
+      placeholder={t("zero_auto_placeholder")}
     />
   </div>
 </div>

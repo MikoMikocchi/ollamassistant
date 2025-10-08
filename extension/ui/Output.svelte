@@ -16,12 +16,13 @@
     scrollToBottom();
   }
   import Button from "./components/Button.svelte";
+  import { t } from "./i18n";
 </script>
 
 <div
   class="output {output ? '' : 'is-empty'}"
   role="region"
-  aria-label="Ответ модели"
+  aria-label={t("output_aria_label")}
 >
   <div class="output-header">
     <div class="spacer"></div>
@@ -29,16 +30,16 @@
       <Button
         variant="subtle"
         size="compact"
-        title={autoscroll ? "Отключить автоскролл" : "Включить автоскролл"}
+        title={autoscroll ? t("autoscroll_disable_title") : t("autoscroll_enable_title")}
         on:click={() => (autoscroll = !autoscroll)}
-        >{autoscroll ? "Авто↓" : "Авто✕"}</Button
+        >{autoscroll ? t("autoscroll_label_on") : t("autoscroll_label_off")}</Button
       >
       <Button
         variant="subtle"
         size="compact"
         on:click={onClear}
-        title="Очистить поле ответа"
-        aria-label="Очистить"
+        title={t("clear_output_title")}
+        aria-label={t("clear_output_aria")}
       >
         <svg
           width="16"
@@ -56,8 +57,8 @@
         variant="subtle"
         size="compact"
         on:click={onCopy}
-        title="Скопировать ответ"
-        aria-label="Копировать"
+        title={t("copy_answer_title")}
+        aria-label={t("copy_answer_aria")}
       >
         <svg
           width="16"
@@ -77,7 +78,7 @@
     {#if output}
       {@html rendered}
     {:else}
-      <span class="placeholder">Ответ появится здесь…</span>
+      <span class="placeholder">{t("output_placeholder")}</span>
     {/if}
   </div>
 </div>
