@@ -34,13 +34,6 @@ export async function streamFromOllama(
     model = args.model.trim();
   }
 
-  // Debug logging to help troubleshoot model selection
-  console.log("[Ollama Debug] Model selection:", {
-    argsModel: args.model,
-    storedModel: stored?.model,
-    finalModel: model,
-    defaultModel: DEFAULT_MODEL,
-  });
   const options: any = {
     temperature: args.temperature ?? DEFAULT_TEMPERATURE,
   };

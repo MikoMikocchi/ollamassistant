@@ -29,16 +29,11 @@
     query = value;
   }
 
-  // Debug: watch for value changes
-  $: console.log("[Combobox Debug] Value changed:", { value, query, open });
-
   function select(val: string) {
-    console.log("[Combobox Debug] Selecting value:", val);
     value = val;
     query = val;
     open = false;
     activeIndex = -1;
-    console.log("[Combobox Debug] Set value to:", value);
     dispatch("value", val);
     dispatch("change", val);
   }
@@ -108,11 +103,6 @@
     on:input={() => {
       // Синхронизируем ввод с внешним значением, чтобы запросы уходили с актуальной моделью
       const newValue = (query || "").trim();
-      console.log("[Combobox Debug] Input changed:", {
-        query,
-        newValue,
-        oldValue: value,
-      });
       value = newValue;
       open = true;
       activeIndex = 0;

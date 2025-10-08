@@ -26,9 +26,6 @@
   import { onMount } from "svelte";
   onMount(() => autosize());
 
-  // Debug: watch model changes
-  $: console.log("[Input Debug] Model changed:", model);
-
   function autosize() {
     if (!textareaEl) return;
     textareaEl.style.height = "auto";

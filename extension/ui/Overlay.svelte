@@ -42,15 +42,8 @@
         "max_tokens",
         "autoscroll",
       ]);
-      console.log("[Storage Debug] Loaded settings:", s);
       model = typeof s?.model === "string" ? s.model.trim() : "";
       lastSavedModel = model;
-      console.log(
-        "[Storage Debug] Set model to:",
-        model,
-        "lastSavedModel:",
-        lastSavedModel
-      );
       if (s?.theme === "light" || s?.theme === "dark") {
         theme = s.theme;
       } else {
@@ -167,12 +160,10 @@
       trimmedModel !== lastSavedModel
     ) {
       try {
-        console.log("[Storage Debug] Saving model:", trimmedModel);
         await chrome.storage.local.set({ model: trimmedModel });
         lastSavedModel = trimmedModel;
-        console.log("[Storage Debug] Model saved successfully");
       } catch (e) {
-        console.error("[Storage Debug] Failed to save model:", e);
+        // Failed to save model
       }
     }
   })();
