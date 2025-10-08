@@ -94,6 +94,7 @@ export async function streamFromOllama(
   const decoder = new TextDecoder();
   let buffer = "";
   let done = false;
+  let sawDone = false;
   while (!done) {
     const { value, done: d } = await reader.read();
     done = d;
@@ -128,7 +129,18 @@ export async function streamFromOllama(
 
         // Check for completion
         if (isChunkDone(json)) {
-          // Response is complete, but we continue reading until stream ends
+          // We've reached the logical end of the response. Stop reading further to avoid
+          // waiting for server-side connection close (which can take ~30s) and return control
+          // so the background can emit a single "done" message.
+          sawDone = true;
+          try {
+            onMessage({ type: "done" });
+          } catch {}
+          try {
+            await reader.cancel();
+          } catch {}
+          done = true;
+          break;
         }
       } catch (parseError) {
         console.warn("[Ollama] Failed to parse JSON line:", line, parseError);
@@ -137,24 +149,26 @@ export async function streamFromOllama(
     }
   }
   // Flush any remaining buffered line on stream end
-  const tail = buffer.trim();
-  if (tail) {
-    try {
-      const json = JSON.parse(tail);
-      if (isValidOllamaChunk(json)) {
-        const error = extractChunkError(json);
-        if (error) {
-          onMessage({ type: "error", error });
-        } else {
-          const token = extractChunkContent(json);
-          if (token) {
-            onMessage({ type: "chunk", data: token });
+  if (!sawDone) {
+    const tail = buffer.trim();
+    if (tail) {
+      try {
+        const json = JSON.parse(tail);
+        if (isValidOllamaChunk(json)) {
+          const error = extractChunkError(json);
+          if (error) {
+            onMessage({ type: "error", error });
+          } else {
+            const token = extractChunkContent(json);
+            if (token) {
+              onMessage({ type: "chunk", data: token });
+            }
           }
         }
+      } catch (parseError) {
+        console.warn("[Ollama] Failed to parse final chunk:", tail, parseError);
+        // ignore trailing garbage
       }
-    } catch (parseError) {
-      console.warn("[Ollama] Failed to parse final chunk:", tail, parseError);
-      // ignore trailing garbage
     }
   }
 }

@@ -109,6 +109,9 @@ chrome.runtime.onConnect.addListener((port: any) => {
     if (msg?.type === "start_stream") {
       const controller = new AbortController();
       const { signal } = controller;
+      let doneSent = false;
+      const startedAt = Date.now();
+      let chunkCount = 0;
 
       const onStop = () => controller.abort();
       port.onMessage.addListener((m: PortMessage) => {
@@ -116,11 +119,58 @@ chrome.runtime.onConnect.addListener((port: any) => {
       });
 
       try {
-        await streamFromOllama(msg.payload, (m) => safePost(port, m), signal);
+        backgroundLogger.debug("stream:start", {
+          model: (msg as any)?.payload?.model,
+          promptLen: (msg as any)?.payload?.prompt?.length,
+          options: {
+            temperature: (msg as any)?.payload?.temperature,
+            top_p: (msg as any)?.payload?.top_p,
+            max_tokens: (msg as any)?.payload?.max_tokens,
+          },
+        });
+        await streamFromOllama(
+          msg.payload,
+          (m) => {
+            if (m?.type === "done") {
+              doneSent = true;
+              // Немедленно закрываем запрос к Ollama, чтобы не ждать долгого keep-alive/таймаута
+              try {
+                controller.abort();
+              } catch {}
+              backgroundLogger.debug("stream:done", {
+                durationMs: Date.now() - startedAt,
+                chunks: chunkCount,
+              });
+            } else if (m?.type === "chunk") {
+              chunkCount++;
+              if (chunkCount <= 3 || chunkCount % 50 === 0) {
+                backgroundLogger.debug("stream:chunk", {
+                  chunkCount,
+                  sampleLen: (m as any)?.data?.length ?? 0,
+                });
+              }
+            } else if (m?.type === "error") {
+              backgroundLogger.warn("stream:error", {
+                error: (m as any)?.error,
+              });
+            }
+            safePost(port, m);
+          },
+          signal
+        );
       } catch (e: any) {
         safePost(port, { type: "error", error: e?.message ?? "Stream error" });
+        backgroundLogger.error("stream:exception", {
+          error: e?.message || String(e),
+        });
       } finally {
-        safePost(port, { type: "done" });
+        if (!doneSent) {
+          backgroundLogger.debug("stream:finalize_without_done", {
+            durationMs: Date.now() - startedAt,
+            chunks: chunkCount,
+          });
+          safePost(port, { type: "done" });
+        }
       }
     }
   });
