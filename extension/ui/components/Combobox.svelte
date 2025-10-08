@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { createEventDispatcher, onMount } from "svelte";
+  import { createEventDispatcher } from "svelte";
   export let items: string[] = [];
   export let value: string = "";
   export let placeholder: string | null = null;
@@ -14,17 +14,15 @@
   let inputEl: HTMLInputElement | null = null;
   let listEl: HTMLElement | null = null;
 
-  function filter() {
-    const q = query.trim().toLowerCase();
+  // Re-compute filtered list whenever inputs change
+  $: {
+    const q = (query || "").trim().toLowerCase();
     const base = items || [];
     filtered = q
-      ? base.filter((s) => s.toLowerCase().includes(q))
+      ? base.filter((s) => (s || "").toLowerCase().includes(q))
       : base.slice();
-    // Try to keep active within bounds
     if (activeIndex >= filtered.length) activeIndex = filtered.length - 1;
   }
-
-  $: filter();
   $: query = value && !open ? value : query;
 
   function select(val: string) {
@@ -50,8 +48,12 @@
       activeIndex = Math.max(activeIndex - 1, 0);
       e.preventDefault();
     } else if (e.key === "Enter") {
-      if (activeIndex >= 0 && filtered[activeIndex])
+      if (activeIndex >= 0 && filtered[activeIndex]) {
         select(filtered[activeIndex]);
+      } else if (query.trim()) {
+        // допускаем произвольное значение, если пользователь ввёл своё
+        select(query.trim());
+      }
       e.preventDefault();
     } else if (e.key === "Escape") {
       open = false;
@@ -67,12 +69,14 @@
   function onBlur(e: FocusEvent) {
     const next = e.relatedTarget as HTMLElement | null;
     if (next && (next === listEl || listEl?.contains(next))) return;
+    // Коммитим введённый текст как значение при уходе фокуса
+    const q = (query || "").trim();
+    if (q !== value) {
+      select(q);
+      return; // select() уже закроет и разошлёт события
+    }
     open = false;
   }
-
-  onMount(() => {
-    filter();
-  });
 </script>
 
 <div
@@ -93,6 +97,8 @@
     on:focus={onFocus}
     on:keydown={onKeydown}
     on:input={() => {
+      // Синхронизируем ввод с внешним значением, чтобы запросы уходили с актуальной моделью
+      value = (query || "").trim();
       open = true;
       activeIndex = 0;
     }}

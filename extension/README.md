@@ -11,8 +11,8 @@ Notes:
 
 ## UI/UX notes
 
-- Single primary CTA: "Спросить". During generation it transforms into "Стоп" in the input toolbar; header shows a spinner and status.
-- Secondary actions moved out of the main flow: "Обновить список моделей", "Сделать текущей" (сохраняет выбранную модель в storage).
+- Single primary CTA: "Отправить". Во время генерации превращается в "Стоп" в панели ввода; в заголовке — индикатор состояния.
+- Вторичные действия вынесены из основного потока: "Обновить список" (повторно запрашивает модели у Ollama), "Сохранить" (сохраняет выбранную модель как текущую в storage).
 - Tooltips and aria-labels for icon buttons; visible focus rings; improved contrast.
 - Output typography: proportional font for body, monospace only for inline/blocks of code; line length constrained to ~70ch for readability.
 - Overlay: backdrop blur, close button in the header, ESC to close, focus trap while open, restore focus on close.

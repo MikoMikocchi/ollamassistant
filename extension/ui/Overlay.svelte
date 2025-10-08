@@ -42,7 +42,8 @@
         "max_tokens",
         "autoscroll",
       ]);
-      model = s?.model || "";
+      model = typeof s?.model === "string" ? s.model.trim() : "";
+      lastSavedModel = model;
       if (s?.theme === "light" || s?.theme === "dark") {
         theme = s.theme;
       } else {
@@ -61,8 +62,9 @@
 
   async function saveModel() {
     try {
-      await chrome.storage.local.set({ model });
-      lastSavedModel = model;
+      const trimmedModel = (model || "").trim();
+      await chrome.storage.local.set({ model: trimmedModel });
+      lastSavedModel = trimmedModel;
     } catch {}
   }
 
@@ -83,10 +85,11 @@
   function start() {
     output = "";
     streaming = true;
+    const chosenModel = (model || "").trim();
     const payload = {
       prompt: buildPrompt(),
       // Pass the currently selected model directly; background will use it if present
-      model,
+      model: chosenModel || undefined,
       temperature,
       top_p,
       max_tokens,
@@ -149,10 +152,11 @@
 
   // Autosave selected model on change
   $: (async () => {
-    if (model && model !== lastSavedModel) {
+    const trimmedModel = (model || "").trim();
+    if (trimmedModel && trimmedModel.length >= 3 && trimmedModel !== lastSavedModel) {
       try {
-        await chrome.storage.local.set({ model });
-        lastSavedModel = model;
+        await chrome.storage.local.set({ model: trimmedModel });
+        lastSavedModel = trimmedModel;
       } catch {}
     }
   })();
@@ -338,7 +342,7 @@
         >
           <svelte:fragment slot="extra-actions">
             <Button variant="subtle" size="compact" on:click={refreshModels} title="Обновить список моделей">
-              Обновить
+              Обновить список
             </Button>
           </svelte:fragment>
         </Input>
@@ -377,38 +381,38 @@
   }
 
   .overlay[data-theme="dark"] {
-    /* Surfaces (светлее и холоднее) */
-    --panel-bg: #121a33;
-    --panel-text: #f1f6ff;
-    --panel-border: #2c3f6f;
-    --header-bg: linear-gradient(180deg, #17234a, #131d3b);
-    --shadow: 0 26px 80px rgba(0, 10, 30, 0.55);
-    --input-bg: #152347;
-    --input-border: #3a4e7a;
-    --focus-ring: rgba(56, 189, 248, 0.36); /* sky */
+    /* Neutral dark palette — выше контраст, меньше синевы */
+    --panel-bg: #0f1115;           /* surface */
+    --panel-text: #e6e9ef;         /* text */
+    --panel-border: #2a2f3a;       /* subtle border */
+    --header-bg: linear-gradient(180deg, #12151b, #0f1115);
+    --shadow: 0 26px 80px rgba(0, 0, 0, 0.6);
+    --input-bg: #101318;           /* inputs */
+    --input-border: #2a2f3a;
+    --focus-ring: rgba(236, 248, 255, 0.18); /* нейтральное свечение */
 
     /* Buttons */
-    --btn-primary-bg: linear-gradient(135deg, #5a8dfc, #7a7df4);
-    --btn-primary-border: rgba(99, 102, 241, 0.5);
+    --btn-primary-bg: linear-gradient(135deg, #3b82f6, #6366f1); /* акцент привычный */
+    --btn-primary-border: rgba(99, 102, 241, 0.45);
     --btn-primary-text: #ffffff;
-    --btn-primary-shadow: rgba(90, 141, 252, 0.35);
-    --btn-secondary-bg: #1b2a52;
-    --btn-secondary-border: #3a4e7a;
-    --btn-secondary-text: #f1f6ff;
-    --btn-subtle-border: #3a4e7a;
-    --btn-subtle-hover: rgba(120, 140, 220, 0.12);
+    --btn-primary-shadow: rgba(99, 102, 241, 0.28);
+    --btn-secondary-bg: #171a20;
+    --btn-secondary-border: #2a2f3a;
+    --btn-secondary-text: #e6e9ef;
+    --btn-subtle-border: #2a2f3a;
+    --btn-subtle-hover: rgba(148, 163, 184, 0.14);
     --btn-danger-bg: linear-gradient(135deg, #ef4444, #f77084);
-    --btn-danger-border: rgba(244, 63, 94, 0.5);
-    --btn-danger-shadow: rgba(244, 63, 94, 0.25);
+    --btn-danger-border: rgba(244, 63, 94, 0.45);
+    --btn-danger-shadow: rgba(244, 63, 94, 0.22);
 
     /* Content */
-    --output-bg: #12214a;
-    --output-text: #f1f6ff;
-    --output-border: #2a3f72;
-    --link: #9acbff;
-    --code-bg: rgba(176, 190, 220, 0.18);
-    --codeblock-bg: #14285a;
-    --placeholder: #b6c6e6;
+    --output-bg: #111520;
+    --output-text: #e6e9ef;
+    --output-border: #2a2f3a;
+    --link: #93c5fd;               /* мягкая ссылка */
+    --code-bg: rgba(148, 163, 184, 0.14);
+    --codeblock-bg: #141923;
+    --placeholder: #94a3b8;
   }
 
   .overlay[data-theme="light"] {
