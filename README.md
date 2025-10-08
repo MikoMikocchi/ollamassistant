@@ -1,6 +1,6 @@
-# Ollama Assistant
+# Ollamassistant
 
-Ollama Assistant is a browser extension that brings the power of your local Ollama models to your fingertips, allowing you to interact with AI on any webpage. Use it to summarize articles, ask questions about selected text, generate content, and much more, directly within your browser.
+Ollamassistant is a browser extension that brings the power of your local Ollama models to your fingertips, allowing you to interact with AI on any webpage. Use it to summarize articles, ask questions about selected text, generate content, and much more, directly within your browser.
 
 ## Features
 
