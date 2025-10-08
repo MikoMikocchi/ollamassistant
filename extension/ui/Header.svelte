@@ -21,12 +21,14 @@
   {/if}
   <Button
     variant="toggle"
+    size="compact"
     on:click={onToggleTheme}
     title={theme === "dark" ? "Светлая тема" : "Тёмная тема"}
     aria-label="Сменить тему">{theme === "dark" ? "☀︎" : "☾"}</Button
   >
   <Button
     variant="subtle"
+    size="compact"
     on:click={onClose}
     title="Закрыть панель"
     aria-label="Закрыть">×</Button

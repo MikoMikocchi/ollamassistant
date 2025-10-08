@@ -27,20 +27,29 @@
 
 <style>
   .btn {
+    /* Базовая унифицированная геометрия для фикса высоты кнопок */
+    --btn-h-normal: 34px;
+    --btn-h-compact: 28px;
+
     border: none;
     cursor: pointer;
     appearance: none;
     border-radius: 9px;
-    padding: 8px 12px;
+    /* Фиксированная высота вместо вертикальных paddings —
+       исключает «скачки» высоты между вариантами */
+    height: var(--btn-h-normal);
+    padding: 0 12px; /* только горизонтальные отступы */
     font-weight: 600;
     outline: none;
-    line-height: 1.1;
+    line-height: 1; /* предотвращает дрожание из-за line-height */
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 6px;
   }
   .btn.compact {
-    padding: 5px 10px;
+    height: var(--btn-h-compact);
+    padding: 0 10px;
     font-size: 13px;
   }
   .btn.primary {
@@ -92,7 +101,8 @@
     border: 1px solid var(--btn-subtle-border);
     color: var(--panel-text);
     border-radius: 16px;
-    padding: 2px 8px;
+    /* Высота берём из базового класса (.btn / .btn.compact) */
+    padding: 0 8px;
     font-weight: 700;
     font-size: 13px;
   }

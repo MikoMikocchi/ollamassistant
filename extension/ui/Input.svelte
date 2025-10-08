@@ -54,15 +54,16 @@
     <button
       type="button"
       class="chip {preset === 'summarize' ? 'active' : ''}"
-      on:click={() => (preset = preset === 'summarize' ? undefined : 'summarize')}
-      title="Суммаризировать выделение/страницу"
-    >Суммаризировать</button>
+      on:click={() =>
+        (preset = preset === "summarize" ? undefined : "summarize")}
+      title="Суммаризировать выделение/страницу">Суммаризировать</button
+    >
     <button
       type="button"
       class="chip {preset === 'tldr' ? 'active' : ''}"
-      on:click={() => (preset = preset === 'tldr' ? undefined : 'tldr')}
-      title="TL;DR страницы"
-    >TL;DR</button>
+      on:click={() => (preset = preset === "tldr" ? undefined : "tldr")}
+      title="TL;DR страницы">TL;DR</button
+    >
   </div>
 </div>
 
@@ -71,10 +72,15 @@
     {#if modelsLoading}
       <div class="muted">Загрузка списка моделей…</div>
     {:else if models.length}
-      <Combobox bind:value={model} items={models} placeholder="Выберите модель" compact />
+      <Combobox
+        bind:value={model}
+        items={models}
+        placeholder="Выберите модель"
+        compact
+      />
     {:else}
       <input
-        class="input compact"
+        class="input compact model-fallback"
         placeholder="model (e.g. llama3:latest)"
         bind:value={model}
         aria-label="Модель"
@@ -86,8 +92,11 @@
   </div>
   <div class="primary">
     {#if streaming}
-      <Button variant="danger" size="compact" on:click={onStop} title="Остановить генерацию"
-        >Стоп</Button
+      <Button
+        variant="danger"
+        size="compact"
+        on:click={onStop}
+        title="Остановить генерацию">Стоп</Button
       >
     {:else}
       <Button
@@ -107,8 +116,8 @@
       variant="subtle"
       size="compact"
       on:click={() => (showParams = !showParams)}
-      title="Параметры генерации"
-    >Параметры</Button>
+      title="Параметры генерации">Параметры</Button
+    >
     <Button
       variant="subtle"
       size="compact"
@@ -150,8 +159,12 @@
   }
   .input.compact {
     min-height: 0;
-    padding: 6px 8px;
+    height: 28px; /* выровнять с кнопками */
+    padding: 0 8px;
     font-size: 13px;
+  }
+  .model-fallback {
+    width: 280px;
   }
   .input:focus {
     border-color: #6366f1;
@@ -175,7 +188,8 @@
     min-width: 0;
     flex-wrap: wrap;
     flex: 1 1 auto;
-    overflow: hidden; /* исключаем наезды в колонку primary */
+    /* Позволяем выпадающему списку комбобокса выходить поверх кнопок */
+    overflow: visible;
   }
   .toolbar .primary {
     grid-area: primary;
@@ -194,7 +208,12 @@
     color: var(--placeholder);
     font-size: 12px;
   }
-  .chips { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 2px; }
+  .chips {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-top: 2px;
+  }
   .chip {
     border: 1px solid var(--btn-subtle-border);
     background: transparent;
@@ -204,8 +223,9 @@
     font-size: 12px;
     cursor: pointer;
   }
-  .chip.active, .chip:hover {
-    background: var(--btn-subtle-hover, rgba(148,163,184,.08));
+  .chip.active,
+  .chip:hover {
+    background: var(--btn-subtle-hover, rgba(148, 163, 184, 0.08));
     border-color: var(--btn-subtle-border);
   }
   .error {

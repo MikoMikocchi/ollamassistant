@@ -18,7 +18,11 @@
   import Button from "./components/Button.svelte";
 </script>
 
-<div class="output" role="region" aria-label="Ответ модели">
+<div
+  class="output {output ? '' : 'is-empty'}"
+  role="region"
+  aria-label="Ответ модели"
+>
   <div class="output-header">
     <div class="spacer"></div>
     <div class="actions">
@@ -27,7 +31,8 @@
         size="compact"
         title={autoscroll ? "Отключить автоскролл" : "Включить автоскролл"}
         on:click={() => (autoscroll = !autoscroll)}
-      >{autoscroll ? "Авто↓" : "Авто✕"}</Button>
+        >{autoscroll ? "Авто↓" : "Авто✕"}</Button
+      >
       <Button
         variant="subtle"
         size="compact"
@@ -35,8 +40,16 @@
         title="Очистить поле ответа"
         aria-label="Очистить"
       >
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-          <path d="M9 3h6a1 1 0 0 1 1 1v1h5v2h-2v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7H2V5h5V4a1 1 0 0 1 1-1zm1 4v10h2V7h-2zm4 0v10h2V7h-2zM8 5v1h8V5H8z" />
+        <svg
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="currentColor"
+          aria-hidden="true"
+        >
+          <path
+            d="M9 3h6a1 1 0 0 1 1 1v1h5v2h-2v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7H2V5h5V4a1 1 0 0 1 1-1zm1 4v10h2V7h-2zm4 0v10h2V7h-2zM8 5v1h8V5H8z"
+          />
         </svg>
       </Button>
       <Button
@@ -46,18 +59,21 @@
         title="Скопировать ответ"
         aria-label="Копировать"
       >
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-          <path d="M16 1H6a2 2 0 0 0-2 2v12h2V3h10V1zm3 4H10a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H10V7h9v14z" />
+        <svg
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="currentColor"
+          aria-hidden="true"
+        >
+          <path
+            d="M16 1H6a2 2 0 0 0-2 2v12h2V3h10V1zm3 4H10a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H10V7h9v14z"
+          />
         </svg>
       </Button>
     </div>
   </div>
-  <div
-    class="output-content markdown"
-    data-empty={!output}
-    aria-live="polite"
-    bind:this={contentEl}
-  >
+  <div class="output-content markdown" aria-live="polite" bind:this={contentEl}>
     {#if output}
       {@html rendered}
     {:else}
@@ -86,8 +102,14 @@
     gap: 8px;
     margin-bottom: 6px;
   }
-  .output-header .spacer { flex: 1 1 auto; }
-  .actions { display: inline-flex; gap: 6px; flex-wrap: wrap; }
+  .output-header .spacer {
+    flex: 1 1 auto;
+  }
+  .actions {
+    display: inline-flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
   :global(.output .btn:focus-visible) {
     box-shadow: 0 0 0 2px var(--focus-ring);
   }
@@ -101,7 +123,7 @@
     background: transparent;
     white-space: normal;
   }
-  .output[data-empty="true"] {
+  .output.is-empty {
     opacity: 0.7;
   }
   .output .placeholder {

@@ -17,7 +17,9 @@
   function filter() {
     const q = query.trim().toLowerCase();
     const base = items || [];
-    filtered = q ? base.filter((s) => s.toLowerCase().includes(q)) : base.slice();
+    filtered = q
+      ? base.filter((s) => s.toLowerCase().includes(q))
+      : base.slice();
     // Try to keep active within bounds
     if (activeIndex >= filtered.length) activeIndex = filtered.length - 1;
   }
@@ -48,7 +50,8 @@
       activeIndex = Math.max(activeIndex - 1, 0);
       e.preventDefault();
     } else if (e.key === "Enter") {
-      if (activeIndex >= 0 && filtered[activeIndex]) select(filtered[activeIndex]);
+      if (activeIndex >= 0 && filtered[activeIndex])
+        select(filtered[activeIndex]);
       e.preventDefault();
     } else if (e.key === "Escape") {
       open = false;
@@ -72,7 +75,14 @@
   });
 </script>
 
-<div class="combo {compact ? 'compact' : ''}">
+<div
+  class="combo {compact ? 'compact' : ''}"
+  role="combobox"
+  aria-expanded={open}
+  aria-haspopup="listbox"
+  aria-owns="combo-list"
+  aria-controls="combo-list"
+>
   <input
     class="input"
     bind:this={inputEl}
@@ -87,12 +97,16 @@
       activeIndex = 0;
     }}
     on:blur={onBlur}
-    aria-expanded={open}
     aria-autocomplete="list"
-    aria-haspopup="listbox"
   />
   {#if open}
-    <div class="list" bind:this={listEl} role="listbox" tabindex="-1">
+    <div
+      class="list"
+      bind:this={listEl}
+      role="listbox"
+      id="combo-list"
+      tabindex="-1"
+    >
       {#if filtered.length === 0}
         <div class="empty">Нет совпадений</div>
       {:else}
@@ -103,8 +117,8 @@
             on:mousedown|preventDefault={() => select(it)}
             on:click={() => select(it)}
             role="option"
-            aria-selected={i === activeIndex}
-          >{it}</button>
+            aria-selected={i === activeIndex}>{it}</button
+          >
         {/each}
       {/if}
     </div>
@@ -115,13 +129,19 @@
   .combo {
     position: relative;
     min-width: 160px;
-    flex: 1 1 320px;
+    /* Не растягиваем селект на всю ширину */
+    flex: 0 1 320px;
     max-width: 100%;
   }
-  .combo.compact { min-width: 160px; }
+  .combo.compact {
+    /* Компактная версия фиксированной ширины */
+    flex: 0 0 280px;
+  }
   .input {
     width: 100%;
-    padding: 6px 8px;
+    /* Выровнять с .btn.compact по высоте */
+    height: 28px;
+    padding: 0 8px;
     border: 1px solid var(--input-border);
     background: var(--input-bg);
     color: var(--panel-text);
@@ -130,18 +150,22 @@
     font-size: 13px;
     outline: none;
   }
-  .input:focus { border-color: #6366f1; box-shadow: 0 0 0 3px var(--focus-ring); }
+  .input:focus {
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px var(--focus-ring);
+  }
   .list {
     position: absolute;
     z-index: 10;
     top: calc(100% + 4px);
-    left: 0; right: 0;
+    left: 0;
+    right: 0;
     max-height: 240px;
     overflow: auto;
     background: var(--input-bg);
     border: 1px solid var(--input-border);
     border-radius: 10px;
-    box-shadow: 0 10px 24px rgba(16,24,40,.2);
+    box-shadow: 0 10px 24px rgba(16, 24, 40, 0.2);
     padding: 4px;
   }
   .item {
@@ -155,9 +179,14 @@
     cursor: pointer;
     font-size: 13px;
   }
-  .item:hover, .item.active {
-    background: var(--btn-subtle-hover, rgba(148,163,184,.08));
+  .item:hover,
+  .item.active {
+    background: var(--btn-subtle-hover, rgba(148, 163, 184, 0.08));
     border-color: var(--btn-subtle-border);
   }
-  .empty { padding: 8px; color: var(--placeholder); font-size: 13px; }
+  .empty {
+    padding: 8px;
+    color: var(--placeholder);
+    font-size: 13px;
+  }
 </style>
