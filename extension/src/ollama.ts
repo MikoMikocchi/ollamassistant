@@ -18,9 +18,29 @@ export async function streamFromOllama(
   onMessage: (m: StreamMessage) => void,
   signal?: AbortSignal
 ) {
-  // Allow overriding model from extension settings (chrome.storage.local)
+  // Use model from args if provided, otherwise use stored model, finally fallback to default
   const stored = await chrome.storage.local.get(["model"]);
-  const model = args.model || stored?.model || DEFAULT_MODEL;
+
+  // Priority: args.model (if truthy) > stored.model (if truthy) > DEFAULT_MODEL
+  let model = DEFAULT_MODEL;
+  if (
+    stored?.model &&
+    typeof stored.model === "string" &&
+    stored.model.trim()
+  ) {
+    model = stored.model.trim();
+  }
+  if (args.model && typeof args.model === "string" && args.model.trim()) {
+    model = args.model.trim();
+  }
+
+  // Debug logging to help troubleshoot model selection
+  console.log("[Ollama Debug] Model selection:", {
+    argsModel: args.model,
+    storedModel: stored?.model,
+    finalModel: model,
+    defaultModel: DEFAULT_MODEL,
+  });
   const options: any = {
     temperature: args.temperature ?? DEFAULT_TEMPERATURE,
   };

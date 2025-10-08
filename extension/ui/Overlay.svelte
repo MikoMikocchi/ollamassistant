@@ -42,8 +42,15 @@
         "max_tokens",
         "autoscroll",
       ]);
+      console.log("[Storage Debug] Loaded settings:", s);
       model = typeof s?.model === "string" ? s.model.trim() : "";
       lastSavedModel = model;
+      console.log(
+        "[Storage Debug] Set model to:",
+        model,
+        "lastSavedModel:",
+        lastSavedModel
+      );
       if (s?.theme === "light" || s?.theme === "dark") {
         theme = s.theme;
       } else {
@@ -89,7 +96,8 @@
     const payload = {
       prompt: buildPrompt(),
       // Pass the currently selected model directly; background will use it if present
-      model: chosenModel || undefined,
+      // Important: Pass null instead of undefined if no model to avoid fallback issues
+      model: chosenModel || null,
       temperature,
       top_p,
       max_tokens,
@@ -153,18 +161,31 @@
   // Autosave selected model on change
   $: (async () => {
     const trimmedModel = (model || "").trim();
-    if (trimmedModel && trimmedModel.length >= 3 && trimmedModel !== lastSavedModel) {
+    if (
+      trimmedModel &&
+      trimmedModel.length >= 3 &&
+      trimmedModel !== lastSavedModel
+    ) {
       try {
+        console.log("[Storage Debug] Saving model:", trimmedModel);
         await chrome.storage.local.set({ model: trimmedModel });
         lastSavedModel = trimmedModel;
-      } catch {}
+        console.log("[Storage Debug] Model saved successfully");
+      } catch (e) {
+        console.error("[Storage Debug] Failed to save model:", e);
+      }
     }
   })();
 
   // Persist generation options
   $: (async () => {
     try {
-      await chrome.storage.local.set({ temperature, top_p, max_tokens, autoscroll });
+      await chrome.storage.local.set({
+        temperature,
+        top_p,
+        max_tokens,
+        autoscroll,
+      });
     } catch {}
   })();
 
@@ -327,7 +348,7 @@
           bind:this={inputRef}
           bind:prompt
           {models}
-          {model}
+          bind:model
           bind:preset
           bind:temperature
           bind:top_p
@@ -341,7 +362,12 @@
           onSaveModel={saveModel}
         >
           <svelte:fragment slot="extra-actions">
-            <Button variant="subtle" size="compact" on:click={refreshModels} title="Обновить список моделей">
+            <Button
+              variant="subtle"
+              size="compact"
+              on:click={refreshModels}
+              title="Обновить список моделей"
+            >
               Обновить список
             </Button>
           </svelte:fragment>
@@ -382,17 +408,21 @@
 
   .overlay[data-theme="dark"] {
     /* Neutral dark palette — выше контраст, меньше синевы */
-    --panel-bg: #0f1115;           /* surface */
-    --panel-text: #e6e9ef;         /* text */
-    --panel-border: #2a2f3a;       /* subtle border */
+    --panel-bg: #0f1115; /* surface */
+    --panel-text: #e6e9ef; /* text */
+    --panel-border: #2a2f3a; /* subtle border */
     --header-bg: linear-gradient(180deg, #12151b, #0f1115);
     --shadow: 0 26px 80px rgba(0, 0, 0, 0.6);
-    --input-bg: #101318;           /* inputs */
+    --input-bg: #101318; /* inputs */
     --input-border: #2a2f3a;
     --focus-ring: rgba(236, 248, 255, 0.18); /* нейтральное свечение */
 
     /* Buttons */
-    --btn-primary-bg: linear-gradient(135deg, #3b82f6, #6366f1); /* акцент привычный */
+    --btn-primary-bg: linear-gradient(
+      135deg,
+      #3b82f6,
+      #6366f1
+    ); /* акцент привычный */
     --btn-primary-border: rgba(99, 102, 241, 0.45);
     --btn-primary-text: #ffffff;
     --btn-primary-shadow: rgba(99, 102, 241, 0.28);
@@ -409,7 +439,7 @@
     --output-bg: #111520;
     --output-text: #e6e9ef;
     --output-border: #2a2f3a;
-    --link: #93c5fd;               /* мягкая ссылка */
+    --link: #93c5fd; /* мягкая ссылка */
     --code-bg: rgba(148, 163, 184, 0.14);
     --codeblock-bg: #141923;
     --placeholder: #94a3b8;

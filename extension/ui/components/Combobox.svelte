@@ -23,13 +23,22 @@
       : base.slice();
     if (activeIndex >= filtered.length) activeIndex = filtered.length - 1;
   }
-  $: query = value && !open ? value : query;
+
+  // Sync query with value when not actively typing
+  $: if (value && !open) {
+    query = value;
+  }
+
+  // Debug: watch for value changes
+  $: console.log("[Combobox Debug] Value changed:", { value, query, open });
 
   function select(val: string) {
+    console.log("[Combobox Debug] Selecting value:", val);
     value = val;
     query = val;
     open = false;
     activeIndex = -1;
+    console.log("[Combobox Debug] Set value to:", value);
     dispatch("value", val);
     dispatch("change", val);
   }
@@ -98,7 +107,13 @@
     on:keydown={onKeydown}
     on:input={() => {
       // Синхронизируем ввод с внешним значением, чтобы запросы уходили с актуальной моделью
-      value = (query || "").trim();
+      const newValue = (query || "").trim();
+      console.log("[Combobox Debug] Input changed:", {
+        query,
+        newValue,
+        oldValue: value,
+      });
+      value = newValue;
       open = true;
       activeIndex = 0;
     }}

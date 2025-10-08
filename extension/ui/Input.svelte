@@ -26,6 +26,9 @@
   import { onMount } from "svelte";
   onMount(() => autosize());
 
+  // Debug: watch model changes
+  $: console.log("[Input Debug] Model changed:", model);
+
   function autosize() {
     if (!textareaEl) return;
     textareaEl.style.height = "auto";
@@ -67,65 +70,65 @@
   </div>
 </div>
 
-  <div class="toolbar" role="group" aria-label="Панель ввода">
-    <div class="left">
-      {#if modelsLoading}
-        <div class="muted">Загрузка списка моделей…</div>
-      {:else if models.length}
-        <Combobox
-          bind:value={model}
-          items={models}
-          placeholder="Выберите модель"
-          compact
-        />
-      {:else}
-        <input
-          class="input compact model-fallback"
-          placeholder="model (e.g. llama3:latest)"
-          bind:value={model}
-          aria-label="Модель"
-        />
-      {/if}
-      {#if modelsError}
-        <div class="error">Ошибка: {modelsError}</div>
-      {/if}
-    </div>
-    <div class="primary">
-      {#if streaming}
-        <Button
-          variant="danger"
-          size="compact"
-          on:click={onStop}
-          title="Остановить генерацию">Стоп</Button
-        >
-      {:else}
-        <Button
-          variant="primary"
-          size="compact"
-          {disabled}
-          on:click={onStart}
-          title="Отправить запрос в локальную LLM"
-        >
-          Отправить
-        </Button>
-      {/if}
-    </div>
-    <div class="utils">
-      <slot name="extra-actions" />
+<div class="toolbar" role="group" aria-label="Панель ввода">
+  <div class="left">
+    {#if modelsLoading}
+      <div class="muted">Загрузка списка моделей…</div>
+    {:else if models.length}
+      <Combobox
+        bind:value={model}
+        items={models}
+        placeholder="Выберите модель"
+        compact
+      />
+    {:else}
+      <input
+        class="input compact model-fallback"
+        placeholder="model (e.g. llama3:latest)"
+        bind:value={model}
+        aria-label="Модель"
+      />
+    {/if}
+    {#if modelsError}
+      <div class="error">Ошибка: {modelsError}</div>
+    {/if}
+  </div>
+  <div class="primary">
+    {#if streaming}
       <Button
+        variant="danger"
+        size="compact"
+        on:click={onStop}
+        title="Остановить генерацию">Стоп</Button
+      >
+    {:else}
+      <Button
+        variant="primary"
+        size="compact"
+        {disabled}
+        on:click={onStart}
+        title="Отправить запрос в локальную LLM"
+      >
+        Отправить
+      </Button>
+    {/if}
+  </div>
+  <div class="utils">
+    <slot name="extra-actions" />
+    <Button
       variant="subtle"
       size="compact"
       on:click={() => (showParams = !showParams)}
       title="Параметры генерации">Настройки</Button
-      >
-      <Button
+    >
+    <Button
       variant="subtle"
       size="compact"
       on:click={onSaveModel}
       title="Сохранить модель как текущую">Сохранить</Button
-      >
-    </div>
+    >
   </div>
+</div>
 
 {#if showParams}
   <ParamSheet bind:temperature bind:top_p bind:max_tokens />
