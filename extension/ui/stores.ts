@@ -17,3 +17,9 @@ export const output = writable<string>("");
 // Context
 export const selectionText = writable<string>("");
 export const preset = writable<string | undefined>(undefined);
+
+// Generation params
+export const temperature = writable<number>(0.3);
+export const top_p = writable<number | null>(null);
+export const max_tokens = writable<number | null>(null);
+export const autoscroll = writable<boolean>(true);

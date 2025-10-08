@@ -9,13 +9,28 @@
   export let onSaveModel: () => void;
   export let streaming: boolean = false;
   export let onStop: () => void;
+  export let preset: string | undefined;
+  export let temperature: number = 0.3;
+  export let top_p: number | null = null;
+  export let max_tokens: number | null = null;
 
   let textareaEl: HTMLTextAreaElement | null = null;
   export function focusTextarea() {
     textareaEl?.focus();
   }
   import Button from "./components/Button.svelte";
-  import Select from "./components/Select.svelte";
+  import Combobox from "./components/Combobox.svelte";
+  import ParamSheet from "./ParamSheet.svelte";
+
+  let showParams = false;
+  import { onMount } from "svelte";
+  onMount(() => autosize());
+
+  function autosize() {
+    if (!textareaEl) return;
+    textareaEl.style.height = "auto";
+    textareaEl.style.height = Math.min(textareaEl.scrollHeight, 480) + "px";
+  }
 </script>
 
 <div class="input-wrap">
@@ -31,8 +46,24 @@
         if (!disabled && !streaming) onStart();
       }
     }}
+    on:input={autosize}
+    on:change={autosize}
   ></textarea>
   <div class="hint">Enter — отправить • Shift+Enter — новая строка</div>
+  <div class="chips" role="listbox" aria-label="Быстрые пресеты">
+    <button
+      type="button"
+      class="chip {preset === 'summarize' ? 'active' : ''}"
+      on:click={() => (preset = preset === 'summarize' ? undefined : 'summarize')}
+      title="Суммаризировать выделение/страницу"
+    >Суммаризировать</button>
+    <button
+      type="button"
+      class="chip {preset === 'tldr' ? 'active' : ''}"
+      on:click={() => (preset = preset === 'tldr' ? undefined : 'tldr')}
+      title="TL;DR страницы"
+    >TL;DR</button>
+  </div>
 </div>
 
 <div class="toolbar" role="group" aria-label="Панель ввода">
@@ -40,12 +71,7 @@
     {#if modelsLoading}
       <div class="muted">Загрузка списка моделей…</div>
     {:else if models.length}
-      <Select
-        bind:value={model}
-        items={models}
-        placeholder="(manual)"
-        compact
-      />
+      <Combobox bind:value={model} items={models} placeholder="Выберите модель" compact />
     {:else}
       <input
         class="input compact"
@@ -60,6 +86,12 @@
   </div>
   <div class="right">
     <slot name="extra-actions" />
+    <Button
+      variant="subtle"
+      size="compact"
+      on:click={() => (showParams = !showParams)}
+      title="Параметры генерации"
+    >Параметры</Button>
     <Button
       variant="subtle"
       size="compact"
@@ -83,6 +115,10 @@
   </div>
 </div>
 
+{#if showParams}
+  <ParamSheet bind:temperature bind:top_p bind:max_tokens />
+{/if}
+
 <style>
   .input-wrap {
     display: flex;
@@ -102,6 +138,9 @@
     transition:
       border-color 0.12s ease,
       box-shadow 0.12s ease;
+    resize: none;
+    overflow: auto;
+    max-height: 480px;
   }
   .input::placeholder {
     color: var(--placeholder);
@@ -137,6 +176,19 @@
   .hint {
     color: var(--placeholder);
     font-size: 12px;
+  }
+  .chips { display: flex; gap: 6px; flex-wrap: wrap; }
+  .chip {
+    border: 1px solid var(--btn-subtle-border);
+    background: transparent;
+    color: var(--panel-text);
+    border-radius: 999px;
+    padding: 4px 8px;
+    font-size: 12px;
+    cursor: pointer;
+  }
+  .chip.active, .chip:hover {
+    background: var(--btn-subtle-hover, rgba(148,163,184,.08));
   }
   .error {
     color: #c00;

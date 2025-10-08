@@ -12,7 +12,16 @@ export type RuntimeMessage =
 
 // Stream control messages over the port
 export type PortMessage =
-  | { type: "start_stream"; payload: { prompt: string; model?: string; temperature?: number } }
+  | {
+      type: "start_stream";
+      payload: {
+        prompt: string;
+        model?: string;
+        temperature?: number;
+        top_p?: number | null;
+        max_tokens?: number | null;
+      };
+    }
   | { type: "stop_stream" };
 
 // Events fired on window to decouple UI/content
@@ -30,4 +39,3 @@ export type StreamMessage =
   | { type: "error"; error: string };
 
 export type OllamaMessage = { role: "system" | "user" | "assistant"; content: string };
-

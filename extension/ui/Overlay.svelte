@@ -17,6 +17,11 @@
   let panelEl: HTMLElement | null = null;
   let lastActiveElement: Element | null = null;
   let lastSavedModel = "";
+  // Generation options
+  let temperature: number = 0.3;
+  let top_p: number | null = null;
+  let max_tokens: number | null = null;
+  let autoscroll: boolean = true;
 
   import {
     EV_OVERLAY_READY,
@@ -29,7 +34,14 @@
 
   async function loadSettings() {
     try {
-      const s = await chrome.storage.local.get(["model", "theme"]);
+      const s = await chrome.storage.local.get([
+        "model",
+        "theme",
+        "temperature",
+        "top_p",
+        "max_tokens",
+        "autoscroll",
+      ]);
       model = s?.model || "";
       if (s?.theme === "light" || s?.theme === "dark") {
         theme = s.theme;
@@ -40,6 +52,10 @@
             ? "dark"
             : "light";
       }
+      if (typeof s?.temperature === "number") temperature = s.temperature;
+      if (typeof s?.top_p === "number") top_p = s.top_p;
+      if (typeof s?.max_tokens === "number") max_tokens = s.max_tokens;
+      if (typeof s?.autoscroll === "boolean") autoscroll = s.autoscroll;
     } catch {}
   }
 
@@ -71,7 +87,9 @@
       prompt: buildPrompt(),
       // Pass the currently selected model directly; background will use it if present
       model,
-      temperature: 0.3,
+      temperature,
+      top_p,
+      max_tokens,
     };
     window.dispatchEvent(new CustomEvent(EV_STREAM_START, { detail: payload }));
   }
@@ -139,6 +157,13 @@
     }
   })();
 
+  // Persist generation options
+  $: (async () => {
+    try {
+      await chrome.storage.local.set({ temperature, top_p, max_tokens, autoscroll });
+    } catch {}
+  })();
+
   // Restore focus to the opener when panel closes
   $: if (
     !open &&
@@ -163,6 +188,10 @@
     output as outputStore,
     selectionText as selectionTextStore,
     preset as presetStore,
+    temperature as temperatureStore,
+    top_p as topPStore,
+    max_tokens as maxTokensStore,
+    autoscroll as autoscrollStore,
   } from "./stores";
   // Sync local vars → stores
   $: themeStore.set(theme);
@@ -175,6 +204,10 @@
   $: outputStore.set(output);
   $: selectionTextStore.set(selectionText);
   $: presetStore.set(preset);
+  $: temperatureStore.set(temperature);
+  $: topPStore.set(top_p);
+  $: maxTokensStore.set(max_tokens);
+  $: autoscrollStore.set(autoscroll);
 
   onMount(() => {
     window.addEventListener(EV_OVERLAY_OPEN, onOpen as any);
@@ -291,6 +324,10 @@
           bind:prompt
           {models}
           {model}
+          bind:preset
+          bind:temperature
+          bind:top_p
+          bind:max_tokens
           {modelsLoading}
           {modelsError}
           {streaming}
@@ -308,6 +345,8 @@
         <Output
           {output}
           {rendered}
+          {streaming}
+          bind:autoscroll
           onClear={() => (output = "")}
           onCopy={copyOutput}
         />

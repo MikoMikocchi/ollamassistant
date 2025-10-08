@@ -12,6 +12,8 @@ export async function streamFromOllama(
     system?: string;
     prompt: string;
     temperature?: number;
+    top_p?: number | null;
+    max_tokens?: number | null;
   },
   onMessage: (m: StreamMessage) => void,
   signal?: AbortSignal
@@ -19,13 +21,18 @@ export async function streamFromOllama(
   // Allow overriding model from extension settings (chrome.storage.local)
   const stored = await chrome.storage.local.get(["model"]);
   const model = args.model || stored?.model || DEFAULT_MODEL;
+  const options: any = {
+    temperature: args.temperature ?? DEFAULT_TEMPERATURE,
+  };
+  if (typeof args.top_p === "number") options.top_p = args.top_p;
+  if (typeof args.max_tokens === "number" && args.max_tokens > 0)
+    options.num_predict = args.max_tokens;
+
   const body = {
     model,
     stream: true,
     messages: buildMessages(args),
-    options: {
-      temperature: args.temperature ?? DEFAULT_TEMPERATURE,
-    },
+    options,
   };
 
   const res = await fetch(OLLAMA_CHAT_ENDPOINT, {

@@ -3,6 +3,18 @@
   export let rendered: string = "";
   export let onClear: () => void;
   export let onCopy: () => void;
+  export let streaming: boolean = false;
+  export let autoscroll: boolean = true;
+  let contentEl: HTMLElement | null = null;
+  function scrollToBottom() {
+    if (!contentEl) return;
+    contentEl.scrollTop = contentEl.scrollHeight + 9999;
+  }
+  $: if (autoscroll && streaming) {
+    // Reference rendered to trigger on content updates during streaming
+    rendered; // no-op usage to create dependency
+    scrollToBottom();
+  }
   import Button from "./components/Button.svelte";
 </script>
 
@@ -10,6 +22,12 @@
   <div class="output-header">
     <div class="spacer"></div>
     <div class="actions">
+      <Button
+        variant="subtle"
+        size="compact"
+        title={autoscroll ? "Отключить автоскролл" : "Включить автоскролл"}
+        on:click={() => (autoscroll = !autoscroll)}
+      >{autoscroll ? "Авто↓" : "Авто✕"}</Button>
       <Button
         variant="subtle"
         size="compact"
@@ -34,7 +52,12 @@
       </Button>
     </div>
   </div>
-  <div class="output-content markdown" data-empty={!output} aria-live="polite">
+  <div
+    class="output-content markdown"
+    data-empty={!output}
+    aria-live="polite"
+    bind:this={contentEl}
+  >
     {#if output}
       {@html rendered}
     {:else}
