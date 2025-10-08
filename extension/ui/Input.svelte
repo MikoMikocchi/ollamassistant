@@ -67,7 +67,7 @@
       title="Сделать модель текущей">Сделать текущей</Button
     >
     {#if streaming}
-      <Button variant="primary" on:click={onStop} title="Остановить генерацию"
+      <Button variant="danger" on:click={onStop} title="Остановить генерацию"
         >Стоп</Button
       >
     {:else}
@@ -103,6 +103,9 @@
       border-color 0.12s ease,
       box-shadow 0.12s ease;
   }
+  .input::placeholder {
+    color: var(--placeholder);
+  }
   .input.compact {
     min-height: 0;
     padding: 6px 8px;
@@ -132,7 +135,7 @@
     align-items: center;
   }
   .hint {
-    color: #64748b;
+    color: var(--placeholder);
     font-size: 12px;
   }
   .error {

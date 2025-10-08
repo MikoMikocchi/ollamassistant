@@ -43,8 +43,9 @@
     border-bottom: 1px solid var(--panel-border);
   }
   .header .title {
-    font-weight: 600;
+    font-weight: 700;
     letter-spacing: 0.2px;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.08);
   }
   .grow {
     flex: 1 1 auto;

@@ -1,6 +1,6 @@
 <script lang="ts">
   import { createEventDispatcher } from "svelte";
-  export let variant: "primary" | "secondary" | "subtle" | "toggle" =
+  export let variant: "primary" | "secondary" | "subtle" | "toggle" | "danger" =
     "secondary";
   export let size: "normal" | "compact" = "normal";
   export let disabled: boolean = false;
@@ -46,12 +46,14 @@
   .btn.primary {
     background: var(--btn-primary-bg);
     color: var(--btn-primary-text);
+    border: 1px solid var(--btn-primary-border, transparent);
+    box-shadow: 0 6px 18px var(--btn-primary-shadow, rgba(37, 99, 235, 0.28));
   }
   .btn:focus-visible {
     box-shadow: 0 0 0 3px var(--focus-ring);
   }
   .btn.primary:hover {
-    filter: brightness(1.05);
+    filter: brightness(1.03);
   }
   .btn.primary:active {
     transform: translateY(0.5px);
@@ -63,6 +65,7 @@
   .btn.secondary {
     background: var(--btn-secondary-bg);
     color: var(--btn-secondary-text);
+    border: 1px solid var(--btn-secondary-border, transparent);
   }
   .btn.secondary:hover {
     filter: brightness(0.98);
@@ -73,7 +76,16 @@
     border: 1px solid var(--btn-subtle-border);
   }
   .btn.subtle:hover {
-    background: rgba(148, 163, 184, 0.08);
+    background: var(--btn-subtle-hover, rgba(148, 163, 184, 0.08));
+  }
+  .btn.danger {
+    background: var(--btn-danger-bg);
+    color: var(--btn-primary-text);
+    border: 1px solid var(--btn-danger-border, transparent);
+    box-shadow: 0 6px 18px var(--btn-danger-shadow, rgba(239, 68, 68, 0.25));
+  }
+  .btn.danger:hover {
+    filter: brightness(1.03);
   }
   .btn.toggle {
     background: transparent;

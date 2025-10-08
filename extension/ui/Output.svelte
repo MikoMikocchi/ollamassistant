@@ -6,75 +6,74 @@
   import Button from "./components/Button.svelte";
 </script>
 
-<div class="actions">
-  <Button
-    variant="subtle"
-    size="compact"
-    on:click={onClear}
-    title="Очистить поле ответа"
-    aria-label="Очистить"
-  >
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="currentColor"
-      aria-hidden="true"
-    >
-      <path
-        d="M9 3h6a1 1 0 0 1 1 1v1h5v2h-2v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7H2V5h5V4a1 1 0 0 1 1-1zm1 4v10h2V7h-2zm4 0v10h2V7h-2zM8 5v1h8V5H8z"
-      />
-    </svg>
-  </Button>
-  <Button
-    variant="subtle"
-    size="compact"
-    on:click={onCopy}
-    title="Скопировать ответ"
-    aria-label="Копировать"
-  >
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="currentColor"
-      aria-hidden="true"
-    >
-      <path
-        d="M16 1H6a2 2 0 0 0-2 2v12h2V3h10V1zm3 4H10a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H10V7h9v14z"
-      />
-    </svg>
-  </Button>
-</div>
-<div class="output markdown" data-empty={!output} aria-live="polite">
-  {#if output}
-    {@html rendered}
-  {:else}
-    <span class="placeholder">Ответ появится здесь…</span>
-  {/if}
+<div class="output" role="region" aria-label="Ответ модели">
+  <div class="output-header">
+    <div class="spacer"></div>
+    <div class="actions">
+      <Button
+        variant="subtle"
+        size="compact"
+        on:click={onClear}
+        title="Очистить поле ответа"
+        aria-label="Очистить"
+      >
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M9 3h6a1 1 0 0 1 1 1v1h5v2h-2v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7H2V5h5V4a1 1 0 0 1 1-1zm1 4v10h2V7h-2zm4 0v10h2V7h-2zM8 5v1h8V5H8z" />
+        </svg>
+      </Button>
+      <Button
+        variant="subtle"
+        size="compact"
+        on:click={onCopy}
+        title="Скопировать ответ"
+        aria-label="Копировать"
+      >
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M16 1H6a2 2 0 0 0-2 2v12h2V3h10V1zm3 4H10a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H10V7h9v14z" />
+        </svg>
+      </Button>
+    </div>
+  </div>
+  <div class="output-content markdown" data-empty={!output} aria-live="polite">
+    {#if output}
+      {@html rendered}
+    {:else}
+      <span class="placeholder">Ответ появится здесь…</span>
+    {/if}
+  </div>
 </div>
 
 <style>
-  .actions {
-    display: flex;
-    gap: 6px;
-    flex-wrap: wrap;
-    justify-content: flex-end;
-  }
-  /* button styles come from Button component */
   .output {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    background: var(--output-bg);
+    color: var(--output-text);
+    border-radius: 12px;
+    border: 1px solid var(--output-border, transparent);
+    width: 100%;
+    min-height: 260px;
+    box-sizing: border-box;
+    padding: 12px;
+  }
+  .output-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+  .output-header .spacer { flex: 1 1 auto; }
+  .actions { display: inline-flex; gap: 6px; flex-wrap: wrap; }
+  /* button styles come from Button component */
+  .output-content {
     flex: 1 1 auto;
     overflow: auto;
     overscroll-behavior: contain;
-    background: var(--output-bg);
-    color: var(--output-text);
-    border-radius: 10px;
-    padding: 16px;
-    max-width: 70ch; /* readable line length */
-    /* center content within the scroll area */
-    margin: 0 auto;
+    padding: 8px;
+    border-radius: 8px;
+    background: transparent;
     white-space: normal;
-    min-height: 220px;
   }
   .output[data-empty="true"] {
     opacity: 0.7;
@@ -127,6 +126,7 @@
     background: var(--codeblock-bg);
     padding: 10px 12px;
     border-radius: 10px;
+    border: 1px solid var(--output-border, transparent);
     overflow: auto;
   }
   :global(.markdown pre.code code) {
