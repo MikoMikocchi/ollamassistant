@@ -112,8 +112,13 @@
 </div>
 
 <style>
-  .combo { position: relative; min-width: 220px; }
-  .combo.compact { min-width: 180px; }
+  .combo {
+    position: relative;
+    min-width: 160px;
+    flex: 1 1 320px;
+    max-width: 100%;
+  }
+  .combo.compact { min-width: 160px; }
   .input {
     width: 100%;
     padding: 6px 8px;
@@ -156,4 +161,3 @@
   }
   .empty { padding: 8px; color: var(--placeholder); font-size: 13px; }
 </style>
-

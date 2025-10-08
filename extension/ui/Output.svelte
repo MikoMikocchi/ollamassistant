@@ -76,9 +76,9 @@
     border-radius: 12px;
     border: 1px solid var(--output-border, transparent);
     width: 100%;
-    min-height: 260px;
+    min-height: 220px;
     box-sizing: border-box;
-    padding: 12px;
+    padding: 10px;
   }
   .output-header {
     display: flex;
@@ -88,6 +88,9 @@
   }
   .output-header .spacer { flex: 1 1 auto; }
   .actions { display: inline-flex; gap: 6px; flex-wrap: wrap; }
+  :global(.output .btn:focus-visible) {
+    box-shadow: 0 0 0 2px var(--focus-ring);
+  }
   /* button styles come from Button component */
   .output-content {
     flex: 1 1 auto;

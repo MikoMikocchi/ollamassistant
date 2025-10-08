@@ -337,8 +337,8 @@
           onSaveModel={saveModel}
         >
           <svelte:fragment slot="extra-actions">
-            <Button variant="subtle" size="compact" on:click={refreshModels}>
-              Обновить список моделей
+            <Button variant="subtle" size="compact" on:click={refreshModels} title="Обновить список моделей">
+              Обновить
             </Button>
           </svelte:fragment>
         </Input>
@@ -467,7 +467,7 @@
     max-height: min(84vh, 820px);
     background: var(--panel-bg);
     color: var(--panel-text);
-    border-radius: 14px;
+    border-radius: 12px;
     box-shadow: var(--shadow);
     display: flex;
     flex-direction: column;
@@ -477,7 +477,7 @@
     animation: panelIn 130ms cubic-bezier(0.2, 0.8, 0.2, 1);
   }
   .body {
-    padding: 16px; /* 8-pt grid */
+    padding: 12px; /* компактнее */
     display: flex;
     flex-direction: column;
     gap: 12px;

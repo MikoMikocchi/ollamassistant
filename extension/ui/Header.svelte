@@ -35,7 +35,7 @@
 
 <style>
   .header {
-    padding: 8px 16px; /* 8-pt grid */
+    padding: 6px 12px; /* компактнее */
     display: flex;
     gap: 8px;
     align-items: center;

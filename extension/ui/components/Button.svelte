@@ -40,7 +40,7 @@
     gap: 6px;
   }
   .btn.compact {
-    padding: 6px 10px;
+    padding: 5px 10px;
     font-size: 13px;
   }
   .btn.primary {
@@ -50,7 +50,7 @@
     box-shadow: 0 6px 18px var(--btn-primary-shadow, rgba(37, 99, 235, 0.28));
   }
   .btn:focus-visible {
-    box-shadow: 0 0 0 3px var(--focus-ring);
+    box-shadow: 0 0 0 2px var(--focus-ring);
   }
   .btn.primary:hover {
     filter: brightness(1.03);

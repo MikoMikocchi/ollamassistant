@@ -84,7 +84,24 @@
       <div class="error">Ошибка: {modelsError}</div>
     {/if}
   </div>
-  <div class="right">
+  <div class="primary">
+    {#if streaming}
+      <Button variant="danger" size="compact" on:click={onStop} title="Остановить генерацию"
+        >Стоп</Button
+      >
+    {:else}
+      <Button
+        variant="primary"
+        size="compact"
+        {disabled}
+        on:click={onStart}
+        title="Отправить в локальную LLM"
+      >
+        Спросить
+      </Button>
+    {/if}
+  </div>
+  <div class="utils">
     <slot name="extra-actions" />
     <Button
       variant="subtle"
@@ -96,22 +113,8 @@
       variant="subtle"
       size="compact"
       on:click={onSaveModel}
-      title="Сделать модель текущей">Сделать текущей</Button
+      title="Сделать текущей">Сделать</Button
     >
-    {#if streaming}
-      <Button variant="danger" on:click={onStop} title="Остановить генерацию"
-        >Стоп</Button
-      >
-    {:else}
-      <Button
-        variant="primary"
-        {disabled}
-        on:click={onStart}
-        title="Отправить в локальную LLM"
-      >
-        Спросить
-      </Button>
-    {/if}
   </div>
 </div>
 
@@ -127,7 +130,7 @@
   }
   .input {
     width: 100%;
-    min-height: 64px;
+    min-height: 56px;
     padding: 12px 14px;
     border: 1px solid var(--input-border);
     border-radius: 10px;
@@ -157,27 +160,41 @@
   .toolbar {
     display: grid;
     grid-template-columns: 1fr auto;
-    gap: 12px;
+    grid-template-areas:
+      "left primary"
+      "utils primary";
+    gap: 10px 12px;
     align-items: center;
     margin-top: 8px;
   }
   .toolbar .left {
+    grid-area: left;
     display: flex;
     gap: 8px;
     align-items: center;
     min-width: 0;
+    flex-wrap: wrap;
+    flex: 1 1 auto;
+    overflow: hidden; /* исключаем наезды в колонку primary */
   }
-  .toolbar .right {
+  .toolbar .primary {
+    grid-area: primary;
+    display: flex;
+    justify-content: end;
+    align-items: center;
+  }
+  .toolbar .utils {
+    grid-area: utils;
     display: flex;
     gap: 8px;
-    justify-content: flex-end;
     align-items: center;
+    flex-wrap: wrap;
   }
   .hint {
     color: var(--placeholder);
     font-size: 12px;
   }
-  .chips { display: flex; gap: 6px; flex-wrap: wrap; }
+  .chips { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 2px; }
   .chip {
     border: 1px solid var(--btn-subtle-border);
     background: transparent;
@@ -189,6 +206,7 @@
   }
   .chip.active, .chip:hover {
     background: var(--btn-subtle-hover, rgba(148,163,184,.08));
+    border-color: var(--btn-subtle-border);
   }
   .error {
     color: #c00;
