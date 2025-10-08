@@ -1,0 +1,77 @@
+{
+  "ext_description": {
+    "message": "Ollamaで動くローカルアシスタント：オーバーレイ、コンテキストメニュー、外部通信なしのストリーミング。"
+  },
+  "cmd_toggle_overlay_description": {
+    "message": "オーバーレイを開く／閉じる"
+  },
+  "context_root": {
+    "message": "ローカルLLMに質問"
+  },
+  "context_qa_selection": {
+    "message": "選択範囲のQ&A"
+  },
+  "context_tldr": {
+    "message": "ページのTL;DR"
+  },
+  "refresh_models_title": {
+    "message": "モデル一覧を再読み込み"
+  },
+  "theme_toggle_aria": {
+    "message": "テーマを切り替える"
+  },
+  "input_placeholder": {
+    "message": "質問（空欄なら要約）…"
+  },
+  "hint_submit": {
+    "message": "Enterで送信、Shift+Enterで改行"
+  },
+  "preset_summarize_title": {
+    "message": "選択範囲／ページを要約"
+  },
+  "preset_tldr_title": {
+    "message": "ページのTL;DR"
+  },
+  "model_fallback_placeholder": {
+    "message": "モデル名（例：llama3:latest）"
+  },
+  "send_title": {
+    "message": "ローカルLLMへリクエストを送信"
+  },
+  "zero_auto_placeholder": {
+    "message": "0は自動"
+  },
+  "fallback_header": {
+    "message": "Ollama Assistant（フォールバック）"
+  },
+  "fallback_input_placeholder": {
+    "message": "質問（空欄なら要約）…"
+  },
+  "fallback_start": {
+    "message": "ローカルに問い合わせ"
+  },
+  "prompt_summary_instruction": {
+    "message": "以下を簡潔かつ構造的に要約してください：短い導入＋事実や数値を含む5–8個の箇条書き。可能なら「要点」と「詳細」のセクションを設けて強調してください。"
+  },
+  "prompt_summary_extra": {
+    "message": "謝罪や関連性の評価は不要です。要約のみを行ってください。"
+  },
+  "prompt_context_label": {
+    "message": "コンテキスト："
+  },
+  "prompt_question_label": {
+    "message": "質問："
+  },
+  "prompt_empty_context": {
+    "message": "コンテキスト：（なし）"
+  },
+  "error_403_hint": {
+    "message": "アクセスが禁止されています。Ollamaに拡張機能のオリジンを許可してください。例（macOS）：\nlaunchctl setenv OLLAMA_ORIGINS \"chrome-extension://$1,http://localhost,http://127.0.0.1\"\nlaunchctl kickstart -k system/com.ollama.ollama\nまたは次のようにOllamaを再起動します： OLLAMA_ORIGINS=\"chrome-extension://$1,http://localhost,http://127.0.0.1\" ollama serve"
+  },
+  "no_response_body": {
+    "message": "Ollamaからのレスポンスボディがありません"
+  },
+  "system_prompt_default": {
+    "message": "あなたはローカルアシスタント（クラウドなし）です。\n簡潔かつ構造的に回答してください。\n「コンテキスト：」が与えられている場合はそれのみに基づいて処理してください：簡潔な要約（導入＋5–8項目）の後、質問があれば回答します。\nMarkdownを保持してください：見出し、リスト、コードブロック（```）、表。\n謝罪や関連性の評価は行わず、要求に沿って回答してください。"
+  }
+}

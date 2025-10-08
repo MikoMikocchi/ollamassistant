@@ -1,0 +1,101 @@
+{
+  "ext_name": { "message": "Ollamassistant" },
+  "ext_description": {
+    "message": "基于 Ollama 的本地助手：叠加层、右键菜单，以及无外部流量的流式传输。"
+  },
+  "action_title": { "message": "Ollamassistant" },
+  "cmd_toggle_overlay_description": { "message": "打开/关闭覆盖层" },
+
+  "context_root": { "message": "询问本地 LLM" },
+  "context_summarize": { "message": "总结" },
+  "context_qa_selection": { "message": "选中内容问答" },
+  "context_tldr": { "message": "页面 TL;DR" },
+
+  "overlay_panel_aria": { "message": "Ollamassistant" },
+  "refresh_models_title": { "message": "刷新模型列表" },
+  "refresh_models_button": { "message": "刷新" },
+  "error": { "message": "错误" },
+
+  "header_generating": { "message": "生成中…" },
+  "theme_toggle_to_light": { "message": "浅色主题" },
+  "theme_toggle_to_dark": { "message": "深色主题" },
+  "close_panel_title": { "message": "关闭面板" },
+  "close_panel_aria": { "message": "关闭" },
+  "title_version_aria": { "message": "标题和版本" },
+  "theme_toggle_aria": { "message": "切换主题" },
+
+  "input_placeholder": {
+    "message": "输入问题，或留空以进行总结…"
+  },
+  "input_aria_label": { "message": "给助手的问题" },
+  "hint_submit": {
+    "message": "Enter — 发送 • Shift+Enter — 换行"
+  },
+  "presets_aria_label": { "message": "快速预设" },
+  "preset_summarize_label": { "message": "总结" },
+  "preset_summarize_title": { "message": "总结选中/页面" },
+  "preset_tldr_label": { "message": "TL;DR" },
+  "preset_tldr_title": { "message": "页面 TL;DR" },
+  "toolbar_aria_label": { "message": "输入工具栏" },
+  "models_loading": { "message": "正在加载模型列表…" },
+  "select_model_placeholder": { "message": "选择模型" },
+  "no_matches": { "message": "无匹配" },
+  "model_fallback_placeholder": { "message": "model（例如：llama3:latest）" },
+  "model_aria_label": { "message": "模型" },
+  "error_label": { "message": "错误" },
+  "stop_title": { "message": "停止生成" },
+  "stop_label": { "message": "停止" },
+  "send_title": { "message": "向本地 LLM 发送请求" },
+  "send_label": { "message": "发送" },
+  "settings_title": { "message": "生成参数" },
+  "settings_label": { "message": "设置" },
+  "save_model_title": { "message": "保存当前模型" },
+  "save_label": { "message": "保存" },
+
+  "params_aria_label": { "message": "生成参数" },
+  "zero_auto_placeholder": { "message": "0 = 自动" },
+
+  "output_aria_label": { "message": "模型回答" },
+  "autoscroll_disable_title": { "message": "禁用自动滚动" },
+  "autoscroll_enable_title": { "message": "启用自动滚动" },
+  "autoscroll_label_on": { "message": "自动↓" },
+  "autoscroll_label_off": { "message": "自动✕" },
+  "clear_output_title": { "message": "清空输出" },
+  "clear_output_aria": { "message": "清空" },
+  "copy_answer_title": { "message": "复制回答" },
+  "copy_answer_aria": { "message": "复制" },
+  "output_placeholder": { "message": "答案将显示在此…" },
+
+  "label_title": { "message": "标题" },
+  "label_url": { "message": "URL" },
+  "label_text": { "message": "文本" },
+  "fallback_header": { "message": "Ollama Assistant（备用）" },
+  "fallback_input_placeholder": {
+    "message": "输入问题，或留空以进行总结..."
+  },
+  "fallback_start": { "message": "本地询问" },
+  "fallback_stop": { "message": "停止" },
+  "fallback_done": { "message": "--- 完成 ---" },
+  "error_lower": { "message": "错误" },
+  "fallback_default_prompt": { "message": "总结页面可见内容。" },
+
+  "prompt_summary_instruction": {
+    "message": "请将以下内容简洁且结构化地总结：简短引言 + 含事实和数字的 5–8 个要点；若适用——突出‘要点’和‘细节’部分。"
+  },
+  "prompt_summary_extra": {
+    "message": "不要道歉，不要评判相关性——只需给出总结。"
+  },
+  "prompt_context_label": { "message": "上下文：" },
+  "prompt_question_label": { "message": "问题：" },
+  "prompt_empty_context": { "message": "上下文：（空）" },
+
+  "ollama_error_prefix": { "message": "Ollama" },
+  "error_403_hint": {
+    "message": "禁止访问。请为 Ollama 允许扩展来源。示例（macOS）：\nlaunchctl setenv OLLAMA_ORIGINS \"chrome-extension://$1,http://localhost,http://127.0.0.1\"\nlaunchctl kickstart -k system/com.ollama.ollama\n或按如下方式重启 Ollama：OLLAMA_ORIGINS=\"chrome-extension://$1,http://localhost,http://127.0.0.1\" ollama serve"
+  },
+  "no_response_body": { "message": "Ollama 没有返回响应体" },
+  "system_prompt_default": {
+    "message": "你是一个本地助手（无云）。\n请简短且结构化地回答。\n若提供了‘上下文：’，仅基于该内容：先给出简洁摘要（引言 + 5–8 条），然后回答问题（如有）。\n保留 Markdown：标题、列表、代码 (```)、表格。\n不要道歉，不要评判内容相关性；只需按请求作答。"
+  }
+}
+

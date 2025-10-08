@@ -1,0 +1,101 @@
+{
+  "ext_name": { "message": "Ollamassistant" },
+  "ext_description": {
+    "message": "Lokaler Assistent mit Ollama: Overlay, Kontextmenü und Streaming ohne externen Traffic."
+  },
+  "action_title": { "message": "Ollamassistant" },
+  "cmd_toggle_overlay_description": { "message": "Overlay öffnen/schließen" },
+
+  "context_root": { "message": "Lokale LLM fragen" },
+  "context_summarize": { "message": "Zusammenfassen" },
+  "context_qa_selection": { "message": "Q&A zur Auswahl" },
+  "context_tldr": { "message": "Seite TL;DR" },
+
+  "overlay_panel_aria": { "message": "Ollamassistant" },
+  "refresh_models_title": { "message": "Modellliste aktualisieren" },
+  "refresh_models_button": { "message": "Aktualisieren" },
+  "error": { "message": "Fehler" },
+
+  "header_generating": { "message": "Generiere…" },
+  "theme_toggle_to_light": { "message": "Helles Theme" },
+  "theme_toggle_to_dark": { "message": "Dunkles Theme" },
+  "close_panel_title": { "message": "Panel schließen" },
+  "close_panel_aria": { "message": "Schließen" },
+  "title_version_aria": { "message": "Titel und Version" },
+  "theme_toggle_aria": { "message": "Theme umschalten" },
+
+  "input_placeholder": {
+    "message": "Stelle eine Frage oder leer lassen zum Zusammenfassen…"
+  },
+  "input_aria_label": { "message": "Frage an den Assistenten" },
+  "hint_submit": {
+    "message": "Enter — senden • Shift+Enter — neue Zeile"
+  },
+  "presets_aria_label": { "message": "Schnelle Presets" },
+  "preset_summarize_label": { "message": "Zusammenfassen" },
+  "preset_summarize_title": { "message": "Auswahl/Seite zusammenfassen" },
+  "preset_tldr_label": { "message": "TL;DR" },
+  "preset_tldr_title": { "message": "TL;DR der Seite" },
+  "toolbar_aria_label": { "message": "Eingabe-Toolbar" },
+  "models_loading": { "message": "Modellliste wird geladen…" },
+  "select_model_placeholder": { "message": "Modell wählen" },
+  "no_matches": { "message": "Keine Treffer" },
+  "model_fallback_placeholder": { "message": "model (z. B. llama3:latest)" },
+  "model_aria_label": { "message": "Modell" },
+  "error_label": { "message": "Fehler" },
+  "stop_title": { "message": "Generierung stoppen" },
+  "stop_label": { "message": "Stopp" },
+  "send_title": { "message": "Anfrage an lokale LLM senden" },
+  "send_label": { "message": "Senden" },
+  "settings_title": { "message": "Generierungsparameter" },
+  "settings_label": { "message": "Einstellungen" },
+  "save_model_title": { "message": "Aktuelles Modell speichern" },
+  "save_label": { "message": "Speichern" },
+
+  "params_aria_label": { "message": "Generierungsparameter" },
+  "zero_auto_placeholder": { "message": "0 = automatisch" },
+
+  "output_aria_label": { "message": "Modellantwort" },
+  "autoscroll_disable_title": { "message": "Autoscroll deaktivieren" },
+  "autoscroll_enable_title": { "message": "Autoscroll aktivieren" },
+  "autoscroll_label_on": { "message": "Auto↓" },
+  "autoscroll_label_off": { "message": "Auto✕" },
+  "clear_output_title": { "message": "Ausgabe löschen" },
+  "clear_output_aria": { "message": "Löschen" },
+  "copy_answer_title": { "message": "Antwort kopieren" },
+  "copy_answer_aria": { "message": "Kopieren" },
+  "output_placeholder": { "message": "Antwort erscheint hier…" },
+
+  "label_title": { "message": "Titel" },
+  "label_url": { "message": "URL" },
+  "label_text": { "message": "Text" },
+  "fallback_header": { "message": "Ollama Assistant (Fallback)" },
+  "fallback_input_placeholder": {
+    "message": "Frage oder leer lassen zum Zusammenfassen..."
+  },
+  "fallback_start": { "message": "Lokal fragen" },
+  "fallback_stop": { "message": "Stopp" },
+  "fallback_done": { "message": "--- fertig ---" },
+  "error_lower": { "message": "fehler" },
+  "fallback_default_prompt": { "message": "Fasse den sichtbaren Inhalt der Seite zusammen." },
+
+  "prompt_summary_instruction": {
+    "message": "Fasse den folgenden Inhalt kurz und strukturiert zusammen: eine kurze Einleitung + 5–8 Stichpunkte mit Fakten und Zahlen; falls vorhanden — hebe die Abschnitte 'Wichtiges' und 'Details' hervor."
+  },
+  "prompt_summary_extra": {
+    "message": "Bitte nicht entschuldigen oder Relevanz bewerten — einfach zusammenfassen."
+  },
+  "prompt_context_label": { "message": "Kontext:" },
+  "prompt_question_label": { "message": "Frage:" },
+  "prompt_empty_context": { "message": "Kontext: (leer)" },
+
+  "ollama_error_prefix": { "message": "Ollama" },
+  "error_403_hint": {
+    "message": "Verboten. Erlaube den Ursprung der Erweiterung für Ollama. Beispiel (macOS):\nlaunchctl setenv OLLAMA_ORIGINS \"chrome-extension://$1,http://localhost,http://127.0.0.1\"\nlaunchctl kickstart -k system/com.ollama.ollama\nOder Ollama so neu starten: OLLAMA_ORIGINS=\"chrome-extension://$1,http://localhost,http://127.0.0.1\" ollama serve"
+  },
+  "no_response_body": { "message": "Keine Antwort vom Ollama-Server" },
+  "system_prompt_default": {
+    "message": "Du bist ein lokaler Assistent (ohne Cloud).\nAntworte kurz und strukturiert.\nWenn 'Kontext:' gegeben ist — arbeite nur damit: kurze Zusammenfassung (Einleitung + 5–8 Punkte), danach beantworte die Frage (falls vorhanden).\nBewahre Markdown: Überschriften, Listen, Code (```), Tabellen.\nBitte nicht entschuldigen und die Relevanz nicht bewerten; beantworte einfach die Anfrage."
+  }
+}
+
