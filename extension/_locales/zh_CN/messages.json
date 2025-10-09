@@ -94,6 +94,26 @@
     "message": "禁止访问。请为 Ollama 允许扩展来源。示例（macOS）：\nlaunchctl setenv OLLAMA_ORIGINS \"chrome-extension://$1,http://localhost,http://127.0.0.1\"\nlaunchctl kickstart -k system/com.ollama.ollama\n或按如下方式重启 Ollama：OLLAMA_ORIGINS=\"chrome-extension://$1,http://localhost,http://127.0.0.1\" ollama serve"
   },
   "no_response_body": { "message": "Ollama 没有返回响应体" },
+
+  "error_generic": { "message": "An error occurred. Please try again." },
+  "error_network": { "message": "Network error. Please check your internet connection." },
+  "error_model_not_found": { "message": "Model not found. Please ensure the model is available in Ollama." },
+  "error_unknown": { "message": "An unknown error occurred." },
+  "error_stream": { "message": "An error occurred while streaming the response." },
+  "error_suggestions": { "message": "Suggestions:" },
+  "suggestion_check_ollama_running": { "message": "Check if Ollama is running." },
+  "suggestion_check_model_name": { "message": "Verify the model name is correct." },
+  "suggestion_check_browser_permissions": { "message": "Check browser permissions for the extension." },
+  "suggestion_check_ollama_origins": { "message": "Ensure OLLAMA_ORIGINS is configured correctly for the extension." },
+  "suggestion_view_logs": { "message": "View Ollama server logs for more details." },
+  "suggestion_retry": { "message": "Retry the request." },
+  "retry_button": { "message": "Retry" },
+  "copy_error_button": { "message": "Copy Error" },
+  "copied_toast": { "message": "Copied to clipboard" },
+  "show_details_button": { "message": "Show Details" },
+  "hide_details_button": { "message": "Hide Details" },
+  "technical_details": { "message": "Technical Details" },
+
   "system_prompt_default": {
     "message": "你是一个本地助手（无云）。\n请简短且结构化地回答。\n若提供了‘上下文：’，仅基于该内容：先给出简洁摘要（引言 + 5–8 条），然后回答问题（如有）。\n保留 Markdown：标题、列表、代码 (```)、表格。\n不要道歉，不要评判内容相关性；只需按请求作答。"
   }

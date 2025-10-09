@@ -1,100 +1,308 @@
 {
-  "ext_name": { "message": "Ollamassistant" },
+  "ext_name": {
+    "message": "Ollamassistant"
+  },
   "ext_description": {
     "message": "Локальный ассистент с Ollama: overlay, контекстное меню и стрим без внешнего трафика."
   },
-  "action_title": { "message": "Ollamassistant" },
-  "cmd_toggle_overlay_description": { "message": "Открыть/закрыть Overlay" },
-
-  "context_root": { "message": "Спросить локальную LLM" },
-  "context_summarize": { "message": "Суммаризировать" },
-  "context_qa_selection": { "message": "Q&A по выделению" },
-  "context_tldr": { "message": "TL;DR страницы" },
-
-  "overlay_panel_aria": { "message": "Ollamassistant" },
-  "refresh_models_title": { "message": "Обновить список моделей" },
-  "refresh_models_button": { "message": "Обновить список" },
-  "error": { "message": "Ошибка" },
-
-  "header_generating": { "message": "Генерация…" },
-  "theme_toggle_to_light": { "message": "Светлая тема" },
-  "theme_toggle_to_dark": { "message": "Тёмная тема" },
-  "close_panel_title": { "message": "Закрыть панель" },
-  "close_panel_aria": { "message": "Закрыть" },
-  "title_version_aria": { "message": "Название и версия" },
-  "theme_toggle_aria": { "message": "Сменить тему" },
-
+  "action_title": {
+    "message": "Ollamassistant"
+  },
+  "cmd_toggle_overlay_description": {
+    "message": "Открыть/закрыть Overlay"
+  },
+  "context_root": {
+    "message": "Спросить локальную LLM"
+  },
+  "context_summarize": {
+    "message": "Суммаризировать"
+  },
+  "context_qa_selection": {
+    "message": "Q&A по выделению"
+  },
+  "context_tldr": {
+    "message": "TL;DR страницы"
+  },
+  "overlay_panel_aria": {
+    "message": "Ollamassistant"
+  },
+  "refresh_models_title": {
+    "message": "Обновить список моделей"
+  },
+  "refresh_models_button": {
+    "message": "Обновить список"
+  },
+  "error": {
+    "message": "Ошибка"
+  },
+  "header_generating": {
+    "message": "Генерация…"
+  },
+  "theme_toggle_to_light": {
+    "message": "Светлая тема"
+  },
+  "theme_toggle_to_dark": {
+    "message": "Тёмная тема"
+  },
+  "close_panel_title": {
+    "message": "Закрыть панель"
+  },
+  "close_panel_aria": {
+    "message": "Закрыть"
+  },
+  "title_version_aria": {
+    "message": "Название и версия"
+  },
+  "theme_toggle_aria": {
+    "message": "Сменить тему"
+  },
   "input_placeholder": {
     "message": "Задайте вопрос или оставьте пустым для суммаризации…"
   },
-  "input_aria_label": { "message": "Вопрос ассистенту" },
+  "input_aria_label": {
+    "message": "Вопрос ассистенту"
+  },
   "hint_submit": {
     "message": "Enter — отправить • Shift+Enter — новая строка"
   },
-  "presets_aria_label": { "message": "Быстрые пресеты" },
-  "preset_summarize_label": { "message": "Суммаризировать" },
-  "preset_summarize_title": { "message": "Суммаризировать выделение/страницу" },
-  "preset_tldr_label": { "message": "TL;DR" },
-  "preset_tldr_title": { "message": "TL;DR страницы" },
-  "toolbar_aria_label": { "message": "Панель ввода" },
-  "models_loading": { "message": "Загрузка списка моделей…" },
-  "select_model_placeholder": { "message": "Выберите модель" },
-  "no_matches": { "message": "Нет совпадений" },
-  "model_fallback_placeholder": { "message": "model (e.g. llama3:latest)" },
-  "model_aria_label": { "message": "Модель" },
-  "error_label": { "message": "Ошибка" },
-  "stop_title": { "message": "Остановить генерацию" },
-  "stop_label": { "message": "Стоп" },
-  "send_title": { "message": "Отправить запрос в локальную LLM" },
-  "send_label": { "message": "Отправить" },
-  "settings_title": { "message": "Параметры генерации" },
-  "settings_label": { "message": "Настройки" },
-  "save_model_title": { "message": "Сохранить модель как текущую" },
-  "save_label": { "message": "Сохранить" },
-
-  "params_aria_label": { "message": "Параметры генерации" },
-  "zero_auto_placeholder": { "message": "0 = авто" },
-
-  "output_aria_label": { "message": "Ответ модели" },
-  "autoscroll_disable_title": { "message": "Отключить автоскролл" },
-  "autoscroll_enable_title": { "message": "Включить автоскролл" },
-  "autoscroll_label_on": { "message": "Авто↓" },
-  "autoscroll_label_off": { "message": "Авто✕" },
-  "clear_output_title": { "message": "Очистить поле ответа" },
-  "clear_output_aria": { "message": "Очистить" },
-  "copy_answer_title": { "message": "Скопировать ответ" },
-  "copy_answer_aria": { "message": "Копировать" },
-  "output_placeholder": { "message": "Ответ появится здесь…" },
-
-  "label_title": { "message": "Заголовок" },
-  "label_url": { "message": "URL" },
-  "label_text": { "message": "Текст" },
-  "fallback_header": { "message": "Ollama Assistant (fallback)" },
+  "presets_aria_label": {
+    "message": "Быстрые пресеты"
+  },
+  "preset_summarize_label": {
+    "message": "Суммаризировать"
+  },
+  "preset_summarize_title": {
+    "message": "Суммаризировать выделение/страницу"
+  },
+  "preset_tldr_label": {
+    "message": "TL;DR"
+  },
+  "preset_tldr_title": {
+    "message": "TL;DR страницы"
+  },
+  "toolbar_aria_label": {
+    "message": "Панель ввода"
+  },
+  "models_loading": {
+    "message": "Загрузка списка моделей…"
+  },
+  "select_model_placeholder": {
+    "message": "Выберите модель"
+  },
+  "no_matches": {
+    "message": "Нет совпадений"
+  },
+  "model_fallback_placeholder": {
+    "message": "model (e.g. llama3:latest)"
+  },
+  "model_aria_label": {
+    "message": "Модель"
+  },
+  "error_label": {
+    "message": "Ошибка"
+  },
+  "stop_title": {
+    "message": "Остановить генерацию"
+  },
+  "stop_label": {
+    "message": "Стоп"
+  },
+  "send_title": {
+    "message": "Отправить запрос в локальную LLM"
+  },
+  "send_label": {
+    "message": "Отправить"
+  },
+  "settings_title": {
+    "message": "Параметры генерации"
+  },
+  "settings_label": {
+    "message": "Настройки"
+  },
+  "save_model_title": {
+    "message": "Сохранить модель как текущую"
+  },
+  "save_label": {
+    "message": "Сохранить"
+  },
+  "params_aria_label": {
+    "message": "Параметры генерации"
+  },
+  "zero_auto_placeholder": {
+    "message": "0 = авто"
+  },
+  "output_aria_label": {
+    "message": "Ответ модели"
+  },
+  "autoscroll_disable_title": {
+    "message": "Отключить автоскролл"
+  },
+  "autoscroll_enable_title": {
+    "message": "Включить автоскролл"
+  },
+  "autoscroll_label_on": {
+    "message": "Авто↓"
+  },
+  "autoscroll_label_off": {
+    "message": "Авто✕"
+  },
+  "clear_output_title": {
+    "message": "Очистить поле ответа"
+  },
+  "clear_output_aria": {
+    "message": "Очистить"
+  },
+  "copy_answer_title": {
+    "message": "Скопировать ответ"
+  },
+  "copy_answer_aria": {
+    "message": "Копировать"
+  },
+  "output_placeholder": {
+    "message": "Ответ появится здесь…"
+  },
+  "label_title": {
+    "message": "Заголовок"
+  },
+  "label_url": {
+    "message": "URL"
+  },
+  "label_text": {
+    "message": "Текст"
+  },
+  "fallback_header": {
+    "message": "Ollama Assistant (fallback)"
+  },
   "fallback_input_placeholder": {
     "message": "Вопрос или оставить пустым для суммаризации..."
   },
-  "fallback_start": { "message": "Спросить локально" },
-  "fallback_stop": { "message": "Стоп" },
-  "fallback_done": { "message": "--- готово ---" },
-  "error_lower": { "message": "ошибка" },
-  "fallback_default_prompt": { "message": "Суммаризируй видимое содержимое страницы." },
-
+  "fallback_start": {
+    "message": "Спросить локально"
+  },
+  "fallback_stop": {
+    "message": "Стоп"
+  },
+  "fallback_done": {
+    "message": "--- готово ---"
+  },
+  "error_lower": {
+    "message": "ошибка"
+  },
+  "fallback_default_prompt": {
+    "message": "Суммаризируй видимое содержимое страницы."
+  },
   "prompt_summary_instruction": {
     "message": "Суммаризируй следующий контекст кратко и структурировано: короткое введение + 5–8 тезисов с фактами и числами; если есть — выдели разделы 'Главное' и 'Детали'."
   },
   "prompt_summary_extra": {
     "message": "Не извиняйся и не оценивай релевантность — просто сделай резюме."
   },
-  "prompt_context_label": { "message": "Контекст:" },
-  "prompt_question_label": { "message": "Вопрос:" },
-  "prompt_empty_context": { "message": "Контекст: (пусто)" },
-
-  "ollama_error_prefix": { "message": "Ollama" },
+  "prompt_context_label": {
+    "message": "Контекст:"
+  },
+  "prompt_question_label": {
+    "message": "Вопрос:"
+  },
+  "prompt_empty_context": {
+    "message": "Контекст: (пусто)"
+  },
+  "ollama_error_prefix": {
+    "message": "Ollama"
+  },
   "error_403_hint": {
     "message": "Запрещено. Разрешите источник расширения для Ollama. Пример (macOS):\nlaunchctl setenv OLLAMA_ORIGINS \"chrome-extension://$1,http://localhost,http://127.0.0.1\"\nlaunchctl kickstart -k system/com.ollama.ollama\nИли перезапустите Ollama так: OLLAMA_ORIGINS=\"chrome-extension://$1,http://localhost,http://127.0.0.1\" ollama serve"
   },
-  "no_response_body": { "message": "Нет тела ответа от Ollama" },
+  "no_response_body": {
+    "message": "Нет тела ответа от Ollama"
+  },
   "system_prompt_default": {
     "message": "Ты — локальный помощник (без облака).\nОтвечай кратко и структурировано.\nЕсли дан 'Контекст:' — работай только с ним: краткое резюме (введение + 5–8 пунктов), затем ответ на вопрос (если он есть).\nСохраняй Markdown-разметку: заголовки, списки, код (```), таблицы.\nНе извиняйся и не оценивай релевантность контента; просто отвечай по запросу."
+  },
+  "error_generic": {
+    "message": "Произошла ошибка. Попробуйте еще раз."
+  },
+  "error_network": {
+    "message": "Ошибка сети. Проверьте подключение к интернету."
+  },
+  "error_ollama_connection": {
+    "message": "Не удается подключиться к Ollama. Убедитесь, что сервис запущен."
+  },
+  "error_model_not_found": {
+    "message": "Модель не найдена. Проверьте название модели."
+  },
+  "error_timeout": {
+    "message": "Время ожидания истекло. Попробуйте еще раз."
+  },
+  "error_no_response": {
+    "message": "Нет ответа от сервера. Проверьте настройки."
+  },
+  "error_title": {
+    "message": "Ошибка"
+  },
+  "warning_title": {
+    "message": "Предупреждение"
+  },
+  "info_title": {
+    "message": "Информация"
+  },
+  "suggestions_title": {
+    "message": "Возможные решения"
+  },
+  "suggestion_check_internet": {
+    "message": "Проверьте подключение к интернету"
+  },
+  "suggestion_check_ollama_running": {
+    "message": "Убедитесь, что Ollama запущен"
+  },
+  "suggestion_check_firewall": {
+    "message": "Проверьте настройки брандмауэра"
+  },
+  "suggestion_start_ollama": {
+    "message": "Запустите сервис Ollama"
+  },
+  "suggestion_check_ollama_port": {
+    "message": "Проверьте порт Ollama (по умолчанию 11434)"
+  },
+  "suggestion_restart_ollama": {
+    "message": "Перезапустите Ollama"
+  },
+  "suggestion_install_model": {
+    "message": "Установите модель: ollama pull <model-name>"
+  },
+  "suggestion_check_model_name": {
+    "message": "Проверьте правильность названия модели"
+  },
+  "suggestion_try_different_model": {
+    "message": "Попробуйте другую модель"
+  },
+  "suggestion_try_again": {
+    "message": "Попробуйте еще раз"
+  },
+  "suggestion_check_model_size": {
+    "message": "Попробуйте модель меньшего размера"
+  },
+  "suggestion_increase_timeout": {
+    "message": "Увеличьте время ожидания"
+  },
+  "suggestion_check_settings": {
+    "message": "Проверьте настройки расширения"
+  },
+  "suggestion_contact_support": {
+    "message": "Обратитесь за поддержкой"
+  },
+  "retry_button": {
+    "message": "Повторить"
+  },
+  "dismiss_button": {
+    "message": "Закрыть"
+  },
+  "show_details": {
+    "message": "Показать детали"
+  },
+  "hide_details": {
+    "message": "Скрыть детали"
+  },
+  "technical_details": {
+    "message": "Технические подробности"
   }
 }

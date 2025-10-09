@@ -16,7 +16,9 @@
     scrollToBottom();
   }
   import Button from "./components/Button.svelte";
+  import LoadingState from "./components/LoadingState.svelte";
   import { t } from "../src/shared/i18n";
+  import { fadeScale, typewriter } from "./animations";
 </script>
 
 <div
@@ -79,10 +81,16 @@
     </div>
   </div>
   <div class="output-content markdown" aria-live="polite" bind:this={contentEl}>
-    {#if output}
-      {@html rendered}
+    {#if streaming && !output}
+      <LoadingState variant="skeleton" skeletonLines={3} />
+    {:else if output}
+      <div transition:fadeScale>
+        {@html rendered}
+      </div>
     {:else}
-      <span class="placeholder">{t("output_placeholder")}</span>
+      <span class="placeholder" transition:fadeScale
+        >{t("output_placeholder")}</span
+      >
     {/if}
   </div>
 </div>
@@ -100,12 +108,15 @@
     min-height: 220px;
     box-sizing: border-box;
     padding: 10px;
+    transition: all 0.2s ease;
+    animation: output-appear 0.3s ease-out;
   }
   .output-header {
     display: flex;
     align-items: center;
     gap: 8px;
     margin-bottom: 6px;
+    animation: header-slide 0.4s ease-out;
   }
   .output-header .spacer {
     flex: 1 1 auto;
@@ -127,12 +138,46 @@
     border-radius: 8px;
     background: transparent;
     white-space: normal;
+    transition: opacity 0.2s ease;
   }
   .output.is-empty {
     opacity: 0.7;
   }
   .output .placeholder {
     opacity: 0.6;
+    animation: placeholder-pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes output-appear {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes header-slide {
+    from {
+      opacity: 0;
+      transform: translateX(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes placeholder-pulse {
+    0%,
+    100% {
+      opacity: 0.6;
+    }
+    50% {
+      opacity: 0.3;
+    }
   }
   :global(.markdown) {
     font-family:
@@ -185,6 +230,29 @@
   :global(.markdown pre.code code) {
     background: transparent;
     padding: 0;
+  }
+
+  /* Accessibility improvements */
+  @media (prefers-reduced-motion: reduce) {
+    .output,
+    .output-header,
+    .output .placeholder,
+    .output-content {
+      animation: none;
+      transition: none;
+    }
+  }
+
+  /* Responsive */
+  @media (max-width: 640px) {
+    .output {
+      min-height: 180px;
+      padding: 8px;
+    }
+
+    .actions {
+      gap: 4px;
+    }
   }
   :global(.markdown a) {
     color: var(--link);

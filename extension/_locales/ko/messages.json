@@ -94,6 +94,26 @@
     "message": "금지되었습니다. Ollama에 확장 프로그램 원본을 허용하세요. 예 (macOS):\nlaunchctl setenv OLLAMA_ORIGINS \"chrome-extension://$1,http://localhost,http://127.0.0.1\"\nlaunchctl kickstart -k system/com.ollama.ollama\n또는 다음과 같이 Ollama를 재시작: OLLAMA_ORIGINS=\"chrome-extension://$1,http://localhost,http://127.0.0.1\" ollama serve"
   },
   "no_response_body": { "message": "Ollama에서 응답 본문이 없습니다" },
+
+  "error_generic": { "message": "An error occurred. Please try again." },
+  "error_network": { "message": "Network error. Please check your internet connection." },
+  "error_model_not_found": { "message": "Model not found. Please ensure the model is available in Ollama." },
+  "error_unknown": { "message": "An unknown error occurred." },
+  "error_stream": { "message": "An error occurred while streaming the response." },
+  "error_suggestions": { "message": "Suggestions:" },
+  "suggestion_check_ollama_running": { "message": "Check if Ollama is running." },
+  "suggestion_check_model_name": { "message": "Verify the model name is correct." },
+  "suggestion_check_browser_permissions": { "message": "Check browser permissions for the extension." },
+  "suggestion_check_ollama_origins": { "message": "Ensure OLLAMA_ORIGINS is configured correctly for the extension." },
+  "suggestion_view_logs": { "message": "View Ollama server logs for more details." },
+  "suggestion_retry": { "message": "Retry the request." },
+  "retry_button": { "message": "Retry" },
+  "copy_error_button": { "message": "Copy Error" },
+  "copied_toast": { "message": "Copied to clipboard" },
+  "show_details_button": { "message": "Show Details" },
+  "hide_details_button": { "message": "Hide Details" },
+  "technical_details": { "message": "Technical Details" },
+
   "system_prompt_default": {
     "message": "당신은 로컬 어시스턴트(클라우드 없음)입니다.\n간결하고 구조적으로 답하세요.\n‘컨텍스트:’가 주어지면 — 그 내용만으로 작업: 간결한 요약(소개 + 5–8개 항목) 후 질문이 있으면 답하세요.\nMarkdown 유지: 제목, 목록, 코드 (```), 표.\n사과하거나 콘텐츠의 관련성을 평가하지 말고, 요청에 따라 답하세요."
   }

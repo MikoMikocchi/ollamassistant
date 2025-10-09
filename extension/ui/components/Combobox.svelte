@@ -6,6 +6,7 @@
   export let compact: boolean = false;
   export let disabled: boolean = false;
   import { t } from "../../src/shared/i18n";
+  import { slideIn, stagger } from "../animations";
 
   const dispatch = createEventDispatcher();
   let open = false;
@@ -118,6 +119,7 @@
       role="listbox"
       id="combo-list"
       tabindex="-1"
+      transition:slideIn={{ duration: 200 }}
     >
       {#if filtered.length === 0}
         <div class="empty">{t("no_matches")}</div>
@@ -161,10 +163,15 @@
     font: inherit;
     font-size: 13px;
     outline: none;
+    transition: all 0.2s ease;
+  }
+  .input:hover {
+    border-color: #8b5cf6;
   }
   .input:focus {
     border-color: #6366f1;
     box-shadow: 0 0 0 3px var(--focus-ring);
+    transform: translateY(-1px);
   }
   .list {
     position: absolute;
@@ -179,6 +186,7 @@
     border-radius: 10px;
     box-shadow: 0 10px 24px rgba(16, 24, 40, 0.2);
     padding: 4px;
+    animation: list-appear 0.2s ease-out;
   }
   .item {
     width: 100%;
@@ -190,15 +198,67 @@
     color: var(--panel-text);
     cursor: pointer;
     font-size: 13px;
+    transition: all 0.15s ease;
+    animation: item-appear 0.2s ease-out;
   }
   .item:hover,
   .item.active {
     background: var(--btn-subtle-hover, rgba(148, 163, 184, 0.08));
-    border-color: var(--btn-subtle-border);
+    border-color: #6366f1;
+    transform: translateX(2px);
   }
   .empty {
     padding: 8px;
     color: var(--placeholder);
     font-size: 13px;
+    animation: empty-appear 0.3s ease-out;
+  }
+
+  @keyframes list-appear {
+    from {
+      opacity: 0;
+      transform: translateY(-4px) scale(0.98);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  @keyframes item-appear {
+    from {
+      opacity: 0;
+      transform: translateX(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes empty-appear {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  /* Accessibility */
+  @media (prefers-reduced-motion: reduce) {
+    .input,
+    .list,
+    .item,
+    .empty {
+      transition: none;
+      animation: none;
+      transform: none;
+    }
+
+    .input:focus,
+    .item:hover {
+      transform: none;
+    }
   }
 </style>

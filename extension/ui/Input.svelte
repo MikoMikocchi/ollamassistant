@@ -21,7 +21,10 @@
   import Button from "./components/Button.svelte";
   import Combobox from "./components/Combobox.svelte";
   import ParamSheet from "./ParamSheet.svelte";
+  import LoadingState from "./components/LoadingState.svelte";
+  import ErrorDisplay from "./components/ErrorDisplay.svelte";
   import { t } from "../src/shared/i18n";
+  import { slideIn, fadeScale } from "./animations";
 
   let showParams = false;
   import { onMount } from "svelte";
@@ -71,7 +74,7 @@
 <div class="toolbar" role="group" aria-label={t("toolbar_aria_label")}>
   <div class="left">
     {#if modelsLoading}
-      <div class="muted">{t("models_loading")}</div>
+      <LoadingState variant="spinner" size="small" text={t("models_loading")} />
     {:else if models.length}
       <Combobox
         bind:value={model}
@@ -88,7 +91,13 @@
       />
     {/if}
     {#if modelsError}
-      <div class="error">{t("error_label")}: {modelsError}</div>
+      <ErrorDisplay
+        variant="warning"
+        title=""
+        message="{t('error_label')}: {modelsError}"
+        showRetry={false}
+        className="models-error"
+      />
     {/if}
   </div>
   <div class="primary">
@@ -129,7 +138,9 @@
 </div>
 
 {#if showParams}
-  <ParamSheet bind:temperature bind:top_p bind:max_tokens />
+  <div transition:slideIn>
+    <ParamSheet bind:temperature bind:top_p bind:max_tokens />
+  </div>
 {/if}
 
 <style>
@@ -149,20 +160,30 @@
     color: var(--panel-text);
     outline: none;
     transition:
-      border-color 0.12s ease,
-      box-shadow 0.12s ease;
+      border-color 0.2s ease,
+      box-shadow 0.2s ease,
+      transform 0.15s ease;
     resize: none;
     overflow: auto;
     max-height: 480px;
   }
   .input::placeholder {
     color: var(--placeholder);
+    transition: color 0.2s ease;
+  }
+  .input:hover {
+    border-color: #8b5cf6;
+    transform: translateY(-1px);
   }
   .input.compact {
     min-height: 0;
     height: 28px; /* выровнять с кнопками */
     padding: 0 8px;
     font-size: 13px;
+    transition: all 0.15s ease;
+  }
+  .input.compact:hover {
+    transform: none;
   }
   .model-fallback {
     width: 280px;
@@ -170,6 +191,7 @@
   .input:focus {
     border-color: #6366f1;
     box-shadow: 0 0 0 3px var(--focus-ring);
+    transform: translateY(-1px);
   }
   .toolbar {
     display: grid;
@@ -223,17 +245,56 @@
     padding: 4px 8px;
     font-size: 12px;
     cursor: pointer;
+    transition: all 0.15s ease;
   }
   .chip.active,
   .chip:hover {
     background: var(--btn-subtle-hover, rgba(148, 163, 184, 0.08));
-    border-color: var(--btn-subtle-border);
+    border-color: #6366f1;
+    transform: translateY(-1px);
   }
-  .error {
-    color: #c00;
-    margin-left: 8px;
+  .chip:active {
+    transform: translateY(0);
   }
-  .muted {
-    color: var(--placeholder);
+
+  /* Styles for new components */
+  :global(.models-error) {
+    margin: 0;
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+
+  /* Animation for chips */
+  .chips {
+    animation: chips-appear 0.3s ease-out;
+  }
+
+  @keyframes chips-appear {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Accessibility improvements */
+  @media (prefers-reduced-motion: reduce) {
+    .input,
+    .input.compact,
+    .chips,
+    .chip {
+      transition: none;
+      animation: none;
+      transform: none;
+    }
+
+    .input:hover,
+    .input:focus,
+    .chip:hover {
+      transform: none;
+    }
   }
 </style>

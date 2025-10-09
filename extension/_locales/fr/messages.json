@@ -94,6 +94,26 @@
     "message": "Interdit. Autorisez l’origine de l’extension pour Ollama. Exemple (macOS) :\nlaunchctl setenv OLLAMA_ORIGINS \"chrome-extension://$1,http://localhost,http://127.0.0.1\"\nlaunchctl kickstart -k system/com.ollama.ollama\nOu redémarrez Ollama ainsi : OLLAMA_ORIGINS=\"chrome-extension://$1,http://localhost,http://127.0.0.1\" ollama serve"
   },
   "no_response_body": { "message": "Aucun corps de réponse d’Ollama" },
+
+  "error_generic": { "message": "An error occurred. Please try again." },
+  "error_network": { "message": "Network error. Please check your internet connection." },
+  "error_model_not_found": { "message": "Model not found. Please ensure the model is available in Ollama." },
+  "error_unknown": { "message": "An unknown error occurred." },
+  "error_stream": { "message": "An error occurred while streaming the response." },
+  "error_suggestions": { "message": "Suggestions:" },
+  "suggestion_check_ollama_running": { "message": "Check if Ollama is running." },
+  "suggestion_check_model_name": { "message": "Verify the model name is correct." },
+  "suggestion_check_browser_permissions": { "message": "Check browser permissions for the extension." },
+  "suggestion_check_ollama_origins": { "message": "Ensure OLLAMA_ORIGINS is configured correctly for the extension." },
+  "suggestion_view_logs": { "message": "View Ollama server logs for more details." },
+  "suggestion_retry": { "message": "Retry the request." },
+  "retry_button": { "message": "Retry" },
+  "copy_error_button": { "message": "Copy Error" },
+  "copied_toast": { "message": "Copied to clipboard" },
+  "show_details_button": { "message": "Show Details" },
+  "hide_details_button": { "message": "Hide Details" },
+  "technical_details": { "message": "Technical Details" },
+
   "system_prompt_default": {
     "message": "Vous êtes un assistant local (sans cloud).\nRépondez brièvement et de façon structurée.\nSi 'Contexte :' est fourni — travaillez uniquement avec lui : résumé concis (introduction + 5–8 points), puis répondez à la question (le cas échéant).\nConservez le Markdown : titres, listes, code (```), tableaux.\nNe vous excusez pas et n’évaluez pas la pertinence du contenu ; répondez simplement à la demande."
   }

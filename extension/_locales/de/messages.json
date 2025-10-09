@@ -1,7 +1,7 @@
 {
   "ext_name": { "message": "Ollamassistant" },
   "ext_description": {
-    "message": "Lokaler Assistent mit Ollama: Overlay, Kontextmenü und Streaming ohne externen Traffic."
+    "message": "Lokaler Assistent mit Olloma: Overlay, Kontextmenü und Streaming ohne externen Traffic."
   },
   "action_title": { "message": "Ollamassistant" },
   "cmd_toggle_overlay_description": { "message": "Overlay öffnen/schließen" },
@@ -93,7 +93,27 @@
   "error_403_hint": {
     "message": "Verboten. Erlaube den Ursprung der Erweiterung für Ollama. Beispiel (macOS):\nlaunchctl setenv OLLAMA_ORIGINS \"chrome-extension://$1,http://localhost,http://127.0.0.1\"\nlaunchctl kickstart -k system/com.ollama.ollama\nOder Ollama so neu starten: OLLAMA_ORIGINS=\"chrome-extension://$1,http://localhost,http://127.0.0.1\" ollama serve"
   },
-  "no_response_body": { "message": "Keine Antwort vom Ollama-Server" },
+  "no_response_body": { "message": "Kein Antwortkörper von Ollama" },
+
+  "error_generic": { "message": "An error occurred. Please try again." },
+  "error_network": { "message": "Network error. Please check your internet connection." },
+  "error_model_not_found": { "message": "Model not found. Please ensure the model is available in Ollama." },
+  "error_unknown": { "message": "An unknown error occurred." },
+  "error_stream": { "message": "An error occurred while streaming the response." },
+  "error_suggestions": { "message": "Suggestions:" },
+  "suggestion_check_ollama_running": { "message": "Check if Ollama is running." },
+  "suggestion_check_model_name": { "message": "Verify the model name is correct." },
+  "suggestion_check_browser_permissions": { "message": "Check browser permissions for the extension." },
+  "suggestion_check_ollama_origins": { "message": "Ensure OLLAMA_ORIGINS is configured correctly for the extension." },
+  "suggestion_view_logs": { "message": "View Ollama server logs for more details." },
+  "suggestion_retry": { "message": "Retry the request." },
+  "retry_button": { "message": "Retry" },
+  "copy_error_button": { "message": "Copy Error" },
+  "copied_toast": { "message": "Copied to clipboard" },
+  "show_details_button": { "message": "Show Details" },
+  "hide_details_button": { "message": "Hide Details" },
+  "technical_details": { "message": "Technical Details" },
+
   "system_prompt_default": {
     "message": "Du bist ein lokaler Assistent (ohne Cloud).\nAntworte kurz und strukturiert.\nWenn 'Kontext:' gegeben ist — arbeite nur damit: kurze Zusammenfassung (Einleitung + 5–8 Punkte), danach beantworte die Frage (falls vorhanden).\nBewahre Markdown: Überschriften, Listen, Code (```), Tabellen.\nBitte nicht entschuldigen und die Relevanz nicht bewerten; beantworte einfach die Anfrage."
   }

@@ -46,7 +46,34 @@
     align-items: center;
     justify-content: center;
     gap: 6px;
+    transition: all 0.15s ease;
+    transform: translateY(0);
+    position: relative;
+    overflow: hidden;
   }
+
+  /* Ripple effect */
+  .btn::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: translate(-50%, -50%);
+    transition:
+      width 0.3s ease,
+      height 0.3s ease;
+    pointer-events: none;
+  }
+
+  .btn:active::before {
+    width: 300px;
+    height: 300px;
+  }
+
   .btn.compact {
     height: var(--btn-h-compact);
     padding: 0 10px;
@@ -60,16 +87,22 @@
   }
   .btn:focus-visible {
     box-shadow: 0 0 0 2px var(--focus-ring);
+    transform: translateY(-1px);
   }
   .btn.primary:hover {
     filter: brightness(1.03);
+    transform: translateY(-1px);
+    box-shadow: 0 8px 22px var(--btn-primary-shadow, rgba(37, 99, 235, 0.35));
   }
   .btn.primary:active {
-    transform: translateY(0.5px);
+    transform: translateY(0);
+    box-shadow: 0 4px 12px var(--btn-primary-shadow, rgba(37, 99, 235, 0.2));
   }
   .btn.primary:disabled {
     opacity: 0.6;
     cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
   }
   .btn.secondary {
     background: var(--btn-secondary-bg);
@@ -78,6 +111,10 @@
   }
   .btn.secondary:hover {
     filter: brightness(0.98);
+    transform: translateY(-1px);
+  }
+  .btn.secondary:active {
+    transform: translateY(0);
   }
   .btn.subtle {
     background: transparent;
@@ -86,6 +123,10 @@
   }
   .btn.subtle:hover {
     background: var(--btn-subtle-hover, rgba(148, 163, 184, 0.08));
+    transform: translateY(-1px);
+  }
+  .btn.subtle:active {
+    transform: translateY(0);
   }
   .btn.danger {
     background: var(--btn-danger-bg);
@@ -95,6 +136,12 @@
   }
   .btn.danger:hover {
     filter: brightness(1.03);
+    transform: translateY(-1px);
+    box-shadow: 0 8px 22px var(--btn-danger-shadow, rgba(239, 68, 68, 0.35));
+  }
+  .btn.danger:active {
+    transform: translateY(0);
+    box-shadow: 0 4px 12px var(--btn-danger-shadow, rgba(239, 68, 68, 0.2));
   }
   .btn.toggle {
     background: transparent;
@@ -105,5 +152,37 @@
     padding: 0 8px;
     font-weight: 700;
     font-size: 13px;
+  }
+  .btn.toggle:hover {
+    background: var(--btn-subtle-hover, rgba(148, 163, 184, 0.08));
+    transform: translateY(-1px);
+  }
+  .btn.toggle:active {
+    transform: translateY(0);
+  }
+
+  /* Accessibility improvements */
+  @media (prefers-reduced-motion: reduce) {
+    .btn,
+    .btn::before {
+      transition: none;
+      animation: none;
+      transform: none !important;
+    }
+
+    .btn:hover,
+    .btn:focus-visible,
+    .btn:active {
+      transform: none !important;
+    }
+  }
+
+  /* Disabled state improvements */
+  .btn:disabled,
+  .btn[disabled] {
+    pointer-events: none;
+    opacity: 0.6;
+    transform: none !important;
+    box-shadow: none !important;
   }
 </style>

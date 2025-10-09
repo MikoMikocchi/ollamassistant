@@ -1,100 +1,308 @@
 {
-  "ext_name": { "message": "Ollamassistant" },
+  "ext_name": {
+    "message": "Ollamassistant"
+  },
   "ext_description": {
     "message": "Local assistant with Ollama: overlay, context menu, and streaming without external traffic."
   },
-  "action_title": { "message": "Ollamassistant" },
-  "cmd_toggle_overlay_description": { "message": "Open/close Overlay" },
-
-  "context_root": { "message": "Ask Local LLM" },
-  "context_summarize": { "message": "Summarize" },
-  "context_qa_selection": { "message": "Q&A on selection" },
-  "context_tldr": { "message": "Page TL;DR" },
-
-  "overlay_panel_aria": { "message": "Ollamassistant" },
-  "refresh_models_title": { "message": "Refresh model list" },
-  "refresh_models_button": { "message": "Refresh" },
-  "error": { "message": "Error" },
-
-  "header_generating": { "message": "Generating…" },
-  "theme_toggle_to_light": { "message": "Light theme" },
-  "theme_toggle_to_dark": { "message": "Dark theme" },
-  "close_panel_title": { "message": "Close panel" },
-  "close_panel_aria": { "message": "Close" },
-  "title_version_aria": { "message": "Title and version" },
-  "theme_toggle_aria": { "message": "Toggle theme" },
-
+  "action_title": {
+    "message": "Ollamassistant"
+  },
+  "cmd_toggle_overlay_description": {
+    "message": "Open/close Overlay"
+  },
+  "context_root": {
+    "message": "Ask Local LLM"
+  },
+  "context_summarize": {
+    "message": "Summarize"
+  },
+  "context_qa_selection": {
+    "message": "Q&A on selection"
+  },
+  "context_tldr": {
+    "message": "Page TL;DR"
+  },
+  "overlay_panel_aria": {
+    "message": "Ollamassistant"
+  },
+  "refresh_models_title": {
+    "message": "Refresh model list"
+  },
+  "refresh_models_button": {
+    "message": "Refresh"
+  },
+  "error": {
+    "message": "Error"
+  },
+  "header_generating": {
+    "message": "Generating…"
+  },
+  "theme_toggle_to_light": {
+    "message": "Light theme"
+  },
+  "theme_toggle_to_dark": {
+    "message": "Dark theme"
+  },
+  "close_panel_title": {
+    "message": "Close panel"
+  },
+  "close_panel_aria": {
+    "message": "Close"
+  },
+  "title_version_aria": {
+    "message": "Title and version"
+  },
+  "theme_toggle_aria": {
+    "message": "Toggle theme"
+  },
   "input_placeholder": {
     "message": "Ask a question or leave empty for summarization…"
   },
-  "input_aria_label": { "message": "Question for assistant" },
+  "input_aria_label": {
+    "message": "Question for assistant"
+  },
   "hint_submit": {
     "message": "Enter — send • Shift+Enter — new line"
   },
-  "presets_aria_label": { "message": "Quick presets" },
-  "preset_summarize_label": { "message": "Summarize" },
-  "preset_summarize_title": { "message": "Summarize selection/page" },
-  "preset_tldr_label": { "message": "TL;DR" },
-  "preset_tldr_title": { "message": "TL;DR of page" },
-  "toolbar_aria_label": { "message": "Input toolbar" },
-  "models_loading": { "message": "Loading model list…" },
-  "select_model_placeholder": { "message": "Choose model" },
-  "no_matches": { "message": "No matches" },
-  "model_fallback_placeholder": { "message": "model (e.g. llama3:latest)" },
-  "model_aria_label": { "message": "Model" },
-  "error_label": { "message": "Error" },
-  "stop_title": { "message": "Stop generation" },
-  "stop_label": { "message": "Stop" },
-  "send_title": { "message": "Send request to local LLM" },
-  "send_label": { "message": "Send" },
-  "settings_title": { "message": "Generation parameters" },
-  "settings_label": { "message": "Settings" },
-  "save_model_title": { "message": "Save current model" },
-  "save_label": { "message": "Save" },
-
-  "params_aria_label": { "message": "Generation parameters" },
-  "zero_auto_placeholder": { "message": "0 = auto" },
-
-  "output_aria_label": { "message": "Model answer" },
-  "autoscroll_disable_title": { "message": "Disable autoscroll" },
-  "autoscroll_enable_title": { "message": "Enable autoscroll" },
-  "autoscroll_label_on": { "message": "Auto↓" },
-  "autoscroll_label_off": { "message": "Auto✕" },
-  "clear_output_title": { "message": "Clear output" },
-  "clear_output_aria": { "message": "Clear" },
-  "copy_answer_title": { "message": "Copy answer" },
-  "copy_answer_aria": { "message": "Copy" },
-  "output_placeholder": { "message": "Answer will appear here…" },
-
-  "label_title": { "message": "Title" },
-  "label_url": { "message": "URL" },
-  "label_text": { "message": "Text" },
-  "fallback_header": { "message": "Ollama Assistant (fallback)" },
+  "presets_aria_label": {
+    "message": "Quick presets"
+  },
+  "preset_summarize_label": {
+    "message": "Summarize"
+  },
+  "preset_summarize_title": {
+    "message": "Summarize selection/page"
+  },
+  "preset_tldr_label": {
+    "message": "TL;DR"
+  },
+  "preset_tldr_title": {
+    "message": "TL;DR of page"
+  },
+  "toolbar_aria_label": {
+    "message": "Input toolbar"
+  },
+  "models_loading": {
+    "message": "Loading model list…"
+  },
+  "select_model_placeholder": {
+    "message": "Choose model"
+  },
+  "no_matches": {
+    "message": "No matches"
+  },
+  "model_fallback_placeholder": {
+    "message": "model (e.g. llama3:latest)"
+  },
+  "model_aria_label": {
+    "message": "Model"
+  },
+  "error_label": {
+    "message": "Error"
+  },
+  "stop_title": {
+    "message": "Stop generation"
+  },
+  "stop_label": {
+    "message": "Stop"
+  },
+  "send_title": {
+    "message": "Send request to local LLM"
+  },
+  "send_label": {
+    "message": "Send"
+  },
+  "settings_title": {
+    "message": "Generation parameters"
+  },
+  "settings_label": {
+    "message": "Settings"
+  },
+  "save_model_title": {
+    "message": "Save current model"
+  },
+  "save_label": {
+    "message": "Save"
+  },
+  "params_aria_label": {
+    "message": "Generation parameters"
+  },
+  "zero_auto_placeholder": {
+    "message": "0 = auto"
+  },
+  "output_aria_label": {
+    "message": "Model answer"
+  },
+  "autoscroll_disable_title": {
+    "message": "Disable autoscroll"
+  },
+  "autoscroll_enable_title": {
+    "message": "Enable autoscroll"
+  },
+  "autoscroll_label_on": {
+    "message": "Auto↓"
+  },
+  "autoscroll_label_off": {
+    "message": "Auto✕"
+  },
+  "clear_output_title": {
+    "message": "Clear output"
+  },
+  "clear_output_aria": {
+    "message": "Clear"
+  },
+  "copy_answer_title": {
+    "message": "Copy answer"
+  },
+  "copy_answer_aria": {
+    "message": "Copy"
+  },
+  "output_placeholder": {
+    "message": "Answer will appear here…"
+  },
+  "label_title": {
+    "message": "Title"
+  },
+  "label_url": {
+    "message": "URL"
+  },
+  "label_text": {
+    "message": "Text"
+  },
+  "fallback_header": {
+    "message": "Ollama Assistant (fallback)"
+  },
   "fallback_input_placeholder": {
     "message": "Question or leave empty for summarization..."
   },
-  "fallback_start": { "message": "Ask locally" },
-  "fallback_stop": { "message": "Stop" },
-  "fallback_done": { "message": "--- done ---" },
-  "error_lower": { "message": "error" },
-  "fallback_default_prompt": { "message": "Summarize visible content of the page." },
-
+  "fallback_start": {
+    "message": "Ask locally"
+  },
+  "fallback_stop": {
+    "message": "Stop"
+  },
+  "fallback_done": {
+    "message": "--- done ---"
+  },
+  "error_lower": {
+    "message": "error"
+  },
+  "fallback_default_prompt": {
+    "message": "Summarize visible content of the page."
+  },
   "prompt_summary_instruction": {
     "message": "Summarize the following content concisely and structured: a short intro + 5–8 bullet points with facts and numbers; if present — highlight 'Main' and 'Details' sections."
   },
   "prompt_summary_extra": {
     "message": "Do not apologize or judge relevance — just summarize."
   },
-  "prompt_context_label": { "message": "Context:" },
-  "prompt_question_label": { "message": "Question:" },
-  "prompt_empty_context": { "message": "Context: (empty)" },
-
-  "ollama_error_prefix": { "message": "Ollama" },
+  "prompt_context_label": {
+    "message": "Context:"
+  },
+  "prompt_question_label": {
+    "message": "Question:"
+  },
+  "prompt_empty_context": {
+    "message": "Context: (empty)"
+  },
+  "ollama_error_prefix": {
+    "message": "Ollama"
+  },
   "error_403_hint": {
     "message": "Forbidden. Allow the extension origin for Ollama. Example (macOS):\nlaunchctl setenv OLLAMA_ORIGINS \"chrome-extension://$1,http://localhost,http://127.0.0.1\"\nlaunchctl kickstart -k system/com.ollama.ollama\nOr restart Ollama as: OLLAMA_ORIGINS=\"chrome-extension://$1,http://localhost,http://127.0.0.1\" ollama serve"
   },
-  "no_response_body": { "message": "No response body from Ollama" },
+  "no_response_body": {
+    "message": "No response body from Ollama"
+  },
   "system_prompt_default": {
     "message": "You are a local assistant (no cloud).\nAnswer briefly and in a structured way.\nIf 'Context:' is given — work only with it: concise summary (intro + 5–8 bullets), then answer the question (if any).\nPreserve Markdown: headings, lists, code (```), tables.\nDo not apologize and do not judge content relevance; just answer the request."
+  },
+  "error_generic": {
+    "message": "An error occurred. Please try again."
+  },
+  "error_network": {
+    "message": "Network error. Please check your internet connection."
+  },
+  "error_ollama_connection": {
+    "message": "Cannot connect to Ollama. Make sure the service is running."
+  },
+  "error_model_not_found": {
+    "message": "Model not found. Please check the model name."
+  },
+  "error_timeout": {
+    "message": "Request timed out. Please try again."
+  },
+  "error_no_response": {
+    "message": "No response from server. Please check settings."
+  },
+  "error_title": {
+    "message": "Error"
+  },
+  "warning_title": {
+    "message": "Warning"
+  },
+  "info_title": {
+    "message": "Information"
+  },
+  "suggestions_title": {
+    "message": "Possible solutions"
+  },
+  "suggestion_check_internet": {
+    "message": "Check your internet connection"
+  },
+  "suggestion_check_ollama_running": {
+    "message": "Make sure Ollama is running"
+  },
+  "suggestion_check_firewall": {
+    "message": "Check firewall settings"
+  },
+  "suggestion_start_ollama": {
+    "message": "Start the Ollama service"
+  },
+  "suggestion_check_ollama_port": {
+    "message": "Check Ollama port (default 11434)"
+  },
+  "suggestion_restart_ollama": {
+    "message": "Restart Ollama"
+  },
+  "suggestion_install_model": {
+    "message": "Install the model: ollama pull <model-name>"
+  },
+  "suggestion_check_model_name": {
+    "message": "Check the model name is correct"
+  },
+  "suggestion_try_different_model": {
+    "message": "Try a different model"
+  },
+  "suggestion_try_again": {
+    "message": "Try again"
+  },
+  "suggestion_check_model_size": {
+    "message": "Try a smaller model"
+  },
+  "suggestion_increase_timeout": {
+    "message": "Increase timeout duration"
+  },
+  "suggestion_check_settings": {
+    "message": "Check extension settings"
+  },
+  "suggestion_contact_support": {
+    "message": "Contact support"
+  },
+  "retry_button": {
+    "message": "Retry"
+  },
+  "dismiss_button": {
+    "message": "Dismiss"
+  },
+  "show_details": {
+    "message": "Show Details"
+  },
+  "hide_details": {
+    "message": "Hide Details"
+  },
+  "technical_details": {
+    "message": "Technical Details"
   }
 }

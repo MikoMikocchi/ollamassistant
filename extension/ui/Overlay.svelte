@@ -149,6 +149,7 @@
   import Output from "./Output.svelte";
   import Button from "./components/Button.svelte";
   import { t } from "../src/shared/i18n";
+  import { fadeScale, slideIn } from "./animations";
   let inputRef: any;
   // Markdown rendering (safe, minimal)
   $: rendered = renderMarkdownSafe(output);
@@ -326,7 +327,12 @@
 
 <div class="overlay" data-theme={theme}>
   {#if open}
-    <div class="backdrop" on:click={toggle} aria-hidden="true"></div>
+    <div
+      class="backdrop"
+      on:click={toggle}
+      aria-hidden="true"
+      transition:fadeScale={{ duration: 200 }}
+    ></div>
     <div
       bind:this={panelEl}
       class="panel"
@@ -336,6 +342,7 @@
       tabindex="-1"
       on:keydown={focusTrap}
       on:introend={focusFirstElement}
+      transition:slideIn={{ duration: 300 }}
     >
       <Header
         {version}
@@ -492,7 +499,7 @@
     inset: 0;
     background: rgba(8, 12, 24, 0.42);
     backdrop-filter: saturate(140%) blur(3px);
-    animation: fadeIn 120ms ease-out;
+    transition: all 0.2s ease-out;
   }
   .panel {
     position: fixed;
@@ -509,7 +516,7 @@
     overflow: hidden;
     border: 1px solid var(--panel-border);
     transform-origin: top right;
-    animation: panelIn 130ms cubic-bezier(0.2, 0.8, 0.2, 1);
+    transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
   }
   .body {
     padding: 12px; /* компактнее */
@@ -519,6 +526,7 @@
     /* Make body fill the panel and keep internal scroll localized */
     flex: 1 1 auto;
     overflow: hidden;
+    transition: all 0.2s ease-out;
   }
   @keyframes fadeIn {
     from {
