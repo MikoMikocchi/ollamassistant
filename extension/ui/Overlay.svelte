@@ -491,9 +491,6 @@
   .overlay * {
     box-sizing: inherit;
   }
-  .overlay * {
-    box-sizing: inherit;
-  }
   .backdrop {
     position: fixed;
     inset: 0;

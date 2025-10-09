@@ -15,7 +15,7 @@ import {
 
 export async function streamFromOllama(
   args: {
-    model?: string;
+    model?: string | null;
     system?: string;
     prompt: string;
     temperature?: number;
@@ -37,7 +37,8 @@ export async function streamFromOllama(
   ) {
     model = stored.model.trim();
   }
-  if (args.model && typeof args.model === "string" && args.model.trim()) {
+  // If args.model is a non-empty string, prefer it; if it's null, explicitly ignore override
+  if (typeof args.model === "string" && args.model.trim()) {
     model = args.model.trim();
   }
 

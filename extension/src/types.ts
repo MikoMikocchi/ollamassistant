@@ -16,7 +16,8 @@ export type PortMessage =
       type: "start_stream";
       payload: {
         prompt: string;
-        model?: string;
+        // Allow explicit null to mean "no override, use stored/default" (matches UI usage)
+        model?: string | null;
         temperature?: number;
         top_p?: number | null;
         max_tokens?: number | null;
@@ -38,4 +39,7 @@ export type StreamMessage =
   | { type: "done" }
   | { type: "error"; error: string };
 
-export type OllamaMessage = { role: "system" | "user" | "assistant"; content: string };
+export type OllamaMessage = {
+  role: "system" | "user" | "assistant";
+  content: string;
+};

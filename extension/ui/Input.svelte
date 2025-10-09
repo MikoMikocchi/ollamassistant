@@ -45,7 +45,10 @@
     placeholder={t("input_placeholder")}
     aria-label={t("input_aria_label")}
     on:keydown={(e) => {
-      if (e.key === "Enter" && !e.shiftKey) {
+      // Respect IME composition; don't submit while composing
+      const anyE = e as any;
+      const composing = Boolean(anyE?.isComposing);
+      if (!composing && e.key === "Enter" && !e.shiftKey) {
         e.preventDefault();
         if (!disabled && !streaming) onStart();
       }

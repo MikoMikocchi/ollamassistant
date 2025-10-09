@@ -11,6 +11,10 @@ extension/dist/
 .cache/
 .vite/
 
+# Prevent accidental TS emits into source
+extension/src/**/*.js
+extension/src/**/*.js.map
+
 # TypeScript buildinfo
 *.tsbuildinfo
 

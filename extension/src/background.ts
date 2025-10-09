@@ -114,9 +114,18 @@ chrome.runtime.onConnect.addListener((port: any) => {
       let chunkCount = 0;
 
       const onStop = () => controller.abort();
-      port.onMessage.addListener((m: PortMessage) => {
+      const onPortMessage = (m: PortMessage) => {
         if (m?.type === "stop_stream") onStop();
-      });
+      };
+      port.onMessage.addListener(onPortMessage);
+
+      // If the port disconnects (tab closed or reloaded), abort the inflight request
+      const onPortDisconnect = () => {
+        try {
+          controller.abort();
+        } catch {}
+      };
+      port.onDisconnect.addListener(onPortDisconnect);
 
       try {
         backgroundLogger.debug("stream:start", {
@@ -164,6 +173,13 @@ chrome.runtime.onConnect.addListener((port: any) => {
           error: e?.message || String(e),
         });
       } finally {
+        // Cleanup listeners to avoid leaks
+        try {
+          port.onMessage.removeListener(onPortMessage as any);
+        } catch {}
+        try {
+          port.onDisconnect.removeListener(onPortDisconnect as any);
+        } catch {}
         if (!doneSent) {
           backgroundLogger.debug("stream:finalize_without_done", {
             durationMs: Date.now() - startedAt,
