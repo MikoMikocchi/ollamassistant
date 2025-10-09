@@ -1,121 +1,275 @@
 {
-  "ext_name": { "message": "Ollamassistant" },
+  "ext_name": {
+    "message": "Ollamassistant"
+  },
   "ext_description": {
     "message": "Ollama 기반 로컬 어시스턴트: 오버레이, 컨텍스트 메뉴, 외부 트래픽 없이 스트리밍."
   },
-  "action_title": { "message": "Ollamassistant" },
-  "cmd_toggle_overlay_description": { "message": "오버레이 열기/닫기" },
-
-  "context_root": { "message": "로컬 LLM에 질문" },
-  "context_summarize": { "message": "요약" },
-  "context_qa_selection": { "message": "선택 영역 Q&A" },
-  "context_tldr": { "message": "페이지 TL;DR" },
-
-  "overlay_panel_aria": { "message": "Ollamassistant" },
-  "refresh_models_title": { "message": "모델 목록 새로고침" },
-  "refresh_models_button": { "message": "새로고침" },
-  "error": { "message": "오류" },
-
-  "header_generating": { "message": "생성 중…" },
-  "theme_toggle_to_light": { "message": "라이트 테마" },
-  "theme_toggle_to_dark": { "message": "다크 테마" },
-  "close_panel_title": { "message": "패널 닫기" },
-  "close_panel_aria": { "message": "닫기" },
-  "title_version_aria": { "message": "제목과 버전" },
-  "theme_toggle_aria": { "message": "테마 전환" },
-
+  "action_title": {
+    "message": "Ollamassistant"
+  },
+  "cmd_toggle_overlay_description": {
+    "message": "오버레이 열기/닫기"
+  },
+  "context_root": {
+    "message": "로컬 LLM에 질문"
+  },
+  "context_summarize": {
+    "message": "요약"
+  },
+  "context_qa_selection": {
+    "message": "선택 영역 Q&A"
+  },
+  "context_tldr": {
+    "message": "페이지 TL;DR"
+  },
+  "overlay_panel_aria": {
+    "message": "Ollamassistant"
+  },
+  "refresh_models_title": {
+    "message": "모델 목록 새로고침"
+  },
+  "refresh_models_button": {
+    "message": "새로고침"
+  },
+  "error": {
+    "message": "오류"
+  },
+  "header_generating": {
+    "message": "생성 중…"
+  },
+  "theme_toggle_to_light": {
+    "message": "라이트 테마"
+  },
+  "theme_toggle_to_dark": {
+    "message": "다크 테마"
+  },
+  "close_panel_title": {
+    "message": "패널 닫기"
+  },
+  "close_panel_aria": {
+    "message": "닫기"
+  },
+  "title_version_aria": {
+    "message": "제목과 버전"
+  },
+  "theme_toggle_aria": {
+    "message": "테마 전환"
+  },
   "input_placeholder": {
     "message": "질문을 입력하거나, 비워두면 요약…"
   },
-  "input_aria_label": { "message": "어시스턴트에 대한 질문" },
+  "input_aria_label": {
+    "message": "어시스턴트에 대한 질문"
+  },
   "hint_submit": {
     "message": "Enter — 전송 • Shift+Enter — 줄바꿈"
   },
-  "presets_aria_label": { "message": "빠른 프리셋" },
-  "preset_summarize_label": { "message": "요약" },
-  "preset_summarize_title": { "message": "선택/페이지 요약" },
-  "preset_tldr_label": { "message": "TL;DR" },
-  "preset_tldr_title": { "message": "페이지 TL;DR" },
-  "toolbar_aria_label": { "message": "입력 도구 모음" },
-  "models_loading": { "message": "모델 목록 불러오는 중…" },
-  "select_model_placeholder": { "message": "모델 선택" },
-  "no_matches": { "message": "일치 항목 없음" },
-  "model_fallback_placeholder": { "message": "model (예: llama3:latest)" },
-  "model_aria_label": { "message": "모델" },
-  "error_label": { "message": "오류" },
-  "stop_title": { "message": "생성 중지" },
-  "stop_label": { "message": "중지" },
-  "send_title": { "message": "로컬 LLM에 요청 보내기" },
-  "send_label": { "message": "보내기" },
-  "settings_title": { "message": "생성 매개변수" },
-  "settings_label": { "message": "설정" },
-  "save_model_title": { "message": "현재 모델 저장" },
-  "save_label": { "message": "저장" },
-
-  "params_aria_label": { "message": "생성 매개변수" },
-  "zero_auto_placeholder": { "message": "0 = 자동" },
-
-  "output_aria_label": { "message": "모델 응답" },
-  "autoscroll_disable_title": { "message": "자동 스크롤 비활성화" },
-  "autoscroll_enable_title": { "message": "자동 스크롤 활성화" },
-  "autoscroll_label_on": { "message": "Auto↓" },
-  "autoscroll_label_off": { "message": "Auto✕" },
-  "clear_output_title": { "message": "출력을 지우기" },
-  "clear_output_aria": { "message": "지우기" },
-  "copy_answer_title": { "message": "응답 복사" },
-  "copy_answer_aria": { "message": "복사" },
-  "output_placeholder": { "message": "여기에 응답이 표시됩니다…" },
-
-  "label_title": { "message": "제목" },
-  "label_url": { "message": "URL" },
-  "label_text": { "message": "텍스트" },
-  "fallback_header": { "message": "Ollama Assistant (fallback)" },
+  "presets_aria_label": {
+    "message": "빠른 프리셋"
+  },
+  "preset_summarize_label": {
+    "message": "요약"
+  },
+  "preset_summarize_title": {
+    "message": "선택/페이지 요약"
+  },
+  "preset_tldr_label": {
+    "message": "TL;DR"
+  },
+  "preset_tldr_title": {
+    "message": "페이지 TL;DR"
+  },
+  "toolbar_aria_label": {
+    "message": "입력 도구 모음"
+  },
+  "models_loading": {
+    "message": "모델 목록 불러오는 중…"
+  },
+  "select_model_placeholder": {
+    "message": "모델 선택"
+  },
+  "no_matches": {
+    "message": "일치 항목 없음"
+  },
+  "model_fallback_placeholder": {
+    "message": "model (예: llama3:latest)"
+  },
+  "model_aria_label": {
+    "message": "모델"
+  },
+  "error_label": {
+    "message": "오류"
+  },
+  "stop_title": {
+    "message": "생성 중지"
+  },
+  "stop_label": {
+    "message": "중지"
+  },
+  "send_title": {
+    "message": "로컬 LLM에 요청 보내기"
+  },
+  "send_label": {
+    "message": "보내기"
+  },
+  "settings_title": {
+    "message": "생성 매개변수"
+  },
+  "settings_label": {
+    "message": "설정"
+  },
+  "save_model_title": {
+    "message": "현재 모델 저장"
+  },
+  "save_label": {
+    "message": "저장"
+  },
+  "params_aria_label": {
+    "message": "생성 매개변수"
+  },
+  "zero_auto_placeholder": {
+    "message": "0 = 자동"
+  },
+  "output_aria_label": {
+    "message": "모델 응답"
+  },
+  "autoscroll_disable_title": {
+    "message": "자동 스크롤 비활성화"
+  },
+  "autoscroll_enable_title": {
+    "message": "자동 스크롤 활성화"
+  },
+  "autoscroll_label_on": {
+    "message": "Auto↓"
+  },
+  "autoscroll_label_off": {
+    "message": "Auto✕"
+  },
+  "clear_output_title": {
+    "message": "출력을 지우기"
+  },
+  "clear_output_aria": {
+    "message": "지우기"
+  },
+  "copy_answer_title": {
+    "message": "응답 복사"
+  },
+  "copy_answer_aria": {
+    "message": "복사"
+  },
+  "output_placeholder": {
+    "message": "여기에 응답이 표시됩니다…"
+  },
+  "label_title": {
+    "message": "제목"
+  },
+  "label_url": {
+    "message": "URL"
+  },
+  "label_text": {
+    "message": "텍스트"
+  },
+  "fallback_header": {
+    "message": "Ollama Assistant (fallback)"
+  },
   "fallback_input_placeholder": {
     "message": "질문을 입력하거나, 비워두면 요약..."
   },
-  "fallback_start": { "message": "로컬로 요청" },
-  "fallback_stop": { "message": "중지" },
-  "fallback_done": { "message": "--- 완료 ---" },
-  "error_lower": { "message": "오류" },
-  "fallback_default_prompt": { "message": "페이지의 보이는 내용을 요약하세요." },
-
+  "fallback_start": {
+    "message": "로컬로 요청"
+  },
+  "fallback_stop": {
+    "message": "중지"
+  },
+  "fallback_done": {
+    "message": "--- 완료 ---"
+  },
+  "error_lower": {
+    "message": "오류"
+  },
+  "fallback_default_prompt": {
+    "message": "페이지의 보이는 내용을 요약하세요."
+  },
   "prompt_summary_instruction": {
     "message": "다음 내용을 간결하고 구조적으로 요약하세요: 짧은 소개 + 사실과 숫자를 포함한 5–8개의 불릿; 가능하다면 ‘핵심’과 ‘세부’ 섹션을 강조."
   },
   "prompt_summary_extra": {
     "message": "사과하거나 관련성을 평가하지 마세요 — 요약만 하세요."
   },
-  "prompt_context_label": { "message": "컨텍스트:" },
-  "prompt_question_label": { "message": "질문:" },
-  "prompt_empty_context": { "message": "컨텍스트: (비어 있음)" },
-
-  "ollama_error_prefix": { "message": "Ollama" },
+  "prompt_context_label": {
+    "message": "컨텍스트:"
+  },
+  "prompt_question_label": {
+    "message": "질문:"
+  },
+  "prompt_empty_context": {
+    "message": "컨텍스트: (비어 있음)"
+  },
+  "ollama_error_prefix": {
+    "message": "Ollama"
+  },
   "error_403_hint": {
     "message": "금지되었습니다. Ollama에 확장 프로그램 원본을 허용하세요. 예 (macOS):\nlaunchctl setenv OLLAMA_ORIGINS \"chrome-extension://$1,http://localhost,http://127.0.0.1\"\nlaunchctl kickstart -k system/com.ollama.ollama\n또는 다음과 같이 Ollama를 재시작: OLLAMA_ORIGINS=\"chrome-extension://$1,http://localhost,http://127.0.0.1\" ollama serve"
   },
-  "no_response_body": { "message": "Ollama에서 응답 본문이 없습니다" },
-
-  "error_generic": { "message": "An error occurred. Please try again." },
-  "error_network": { "message": "Network error. Please check your internet connection." },
-  "error_model_not_found": { "message": "Model not found. Please ensure the model is available in Ollama." },
-  "error_unknown": { "message": "An unknown error occurred." },
-  "error_stream": { "message": "An error occurred while streaming the response." },
-  "error_suggestions": { "message": "Suggestions:" },
-  "suggestion_check_ollama_running": { "message": "Check if Ollama is running." },
-  "suggestion_check_model_name": { "message": "Verify the model name is correct." },
-  "suggestion_check_browser_permissions": { "message": "Check browser permissions for the extension." },
-  "suggestion_check_ollama_origins": { "message": "Ensure OLLAMA_ORIGINS is configured correctly for the extension." },
-  "suggestion_view_logs": { "message": "View Ollama server logs for more details." },
-  "suggestion_retry": { "message": "Retry the request." },
-  "retry_button": { "message": "Retry" },
-  "copy_error_button": { "message": "Copy Error" },
-  "copied_toast": { "message": "Copied to clipboard" },
-  "show_details_button": { "message": "Show Details" },
-  "hide_details_button": { "message": "Hide Details" },
-  "technical_details": { "message": "Technical Details" },
-
+  "no_response_body": {
+    "message": "Ollama에서 응답 본문이 없습니다"
+  },
+  "error_generic": {
+    "message": "An error occurred. Please try again."
+  },
+  "error_network": {
+    "message": "Network error. Please check your internet connection."
+  },
+  "error_model_not_found": {
+    "message": "Model not found. Please ensure the model is available in Ollama."
+  },
+  "error_unknown": {
+    "message": "An unknown error occurred."
+  },
+  "error_stream": {
+    "message": "An error occurred while streaming the response."
+  },
+  "error_suggestions": {
+    "message": "Suggestions:"
+  },
+  "suggestion_check_ollama_running": {
+    "message": "Check if Ollama is running."
+  },
+  "suggestion_check_model_name": {
+    "message": "Verify the model name is correct."
+  },
+  "suggestion_check_browser_permissions": {
+    "message": "Check browser permissions for the extension."
+  },
+  "suggestion_check_ollama_origins": {
+    "message": "Ensure OLLAMA_ORIGINS is configured correctly for the extension."
+  },
+  "suggestion_view_logs": {
+    "message": "View Ollama server logs for more details."
+  },
+  "suggestion_retry": {
+    "message": "Retry the request."
+  },
+  "retry_button": {
+    "message": "Retry"
+  },
+  "copy_error_button": {
+    "message": "Copy Error"
+  },
+  "copied_toast": {
+    "message": "Copied to clipboard"
+  },
+  "show_details_button": {
+    "message": "Show Details"
+  },
+  "hide_details_button": {
+    "message": "Hide Details"
+  },
+  "technical_details": {
+    "message": "Technical Details"
+  },
   "system_prompt_default": {
     "message": "당신은 로컬 어시스턴트(클라우드 없음)입니다.\n간결하고 구조적으로 답하세요.\n‘컨텍스트:’가 주어지면 — 그 내용만으로 작업: 간결한 요약(소개 + 5–8개 항목) 후 질문이 있으면 답하세요.\nMarkdown 유지: 제목, 목록, 코드 (```), 표.\n사과하거나 콘텐츠의 관련성을 평가하지 말고, 요청에 따라 답하세요."
   }
 }
-

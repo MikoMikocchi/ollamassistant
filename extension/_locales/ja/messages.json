@@ -71,26 +71,60 @@
   "no_response_body": {
     "message": "Ollamaからのレスポンスボディがありません"
   },
-
-  "error_generic": { "message": "エラーが発生しました。再試行してください。" },
-  "error_network": { "message": "ネットワークエラー。インターネット接続を確認してください。" },
-  "error_model_not_found": { "message": "モデルが見つかりません。Ollamaにモデルが存在することを確認してください。" },
-  "error_unknown": { "message": "不明なエラーが発生しました。" },
-  "error_stream": { "message": "レスポンスのストリーミング中にエラーが発生しました。" },
-  "error_suggestions": { "message": "提案：" },
-  "suggestion_check_ollama_running": { "message": "Ollamaが実行中であることを確認してください。" },
-  "suggestion_check_model_name": { "message": "モデル名が正しいことを確認してください。" },
-  "suggestion_check_browser_permissions": { "message": "拡張機能のブラウザ権限を確認してください。" },
-  "suggestion_check_ollama_origins": { "message": "拡張機能のためにOLLAMA_ORIGINSが正しく設定されていることを確認してください。" },
-  "suggestion_view_logs": { "message": "詳細についてはOllamaサーバーログを表示してください。" },
-  "suggestion_retry": { "message": "リクエストを再試行してください。" },
-  "retry_button": { "message": "再試行" },
-  "copy_error_button": { "message": "エラーをコピー" },
-  "copied_toast": { "message": "クリップボードにコピーされました" },
-  "show_details_button": { "message": "詳細を表示" },
-  "hide_details_button": { "message": "詳細を非表示" },
-  "technical_details": { "message": "技術的詳細" },
-
+  "error_generic": {
+    "message": "エラーが発生しました。再試行してください。"
+  },
+  "error_network": {
+    "message": "ネットワークエラー。インターネット接続を確認してください。"
+  },
+  "error_model_not_found": {
+    "message": "モデルが見つかりません。Ollamaにモデルが存在することを確認してください。"
+  },
+  "error_unknown": {
+    "message": "不明なエラーが発生しました。"
+  },
+  "error_stream": {
+    "message": "レスポンスのストリーミング中にエラーが発生しました。"
+  },
+  "error_suggestions": {
+    "message": "提案："
+  },
+  "suggestion_check_ollama_running": {
+    "message": "Ollamaが実行中であることを確認してください。"
+  },
+  "suggestion_check_model_name": {
+    "message": "モデル名が正しいことを確認してください。"
+  },
+  "suggestion_check_browser_permissions": {
+    "message": "拡張機能のブラウザ権限を確認してください。"
+  },
+  "suggestion_check_ollama_origins": {
+    "message": "拡張機能のためにOLLAMA_ORIGINSが正しく設定されていることを確認してください。"
+  },
+  "suggestion_view_logs": {
+    "message": "詳細についてはOllamaサーバーログを表示してください。"
+  },
+  "suggestion_retry": {
+    "message": "リクエストを再試行してください。"
+  },
+  "retry_button": {
+    "message": "再試行"
+  },
+  "copy_error_button": {
+    "message": "エラーをコピー"
+  },
+  "copied_toast": {
+    "message": "クリップボードにコピーされました"
+  },
+  "show_details_button": {
+    "message": "詳細を表示"
+  },
+  "hide_details_button": {
+    "message": "詳細を非表示"
+  },
+  "technical_details": {
+    "message": "技術的詳細"
+  },
   "system_prompt_default": {
     "message": "あなたはローカルアシスタント（クラウドなし）です。\n簡潔かつ構造的に回答してください。\n「コンテキスト：」が与えられている場合はそれのみに基づいて処理してください：簡潔な要約（導入＋5–8項目）の後、質問があれば回答します。\nMarkdownを保持してください：見出し、リスト、コードブロック（```）、表。\n謝罪や関連性の評価は行わず、要求に沿って回答してください。"
   }

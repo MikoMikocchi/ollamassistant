@@ -1,121 +1,275 @@
 {
-  "ext_name": { "message": "Ollamassistant" },
+  "ext_name": {
+    "message": "Ollamassistant"
+  },
   "ext_description": {
     "message": "Assistente locale con Ollama: overlay, menu contestuale e streaming senza traffico esterno."
   },
-  "action_title": { "message": "Ollamassistant" },
-  "cmd_toggle_overlay_description": { "message": "Apri/chiudi Overlay" },
-
-  "context_root": { "message": "Chiedi alla LLM locale" },
-  "context_summarize": { "message": "Riassumi" },
-  "context_qa_selection": { "message": "Q&A sulla selezione" },
-  "context_tldr": { "message": "TL;DR della pagina" },
-
-  "overlay_panel_aria": { "message": "Ollamassistant" },
-  "refresh_models_title": { "message": "Aggiorna elenco modelli" },
-  "refresh_models_button": { "message": "Aggiorna" },
-  "error": { "message": "Errore" },
-
-  "header_generating": { "message": "Generazione…" },
-  "theme_toggle_to_light": { "message": "Tema chiaro" },
-  "theme_toggle_to_dark": { "message": "Tema scuro" },
-  "close_panel_title": { "message": "Chiudi pannello" },
-  "close_panel_aria": { "message": "Chiudi" },
-  "title_version_aria": { "message": "Titolo e versione" },
-  "theme_toggle_aria": { "message": "Cambia tema" },
-
+  "action_title": {
+    "message": "Ollamassistant"
+  },
+  "cmd_toggle_overlay_description": {
+    "message": "Apri/chiudi Overlay"
+  },
+  "context_root": {
+    "message": "Chiedi alla LLM locale"
+  },
+  "context_summarize": {
+    "message": "Riassumi"
+  },
+  "context_qa_selection": {
+    "message": "Q&A sulla selezione"
+  },
+  "context_tldr": {
+    "message": "TL;DR della pagina"
+  },
+  "overlay_panel_aria": {
+    "message": "Ollamassistant"
+  },
+  "refresh_models_title": {
+    "message": "Aggiorna elenco modelli"
+  },
+  "refresh_models_button": {
+    "message": "Aggiorna"
+  },
+  "error": {
+    "message": "Errore"
+  },
+  "header_generating": {
+    "message": "Generazione…"
+  },
+  "theme_toggle_to_light": {
+    "message": "Tema chiaro"
+  },
+  "theme_toggle_to_dark": {
+    "message": "Tema scuro"
+  },
+  "close_panel_title": {
+    "message": "Chiudi pannello"
+  },
+  "close_panel_aria": {
+    "message": "Chiudi"
+  },
+  "title_version_aria": {
+    "message": "Titolo e versione"
+  },
+  "theme_toggle_aria": {
+    "message": "Cambia tema"
+  },
   "input_placeholder": {
     "message": "Fai una domanda o lascia vuoto per il riassunto…"
   },
-  "input_aria_label": { "message": "Domanda per l’assistente" },
+  "input_aria_label": {
+    "message": "Domanda per l’assistente"
+  },
   "hint_submit": {
     "message": "Invio — invia • Shift+Invio — nuova riga"
   },
-  "presets_aria_label": { "message": "Preset rapidi" },
-  "preset_summarize_label": { "message": "Riassumi" },
-  "preset_summarize_title": { "message": "Riassumi selezione/pagina" },
-  "preset_tldr_label": { "message": "TL;DR" },
-  "preset_tldr_title": { "message": "TL;DR della pagina" },
-  "toolbar_aria_label": { "message": "Barra strumenti di input" },
-  "models_loading": { "message": "Caricamento elenco modelli…" },
-  "select_model_placeholder": { "message": "Scegli modello" },
-  "no_matches": { "message": "Nessuna corrispondenza" },
-  "model_fallback_placeholder": { "message": "model (es. llama3:latest)" },
-  "model_aria_label": { "message": "Modello" },
-  "error_label": { "message": "Errore" },
-  "stop_title": { "message": "Ferma generazione" },
-  "stop_label": { "message": "Stop" },
-  "send_title": { "message": "Invia richiesta alla LLM locale" },
-  "send_label": { "message": "Invia" },
-  "settings_title": { "message": "Parametri di generazione" },
-  "settings_label": { "message": "Impostazioni" },
-  "save_model_title": { "message": "Salva modello corrente" },
-  "save_label": { "message": "Salva" },
-
-  "params_aria_label": { "message": "Parametri di generazione" },
-  "zero_auto_placeholder": { "message": "0 = auto" },
-
-  "output_aria_label": { "message": "Risposta del modello" },
-  "autoscroll_disable_title": { "message": "Disattiva autoscroll" },
-  "autoscroll_enable_title": { "message": "Attiva autoscroll" },
-  "autoscroll_label_on": { "message": "Auto↓" },
-  "autoscroll_label_off": { "message": "Auto✕" },
-  "clear_output_title": { "message": "Pulisci output" },
-  "clear_output_aria": { "message": "Pulisci" },
-  "copy_answer_title": { "message": "Copia risposta" },
-  "copy_answer_aria": { "message": "Copia" },
-  "output_placeholder": { "message": "La risposta apparirà qui…" },
-
-  "label_title": { "message": "Titolo" },
-  "label_url": { "message": "URL" },
-  "label_text": { "message": "Testo" },
-  "fallback_header": { "message": "Ollama Assistant (fallback)" },
+  "presets_aria_label": {
+    "message": "Preset rapidi"
+  },
+  "preset_summarize_label": {
+    "message": "Riassumi"
+  },
+  "preset_summarize_title": {
+    "message": "Riassumi selezione/pagina"
+  },
+  "preset_tldr_label": {
+    "message": "TL;DR"
+  },
+  "preset_tldr_title": {
+    "message": "TL;DR della pagina"
+  },
+  "toolbar_aria_label": {
+    "message": "Barra strumenti di input"
+  },
+  "models_loading": {
+    "message": "Caricamento elenco modelli…"
+  },
+  "select_model_placeholder": {
+    "message": "Scegli modello"
+  },
+  "no_matches": {
+    "message": "Nessuna corrispondenza"
+  },
+  "model_fallback_placeholder": {
+    "message": "model (es. llama3:latest)"
+  },
+  "model_aria_label": {
+    "message": "Modello"
+  },
+  "error_label": {
+    "message": "Errore"
+  },
+  "stop_title": {
+    "message": "Ferma generazione"
+  },
+  "stop_label": {
+    "message": "Stop"
+  },
+  "send_title": {
+    "message": "Invia richiesta alla LLM locale"
+  },
+  "send_label": {
+    "message": "Invia"
+  },
+  "settings_title": {
+    "message": "Parametri di generazione"
+  },
+  "settings_label": {
+    "message": "Impostazioni"
+  },
+  "save_model_title": {
+    "message": "Salva modello corrente"
+  },
+  "save_label": {
+    "message": "Salva"
+  },
+  "params_aria_label": {
+    "message": "Parametri di generazione"
+  },
+  "zero_auto_placeholder": {
+    "message": "0 = auto"
+  },
+  "output_aria_label": {
+    "message": "Risposta del modello"
+  },
+  "autoscroll_disable_title": {
+    "message": "Disattiva autoscroll"
+  },
+  "autoscroll_enable_title": {
+    "message": "Attiva autoscroll"
+  },
+  "autoscroll_label_on": {
+    "message": "Auto↓"
+  },
+  "autoscroll_label_off": {
+    "message": "Auto✕"
+  },
+  "clear_output_title": {
+    "message": "Pulisci output"
+  },
+  "clear_output_aria": {
+    "message": "Pulisci"
+  },
+  "copy_answer_title": {
+    "message": "Copia risposta"
+  },
+  "copy_answer_aria": {
+    "message": "Copia"
+  },
+  "output_placeholder": {
+    "message": "La risposta apparirà qui…"
+  },
+  "label_title": {
+    "message": "Titolo"
+  },
+  "label_url": {
+    "message": "URL"
+  },
+  "label_text": {
+    "message": "Testo"
+  },
+  "fallback_header": {
+    "message": "Ollama Assistant (fallback)"
+  },
   "fallback_input_placeholder": {
     "message": "Domanda o lascia vuoto per riassumere..."
   },
-  "fallback_start": { "message": "Chiedi localmente" },
-  "fallback_stop": { "message": "Stop" },
-  "fallback_done": { "message": "--- fatto ---" },
-  "error_lower": { "message": "errore" },
-  "fallback_default_prompt": { "message": "Riassumi il contenuto visibile della pagina." },
-
+  "fallback_start": {
+    "message": "Chiedi localmente"
+  },
+  "fallback_stop": {
+    "message": "Stop"
+  },
+  "fallback_done": {
+    "message": "--- fatto ---"
+  },
+  "error_lower": {
+    "message": "errore"
+  },
+  "fallback_default_prompt": {
+    "message": "Riassumi il contenuto visibile della pagina."
+  },
   "prompt_summary_instruction": {
     "message": "Riassumi il seguente contenuto in modo conciso e strutturato: breve introduzione + 5–8 punti con fatti e numeri; se presenti — evidenzia le sezioni 'Principale' e 'Dettagli'."
   },
   "prompt_summary_extra": {
     "message": "Non scusarti e non giudicare la pertinenza — limita a riassumere."
   },
-  "prompt_context_label": { "message": "Contesto:" },
-  "prompt_question_label": { "message": "Domanda:" },
-  "prompt_empty_context": { "message": "Contesto: (vuoto)" },
-
-  "ollama_error_prefix": { "message": "Ollama" },
+  "prompt_context_label": {
+    "message": "Contesto:"
+  },
+  "prompt_question_label": {
+    "message": "Domanda:"
+  },
+  "prompt_empty_context": {
+    "message": "Contesto: (vuoto)"
+  },
+  "ollama_error_prefix": {
+    "message": "Ollama"
+  },
   "error_403_hint": {
     "message": "Vietato. Consenti l’origine dell’estensione per Ollama. Esempio (macOS):\nlaunchctl setenv OLLAMA_ORIGINS \"chrome-extension://$1,http://localhost,http://127.0.0.1\"\nlaunchctl kickstart -k system/com.ollama.ollama\nOppure riavvia Ollama così: OLLAMA_ORIGINS=\"chrome-extension://$1,http://localhost,http://127.0.0.1\" ollama serve"
   },
-  "no_response_body": { "message": "Nessun corpo di risposta da Ollama" },
-
-  "error_generic": { "message": "An error occurred. Please try again." },
-  "error_network": { "message": "Network error. Please check your internet connection." },
-  "error_model_not_found": { "message": "Model not found. Please ensure the model is available in Ollama." },
-  "error_unknown": { "message": "An unknown error occurred." },
-  "error_stream": { "message": "An error occurred while streaming the response." },
-  "error_suggestions": { "message": "Suggestions:" },
-  "suggestion_check_ollama_running": { "message": "Check if Ollama is running." },
-  "suggestion_check_model_name": { "message": "Verify the model name is correct." },
-  "suggestion_check_browser_permissions": { "message": "Check browser permissions for the extension." },
-  "suggestion_check_ollama_origins": { "message": "Ensure OLLAMA_ORIGINS is configured correctly for the extension." },
-  "suggestion_view_logs": { "message": "View Ollama server logs for more details." },
-  "suggestion_retry": { "message": "Retry the request." },
-  "retry_button": { "message": "Retry" },
-  "copy_error_button": { "message": "Copy Error" },
-  "copied_toast": { "message": "Copied to clipboard" },
-  "show_details_button": { "message": "Show Details" },
-  "hide_details_button": { "message": "Hide Details" },
-  "technical_details": { "message": "Technical Details" },
-
+  "no_response_body": {
+    "message": "Nessun corpo di risposta da Ollama"
+  },
+  "error_generic": {
+    "message": "An error occurred. Please try again."
+  },
+  "error_network": {
+    "message": "Network error. Please check your internet connection."
+  },
+  "error_model_not_found": {
+    "message": "Model not found. Please ensure the model is available in Ollama."
+  },
+  "error_unknown": {
+    "message": "An unknown error occurred."
+  },
+  "error_stream": {
+    "message": "An error occurred while streaming the response."
+  },
+  "error_suggestions": {
+    "message": "Suggestions:"
+  },
+  "suggestion_check_ollama_running": {
+    "message": "Check if Ollama is running."
+  },
+  "suggestion_check_model_name": {
+    "message": "Verify the model name is correct."
+  },
+  "suggestion_check_browser_permissions": {
+    "message": "Check browser permissions for the extension."
+  },
+  "suggestion_check_ollama_origins": {
+    "message": "Ensure OLLAMA_ORIGINS is configured correctly for the extension."
+  },
+  "suggestion_view_logs": {
+    "message": "View Ollama server logs for more details."
+  },
+  "suggestion_retry": {
+    "message": "Retry the request."
+  },
+  "retry_button": {
+    "message": "Retry"
+  },
+  "copy_error_button": {
+    "message": "Copy Error"
+  },
+  "copied_toast": {
+    "message": "Copied to clipboard"
+  },
+  "show_details_button": {
+    "message": "Show Details"
+  },
+  "hide_details_button": {
+    "message": "Hide Details"
+  },
+  "technical_details": {
+    "message": "Technical Details"
+  },
   "system_prompt_default": {
     "message": "Sei un assistente locale (senza cloud).\nRispondi in modo breve e strutturato.\nSe è presente 'Contesto:' — lavora solo con quello: breve riassunto (introduzione + 5–8 punti), poi rispondi alla domanda (se c’è).\nConserva il Markdown: titoli, elenchi, codice (```), tabelle.\nNon scusarti e non giudicare la pertinenza dei contenuti; rispondi semplicemente alla richiesta."
   }
 }
-
