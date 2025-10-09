@@ -79,7 +79,7 @@ function ensureOverlay() {
       // Use svelte's mount helper to support the project's compiled component shape
       app = svelteMount(Overlay as any, {
         target: mountPoint,
-        props: { version: "MVP" },
+        props: { version: chrome.runtime.getManifest().version },
       });
       // overlayReady remains false until the component fires its ready event
     } catch (innerErr) {
