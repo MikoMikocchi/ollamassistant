@@ -10,7 +10,7 @@ import {
   PortMessage,
   PORT_OLLAMA_STREAM,
 } from "./types";
-import { OLLAMA_TAGS_ENDPOINT, TAGS_TTL_MS } from "./config";
+import { OLLAMA_TAGS_ENDPOINT, TAGS_TTL_MS, STREAM_TIMEOUT_MS } from "./config";
 
 const MENU_ROOT_ID = "ollama_assistant_root";
 
@@ -113,7 +113,25 @@ chrome.runtime.onConnect.addListener((port: any) => {
       const startedAt = Date.now();
       let chunkCount = 0;
 
-      const onStop = () => controller.abort();
+      // Таймаут безопасности: если за STREAM_TIMEOUT_MS не пришёл ответ, прерываем
+      const timeoutId = setTimeout(() => {
+        if (!doneSent) {
+          backgroundLogger.warn("stream:timeout", {
+            durationMs: Date.now() - startedAt,
+            timeoutMs: STREAM_TIMEOUT_MS,
+          });
+          controller.abort();
+          safePost(port, {
+            type: "error",
+            error: "Превышен таймаут ожидания ответа от Ollama",
+          });
+        }
+      }, STREAM_TIMEOUT_MS);
+
+      const onStop = () => {
+        clearTimeout(timeoutId);
+        controller.abort();
+      };
       const onPortMessage = (m: PortMessage) => {
         if (m?.type === "stop_stream") onStop();
       };
@@ -122,6 +140,7 @@ chrome.runtime.onConnect.addListener((port: any) => {
       // If the port disconnects (tab closed or reloaded), abort the inflight request
       const onPortDisconnect = () => {
         try {
+          clearTimeout(timeoutId);
           controller.abort();
         } catch {}
       };
@@ -142,10 +161,7 @@ chrome.runtime.onConnect.addListener((port: any) => {
           (m) => {
             if (m?.type === "done") {
               doneSent = true;
-              // Немедленно закрываем запрос к Ollama, чтобы не ждать долгого keep-alive/таймаута
-              try {
-                controller.abort();
-              } catch {}
+              clearTimeout(timeoutId); // Очищаем таймаут при успешном завершении
               backgroundLogger.debug("stream:done", {
                 durationMs: Date.now() - startedAt,
                 chunks: chunkCount,
@@ -159,6 +175,7 @@ chrome.runtime.onConnect.addListener((port: any) => {
                 });
               }
             } else if (m?.type === "error") {
+              clearTimeout(timeoutId); // Очищаем таймаут при ошибке
               backgroundLogger.warn("stream:error", {
                 error: (m as any)?.error,
               });
@@ -173,7 +190,8 @@ chrome.runtime.onConnect.addListener((port: any) => {
           error: e?.message || String(e),
         });
       } finally {
-        // Cleanup listeners to avoid leaks
+        // Очистка таймаута и слушателей
+        clearTimeout(timeoutId);
         try {
           port.onMessage.removeListener(onPortMessage as any);
         } catch {}

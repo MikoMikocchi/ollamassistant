@@ -82,9 +82,23 @@
   function toggle() {
     open = !open;
   }
+
+  let streamTimeout: ReturnType<typeof setTimeout> | null = null;
+
   function start() {
     output = "";
     streaming = true;
+
+    // Таймаут безопасности: если через 5 минут не получен done, останавливаем
+    if (streamTimeout) clearTimeout(streamTimeout);
+    streamTimeout = setTimeout(() => {
+      if (streaming) {
+        streaming = false;
+        output += `\n\n[${t("error")}] Таймаут ожидания ответа (5 мин). Попробуйте снова.`;
+        stop();
+      }
+    }, 300000); // 5 минут
+
     const chosenModel = (model || "").trim();
     const payload = {
       prompt: buildPrompt(),
@@ -98,6 +112,10 @@
     window.dispatchEvent(new CustomEvent(EV_STREAM_START, { detail: payload }));
   }
   function stop() {
+    if (streamTimeout) {
+      clearTimeout(streamTimeout);
+      streamTimeout = null;
+    }
     streaming = false;
     window.dispatchEvent(new CustomEvent(EV_STREAM_STOP));
   }
@@ -134,10 +152,33 @@
   }
   function onStream(e: any) {
     const msg = e?.detail;
-    if (msg?.type === "chunk") output += msg.data;
-    if (msg?.type === "done") streaming = false;
+    if (msg?.type === "chunk") {
+      output += msg.data;
+      // Сбрасываем таймаут при каждом полученном чанке - означает, что генерация идёт
+      if (streamTimeout) {
+        clearTimeout(streamTimeout);
+        streamTimeout = setTimeout(() => {
+          if (streaming) {
+            streaming = false;
+            output += `\n\n[${t("error")}] Таймаут ожидания ответа (5 мин). Попробуйте снова.`;
+            stop();
+          }
+        }, 300000); // 5 минут
+      }
+    }
+    if (msg?.type === "done") {
+      streaming = false;
+      if (streamTimeout) {
+        clearTimeout(streamTimeout);
+        streamTimeout = null;
+      }
+    }
     if (msg?.type === "error") {
       streaming = false;
+      if (streamTimeout) {
+        clearTimeout(streamTimeout);
+        streamTimeout = null;
+      }
       output += `\n[${t("error")}] ${msg.error}`;
     }
   }
@@ -249,6 +290,11 @@
     } catch {}
   });
   onDestroy(() => {
+    // Очистка таймера при уничтожении компонента
+    if (streamTimeout) {
+      clearTimeout(streamTimeout);
+      streamTimeout = null;
+    }
     window.removeEventListener(EV_OVERLAY_OPEN, onOpen as any);
     window.removeEventListener(EV_OVERLAY_TOGGLE, onToggle as any);
     window.removeEventListener(EV_STREAM_OUT, onStream as any);

@@ -130,16 +130,10 @@ export async function streamFromOllama(
 
         // Check for completion
         if (isChunkDone(json)) {
-          // We've reached the logical end of the response. Stop reading further to avoid
-          // waiting for server-side connection close (which can take ~30s) and return control
-          // so the background can emit a single "done" message.
+          // We've reached the logical end of the response.
           sawDone = true;
-          try {
-            onMessage({ type: "done" });
-          } catch {}
-          try {
-            await reader.cancel();
-          } catch {}
+          onMessage({ type: "done" });
+          // Close the reader gracefully without canceling (which can cause server errors)
           done = true;
           break;
         }

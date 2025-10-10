@@ -12,4 +12,4 @@ export const TAGS_TTL_MS = 60_000; // 1 minute
 
 // Networking
 export const DEFAULT_TEMPERATURE = 0.3;
-
+export const STREAM_TIMEOUT_MS = 300_000; // 5 минут - максимальное время ожидания ответа

@@ -11,7 +11,10 @@
   let mounted = false;
 
   onMount(() => {
-    mounted = true;
+    // Небольшая задержка для более плавного появления
+    requestAnimationFrame(() => {
+      mounted = true;
+    });
   });
 
   function getSkeletonStyle(lineIndex?: number) {
@@ -20,7 +23,9 @@
     // Для текстовых скелетонов варьируем ширину последних строк
     if (variant === "text" && lines > 1 && lineIndex !== undefined) {
       if (lineIndex === lines - 1) {
-        baseWidth = Math.random() > 0.5 ? "75%" : "85%";
+        baseWidth = Math.random() > 0.5 ? "70%" : "80%";
+      } else if (lineIndex === lines - 2 && lines > 2) {
+        baseWidth = Math.random() > 0.5 ? "85%" : "92%";
       }
     }
 
@@ -46,16 +51,16 @@
     display: inline-block;
     position: relative;
     overflow: hidden;
-    background-color: var(--skeleton-bg, #e5e7eb);
-    border-radius: var(--skeleton-radius, 4px);
+    background: transparent;
+    border-radius: var(--skeleton-radius, 6px);
   }
 
   .skeleton--text {
-    border-radius: 4px;
+    border-radius: 6px;
   }
 
   .skeleton--rectangular {
-    border-radius: 6px;
+    border-radius: 8px;
   }
 
   .skeleton--circular {
@@ -69,74 +74,85 @@
   .skeleton__line,
   .skeleton__element {
     background: linear-gradient(
-      90deg,
-      var(--skeleton-bg, #e5e7eb) 0%,
-      var(--skeleton-highlight, #f3f4f6) 50%,
-      var(--skeleton-bg, #e5e7eb) 100%
+      110deg,
+      var(--skeleton-bg-start, rgba(148, 163, 184, 0.08)) 0%,
+      var(--skeleton-bg-mid, rgba(148, 163, 184, 0.14)) 45%,
+      var(--skeleton-bg-end, rgba(148, 163, 184, 0.18)) 55%,
+      var(--skeleton-bg-start, rgba(148, 163, 184, 0.08)) 100%
     );
+    background-size: 200% 100%;
     border-radius: inherit;
+    position: relative;
   }
 
-  /* Pulse animation */
+  /* Pulse animation - более мягкий и плавный */
   .skeleton--pulse .skeleton__line,
   .skeleton--pulse .skeleton__element {
-    animation: skeleton-pulse 2s ease-in-out infinite;
+    animation: skeleton-pulse 2.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
   }
 
   @keyframes skeleton-pulse {
-    0%,
-    100% {
-      opacity: 1;
+    0% {
+      background-position: 200% 0;
+      opacity: 0.6;
     }
     50% {
-      opacity: 0.7;
+      background-position: 0% 0;
+      opacity: 0.85;
+    }
+    100% {
+      background-position: -200% 0;
+      opacity: 0.6;
     }
   }
 
-  /* Wave animation */
+  /* Wave animation - более изящная волна */
   .skeleton--wave::before {
     content: "";
     position: absolute;
     top: 0;
-    left: -100%;
-    width: 100%;
+    left: -150%;
+    width: 150%;
     height: 100%;
     background: linear-gradient(
       90deg,
-      transparent,
-      var(--skeleton-wave, rgba(255, 255, 255, 0.3)),
-      transparent
+      transparent 0%,
+      var(--skeleton-wave, rgba(255, 255, 255, 0.15)) 50%,
+      transparent 100%
     );
-    animation: skeleton-wave 2s infinite;
+    animation: skeleton-wave 2.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+    border-radius: inherit;
   }
 
   @keyframes skeleton-wave {
     0% {
-      left: -100%;
+      left: -150%;
     }
     100% {
-      left: 100%;
+      left: 150%;
     }
   }
 
-  /* Dark theme support */
+  /* Dark theme - интеграция с цветовой схемой расширения */
   :global([data-theme="dark"]) .skeleton {
-    --skeleton-bg: #374151;
-    --skeleton-highlight: #4b5563;
-    --skeleton-wave: rgba(255, 255, 255, 0.1);
+    --skeleton-bg-start: rgba(148, 163, 184, 0.06);
+    --skeleton-bg-mid: rgba(148, 163, 184, 0.11);
+    --skeleton-bg-end: rgba(148, 163, 184, 0.14);
+    --skeleton-wave: rgba(230, 233, 239, 0.08);
   }
 
-  /* Light theme support */
+  /* Light theme - интеграция с цветовой схемой расширения */
   :global([data-theme="light"]) .skeleton {
-    --skeleton-bg: #e5e7eb;
-    --skeleton-highlight: #f3f4f6;
-    --skeleton-wave: rgba(255, 255, 255, 0.6);
+    --skeleton-bg-start: rgba(37, 99, 235, 0.04);
+    --skeleton-bg-mid: rgba(37, 99, 235, 0.08);
+    --skeleton-bg-end: rgba(37, 99, 235, 0.11);
+    --skeleton-wave: rgba(37, 99, 235, 0.12);
   }
 
-  /* Smooth appearance */
+  /* Smooth appearance - более плавное появление */
   .skeleton {
     opacity: 0;
-    animation: skeleton-appear 0.3s ease-out forwards;
+    animation: skeleton-appear 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
   }
 
   .skeleton--mounted {
@@ -146,11 +162,11 @@
   @keyframes skeleton-appear {
     from {
       opacity: 0;
-      transform: translateY(4px);
+      transform: translateY(2px) scale(0.98);
     }
     to {
       opacity: 1;
-      transform: translateY(0);
+      transform: translateY(0) scale(1);
     }
   }
 
@@ -158,18 +174,54 @@
   .skeleton--text {
     display: flex;
     flex-direction: column;
-    gap: 0.5em;
+    gap: 0.6em;
   }
 
   .skeleton__line {
     height: 1em;
-    min-height: 12px;
+    min-height: 14px;
   }
 
   /* Responsive sizing */
   @media (max-width: 640px) {
     .skeleton {
-      --skeleton-radius: 3px;
+      --skeleton-radius: 4px;
+    }
+  }
+
+  /* Accessibility - уважаем предпочтения пользователя */
+  @media (prefers-reduced-motion: reduce) {
+    .skeleton--pulse .skeleton__line,
+    .skeleton--pulse .skeleton__element {
+      animation: skeleton-pulse-reduced 3s ease-in-out infinite;
+    }
+
+    @keyframes skeleton-pulse-reduced {
+      0%,
+      100% {
+        opacity: 0.7;
+      }
+      50% {
+        opacity: 0.85;
+      }
+    }
+
+    .skeleton--wave::before {
+      animation: none;
+      opacity: 0.5;
+    }
+
+    .skeleton {
+      animation: skeleton-appear-reduced 0.2s ease-out forwards;
+    }
+
+    @keyframes skeleton-appear-reduced {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
     }
   }
 </style>

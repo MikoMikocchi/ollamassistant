@@ -129,13 +129,15 @@
   .loading-state__dot {
     font-size: 20px;
     color: var(--placeholder);
-    transition: all 0.3s ease;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     transform: scale(1);
+    opacity: 0.5;
   }
 
   .loading-state__dot--active {
     color: var(--panel-text);
-    transform: scale(1.3);
+    transform: scale(1.4);
+    opacity: 1;
   }
 
   .loading-state__text {
@@ -143,6 +145,7 @@
     color: var(--placeholder);
     font-weight: 500;
     text-align: center;
+    opacity: 0.85;
   }
 
   .loading-state--small .loading-state__text {
@@ -153,19 +156,19 @@
     font-size: 16px;
   }
 
-  /* Animation for entrance */
+  /* Animation for entrance - более плавная */
   .loading-state {
-    animation: loading-appear 0.3s ease-out;
+    animation: loading-appear 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   @keyframes loading-appear {
     from {
       opacity: 0;
-      transform: translateY(10px);
+      transform: translateY(8px) scale(0.98);
     }
     to {
       opacity: 1;
-      transform: translateY(0);
+      transform: translateY(0) scale(1);
     }
   }
 
@@ -174,11 +177,20 @@
     .loading-state,
     .loading-state__dot {
       animation: none;
-      transition: none;
+      transition: opacity 0.2s ease;
     }
 
     .loading-state__dot--active {
       transform: none;
+    }
+
+    @keyframes loading-appear {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
     }
   }
 
