@@ -8,7 +8,7 @@
         "build": "vite build --config vite.config.ts"
     },
     "devDependencies": {
-        "@crxjs/vite-plugin": "^2.0.0-beta.21",
+        "@crxjs/vite-plugin": "^2.4.0",
         "@sveltejs/vite-plugin-svelte": "^6.2.1",
         "@types/chrome": "^0.0.269",
         "svelte": "^5.39.6",
